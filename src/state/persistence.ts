@@ -220,6 +220,14 @@ function parseFichas(raw: unknown): Ficha[] {
           typeof item.proficienciaManual === 'number'
             ? Math.max(1, Math.floor(item.proficienciaManual))
             : null,
+        classeId: typeof item.classeId === 'string' ? item.classeId : null,
+        subclasseId: typeof item.subclasseId === 'string' ? item.subclasseId : null,
+        ancestralidadeId:
+          typeof item.ancestralidadeId === 'string' ? item.ancestralidadeId : null,
+        comunidadeId: typeof item.comunidadeId === 'string' ? item.comunidadeId : null,
+        cartas: Array.isArray(item.cartas)
+          ? item.cartas.filter((carta): carta is string => typeof carta === 'string')
+          : [],
       };
     });
 

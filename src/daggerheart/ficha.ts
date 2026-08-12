@@ -69,6 +69,16 @@ export interface Ficha {
 
   /** Sobrescreve a proficiência derivada do nível, quando a mesa diverge. */
   proficienciaManual: number | null;
+
+  // --- Escolhas do SRD ---
+  // Guardadas como ids para o app poder buscar as características; os campos
+  // de texto acima seguem valendo para quem joga com material próprio.
+  classeId: string | null;
+  subclasseId: string | null;
+  ancestralidadeId: string | null;
+  comunidadeId: string | null;
+  /** Ids das cartas de domínio que o personagem tem em mãos. */
+  cartas: string[];
 }
 
 /** Proficiência efetiva: a manual ganha da tabela por nível. */
@@ -184,6 +194,26 @@ export function danoDaArma(
   return { expressao, rotulo };
 }
 
+/**
+ * Rolagem de conjuração: dualidade + o atributo que a subclasse define.
+ * Qual atributo é depende da subclasse, e isso vem do SRD.
+ */
+export function rolagemDeConjuracao(
+  ficha: Ficha,
+  atributo: TraitId,
+  opcoes: OpcoesDeTeste = {},
+): RolagemPronta {
+  const modificador =
+    (ficha.atributos[atributo] ?? 0) +
+    bonusDaExperiencia(ficha, opcoes.experienciaId) +
+    (opcoes.bonusExtra ?? 0);
+
+  const rotulo = 'Conjuração';
+  const expressao = `${comModificador('dd', modificador)}${dadoDeSituacao(opcoes)}[${rotulo}]`;
+
+  return { expressao, rotulo };
+}
+
 /** Reação: mesma dualidade, sem gerar Esperança nem Medo. */
 export function rolagemDeReacao(
   ficha: Ficha,
@@ -228,6 +258,11 @@ export function fichaEmBranco(id: string, nome = 'Novo personagem'): Ficha {
     armas: [],
     experiencias: [],
     proficienciaManual: null,
+    classeId: null,
+    subclasseId: null,
+    ancestralidadeId: null,
+    comunidadeId: null,
+    cartas: [],
   };
 }
 

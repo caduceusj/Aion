@@ -3,6 +3,7 @@ import {
   ataqueComArma,
   danoDaArma,
   proficiencia,
+  rolagemDeConjuracao,
   rolagemDeReacao,
   testeDeAtributo,
   DADOS_DE_DANO,
@@ -11,6 +12,10 @@ import {
   type Ficha,
   type OpcoesDeTeste,
 } from '@/daggerheart/ficha';
+import { useSrd } from '@/ui/hooks/useSrd';
+import { EscolhasDoSrd } from './EscolhasDoSrd';
+import { CartasDeDominio } from './CartasDeDominio';
+import { AVISO_DPCGL, FONTE_DOS_DADOS, NAO_AFILIADO } from '@/daggerheart/srd/licenca';
 import {
   DIFICULDADES,
   ESPERANCA_MAXIMA,
@@ -125,6 +130,8 @@ export function FichaPanel() {
   const [editando, setEditando] = useState(false);
   const [danoRecebido, setDanoRecebido] = useState('');
 
+  const { srd, carregando: srdCarregando } = useSrd();
+
   const opcoes: OpcoesDeTeste = useMemo(
     () => ({ vantagem, desvantagem, experienciaId }),
     [vantagem, desvantagem, experienciaId],
@@ -159,6 +166,11 @@ export function FichaPanel() {
   };
 
   const prof = proficiencia(ficha);
+
+  // Qual atributo conjura depende da subclasse, e isso vem do SRD.
+  const atributoDeConjuracao =
+    srd?.subclasses.find((item) => item.id === ficha.subclasseId)?.atributoDeConjuracao ??
+    null;
 
   // Lê o desfecho da última rolagem de dualidade contra a Dificuldade
   // escolhida — é a leitura que a mesa faz em voz alta.
@@ -318,6 +330,32 @@ export function FichaPanel() {
             })}
           </div>
         </section>
+
+        {/* ----------------------------------------------- conjuração */}
+        {atributoDeConjuracao ? (
+          <section className="ficha__secao">
+            <h3 className="rotulo ficha__secao-titulo">Conjuração</h3>
+            <button
+              type="button"
+              className="conjuracao"
+              onClick={() => {
+                const magia = rolagemDeConjuracao(ficha, atributoDeConjuracao, opcoes);
+                rolar(magia.expressao, magia.rotulo);
+              }}
+            >
+              <span className="conjuracao__valor mono">
+                {(ficha.atributos[atributoDeConjuracao] ?? 0) >= 0 ? '+' : ''}
+                {ficha.atributos[atributoDeConjuracao] ?? 0}
+              </span>
+              <span className="conjuracao__texto">
+                Rolagem de Conjuração
+                <span className="conjuracao__atributo">
+                  usa {TRAITS.find((t) => t.id === atributoDeConjuracao)?.nome}
+                </span>
+              </span>
+            </button>
+          </section>
+        ) : null}
 
         {/* ------------------------------------------------ desfecho */}
         <section className="ficha__secao">
@@ -690,6 +728,29 @@ export function FichaPanel() {
           </section>
         ) : null}
 
+        {/* ------------------------------------------------ personagem */}
+        <section className="ficha__secao">
+          <h3 className="rotulo ficha__secao-titulo">Personagem</h3>
+          {srdCarregando ? (
+            <p className="ficha__nota">Carregando o material do Daggerheart…</p>
+          ) : srd ? (
+            <EscolhasDoSrd ficha={ficha} srd={srd} aoMudar={patch} />
+          ) : (
+            <p className="ficha__nota">
+              Não consegui carregar o material do Daggerheart. A ficha continua
+              funcionando: preencha os campos à mão em Editar.
+            </p>
+          )}
+        </section>
+
+        {/* --------------------------------------------------- cartas */}
+        {srd ? (
+          <section className="ficha__secao">
+            <h3 className="rotulo ficha__secao-titulo">Cartas de domínio</h3>
+            <CartasDeDominio ficha={ficha} srd={srd} aoMudar={patch} />
+          </section>
+        ) : null}
+
         {/* ------------------------------------------------ lembretes */}
         <section className="ficha__secao">
           <h3 className="rotulo ficha__secao-titulo">Lembretes</h3>
@@ -702,6 +763,19 @@ export function FichaPanel() {
             ))}
           </dl>
         </section>
+
+        {/* A DPCGL exige este aviso onde o conteúdo do SRD é exibido. */}
+        <footer className="ficha__licenca">
+          <p>{AVISO_DPCGL}</p>
+          <p>
+            {NAO_AFILIADO} Dados de{' '}
+            <a href={FONTE_DOS_DADOS.url} target="_blank" rel="noreferrer noopener">
+              {FONTE_DOS_DADOS.repositorio}
+            </a>
+            , cópia de {FONTE_DOS_DADOS.baixadoEm}. O texto das regras aparece no
+            original em inglês, sem tradução.
+          </p>
+        </footer>
       </div>
     </div>
   );

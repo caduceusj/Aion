@@ -14,7 +14,9 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "relay": "node server/relay.mjs",
-    "verifica:mesa": "node scripts/verifica-mesa.mjs"
+    "verifica:mesa": "node scripts/verifica-mesa.mjs",
+    "srd:atualiza": "node scripts/atualiza-srd.mjs",
+    "srd:confere": "node scripts/atualiza-srd.mjs --conferir"
   },
   "dependencies": {
     "cannon-es": "^0.20.0",

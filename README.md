@@ -19,8 +19,10 @@ animação por cima: os dados são poliedros reais simulados com física, a
 matemática é auditável e cada rolagem guarda a semente que a produziu — se
 alguém na mesa duvidar do resultado, dá para reproduzi-lo.
 
-Funciona offline, sem conta, sem servidor, sem nenhuma requisição de rede.
-Tudo — texturas dos dados, sons, ícones — é gerado em tempo de execução.
+Funciona offline e sem conta. Tudo — texturas dos dados, sons, ícones — é
+gerado em tempo de execução, e o material do Daggerheart vem embutido. A única
+parte que usa rede é a mesa compartilhada, e mesmo ela é opcional: um relay que
+você mesmo roda, para os aparelhos se acharem.
 
 ## Recursos
 
@@ -38,6 +40,11 @@ Tudo — texturas dos dados, sons, ícones — é gerado em tempo de execução.
 - Vibração no celular
 
 **Daggerheart**
+- Material do SRD embutido: 18 ancestralidades, 9 comunidades, 9 classes,
+  18 subclasses e 189 cartas de domínio — offline, sem depender do GitHub
+- Escolher a classe traz domínios, PV e Evasão iniciais; a subclasse define
+  qual atributo faz a rolagem de Conjuração
+- Baralho de domínio filtrado pelos seus domínios e pelo seu nível
 - Dados de dualidade (`dd`): 2d12 de Esperança e Medo, com cores próprias na mesa
 - Empate é sucesso crítico e entra no mesmo drama do 20 natural
 - Ficha que monta as rolagens: toque no atributo e ele rola com o modificador certo
@@ -136,4 +143,26 @@ As setas de dependência apontam sempre para baixo.
 
 ## Licença
 
-MIT — veja [LICENSE](LICENSE).
+O código do Aion é MIT — veja [LICENSE](LICENSE).
+
+O material de regras é outra coisa:
+
+> This product includes materials from the Daggerheart System Reference
+> Document, © Critical Role, LLC. Used with permission under the Darrington
+> Press Community Gaming License (DPCGL). Daggerheart and all associated
+> marks are trademarks of Critical Role, LLC.
+
+Aion não é afiliado a Critical Role, LLC nem à Darrington Press. Os dados do
+SRD vêm de [daggersearch/daggerheart-data](https://github.com/daggersearch/daggerheart-data)
+e ficam versionados em `src/daggerheart/srd/dados/` — ver
+[PROCEDENCIA.md](src/daggerheart/srd/PROCEDENCIA.md) para somas de
+verificação e como atualizar:
+
+```bash
+npm run srd:confere    # compara a cópia local com a fonte
+npm run srd:atualiza   # rebaixa e relata o que mudou
+```
+
+O texto das regras aparece no original em inglês. Traduzir na mão produziria
+uma versão não oficial e provavelmente imprecisa — a moldura da interface é
+que fica em português.
