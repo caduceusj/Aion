@@ -414,6 +414,47 @@ export function createDiceStage(
     return best;
   }
 
+  /**
+   * Deita o dado na face que está mais para cima e o pousa na mesa.
+   *
+   * Só é usado quando o tempo limite estoura: gira o mínimo necessário para
+   * a face de cima ficar exatamente na horizontal e baixa o corpo até o
+   * vértice mais baixo tocar o feltro.
+   */
+  function snapToRest(entry: ActiveDie): void {
+    const upIndex = upwardFace(entry);
+    const localUp = entry.shape.faceNormals[upIndex];
+    if (!localUp) return;
+
+    const current = new THREE.Quaternion(
+      entry.body.quaternion.x,
+      entry.body.quaternion.y,
+      entry.body.quaternion.z,
+      entry.body.quaternion.w,
+    );
+
+    const worldUp = localUp.clone().applyQuaternion(current);
+    const correction = new THREE.Quaternion().setFromUnitVectors(
+      worldUp.normalize(),
+      new THREE.Vector3(0, 1, 0),
+    );
+    const settled = correction.multiply(current);
+
+    entry.body.quaternion.set(settled.x, settled.y, settled.z, settled.w);
+
+    // Pousa exatamente sobre o feltro: o vértice mais baixo encosta em y = 0.
+    const scale = entry.mesh.scale.x;
+    let lowest = Infinity;
+    const vertex = new THREE.Vector3();
+    for (const [x, y, z] of entry.shape.hullVertices) {
+      vertex.set(x * scale, y * scale, z * scale).applyQuaternion(settled);
+      lowest = Math.min(lowest, vertex.y);
+    }
+    if (Number.isFinite(lowest)) entry.body.position.y = -lowest;
+
+    entry.body.sleep();
+  }
+
   /** Mapa de faces opostas por sólido — calculado uma vez, reaproveitado. */
   const oppositeCache = new Map<PolyhedronKind, number[]>();
 
@@ -536,11 +577,13 @@ export function createDiceStage(
     if (!allQuiet && !timedOut) return;
 
     if (timedOut) {
-      // Congela o que ainda estiver rolando. Um dado escorado em outro
-      // continua legível: a reetiquetagem usa a face mais alta, seja qual for.
+      // Em máquina lenta a simulação pode não terminar a tempo. Em vez de
+      // apenas congelar — o que deixaria dados tortos, apoiados em quina —
+      // deita cada um na face que estava mais para cima.
       for (const entry of active) {
         entry.body.velocity.setZero();
         entry.body.angularVelocity.setZero();
+        snapToRest(entry);
       }
     }
 
@@ -610,8 +653,20 @@ export function createDiceStage(
   frameHandle = requestAnimationFrame(animate);
 
   // ------------------------------------------------------------------- API
+  /** Encerra a espera da rolagem anterior, se ainda houver uma pendente. */
+  function resolvePending(): void {
+    if (!settleResolve) return;
+    const resolve = settleResolve;
+    settleResolve = null;
+    currentRollId = null;
+    resolve();
+  }
+
   return {
     roll(request: RollRequest): Promise<void> {
+      // Rolar de novo no meio de uma rolagem substitui a anterior; sem isso
+      // a promessa dela ficaria pendurada para sempre.
+      resolvePending();
       clearDice();
       currentSkin = request.skin;
       currentRollId = request.id;
@@ -633,12 +688,7 @@ export function createDiceStage(
 
     clear(): void {
       clearDice();
-      if (settleResolve) {
-        const resolve = settleResolve;
-        settleResolve = null;
-        currentRollId = null;
-        resolve();
-      }
+      resolvePending();
     },
 
     setSpeed(next: number): void {

@@ -64,7 +64,7 @@ Requer Node 20+.
 | Tecla | Ação |
 |---|---|
 | `Enter` | Foca o campo de notação |
-| `1`–`7` | Rola d4, d6, d8, d10, d12, d20, d100 |
+| `1`–`8` | Rola d4, d6, d8, d10, d12, d20, d100, dF |
 | `r` | Repete a última rolagem |
 | `v` / `d` | Vantagem / desvantagem |
 | `h` / `a` / `,` | Histórico / atalhos / ajustes |
