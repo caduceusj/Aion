@@ -242,3 +242,28 @@
   }
 }
 
+/* Em telas estreitas o campo ganha a linha inteira: espremido entre quatro
+   botões, não cabia nem "1d20+7[Ataque]". */
+@media (max-width: 560px) {
+  .doca__linha {
+    flex-wrap: wrap;
+  }
+
+  .doca__campo {
+    flex: 1 1 100%;
+  }
+
+  .doca__acoes {
+    flex: 1 1 100%;
+  }
+
+  .doca__rolar {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .doca__rolar span {
+    display: inline;
+  }
+}
+

@@ -266,12 +266,15 @@ export function createDiceStage(
 
     if (corners.length === 0) return;
 
-    // A borda superior da tela pode cair no horizonte; limitamos a arena a
-    // um tamanho jogável para os dados não sumirem ao longe.
-    arenaHalfX = Math.min(Math.max(...corners.map((p) => Math.abs(p.x))), 16);
-    arenaHalfZ = Math.min(Math.max(...corners.map((p) => Math.abs(p.z))), 14);
-    arenaHalfX = Math.max(arenaHalfX, 4);
-    arenaHalfZ = Math.max(arenaHalfZ, 4);
+    // A região visível do chão é um trapézio — estreito perto da câmera e
+    // largo ao longe. A arena precisa ser um retângulo INSCRITO nele, por
+    // isso o mínimo e não o máximo: com o máximo, os dados assentariam nos
+    // cantos próximos, que já estão fora do enquadramento.
+    arenaHalfX = Math.min(...corners.map((p) => Math.abs(p.x)));
+    arenaHalfZ = Math.min(...corners.map((p) => Math.abs(p.z)));
+
+    arenaHalfX = THREE.MathUtils.clamp(arenaHalfX, 3.2, 16);
+    arenaHalfZ = THREE.MathUtils.clamp(arenaHalfZ, 3.2, 14);
 
     const setWall = (
       index: number,
