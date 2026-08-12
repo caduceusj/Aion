@@ -8,20 +8,33 @@ import {
   type CartaDeDominio,
   type Srd,
 } from '@/daggerheart/srd';
+import { extrairDanosDaCarta, montarDanoDeCarta } from '@/daggerheart/srd/dano';
+import { proficiencia as proficienciaDaFicha } from '@/daggerheart/ficha';
 import { Blocos } from './EscolhasDoSrd';
 import { IconCheck, IconMais } from './Icons';
 
 function Carta({
   carta,
   escolhida,
+  proficiencia,
   aoAlternar,
+  aoRolar,
 }: {
   carta: CartaDeDominio;
   escolhida: boolean;
+  proficiencia: number;
   aoAlternar: () => void;
+  aoRolar: (expressao: string, rotulo: string) => void;
 }) {
   const [aberta, setAberta] = useState(false);
   const cor = DOMINIOS[carta.dominio].cor;
+
+  // Só o que está em mãos ganha botão de rolar: numa lista de busca, um
+  // botão de dano em carta que você não tem é convite para erro.
+  const danos = useMemo(
+    () => (escolhida ? extrairDanosDaCarta(carta) : []),
+    [carta, escolhida],
+  );
 
   return (
     <li
@@ -55,6 +68,44 @@ function Carta({
         </button>
       </div>
 
+      {danos.length > 0 ? (
+        <div className="carta__danos">
+          {danos.map((dano) => {
+            const normal = montarDanoDeCarta(dano, proficiencia, carta.nome);
+            const critico = montarDanoDeCarta(dano, proficiencia, carta.nome, {
+              critico: true,
+            });
+            const rotulo = normal.expressao.replace(/\[.*$/, '');
+
+            return (
+              <div className="carta__dano" key={dano.trecho}>
+                <button
+                  type="button"
+                  className="carta__rolar"
+                  onClick={() => aoRolar(normal.expressao, normal.rotulo)}
+                  title={
+                    normal.usaProficiencia
+                      ? `"${dano.trecho}" — a carta não traz a contagem, então ela vem da sua Proficiência (${proficiencia})`
+                      : `"${dano.trecho}" — contagem fixa da carta`
+                  }
+                >
+                  <span className="carta__rolar-rotulo">Dano</span>
+                  <span className="carta__rolar-expressao mono">{rotulo}</span>
+                </button>
+                <button
+                  type="button"
+                  className="carta__rolar carta__rolar--critico"
+                  onClick={() => aoRolar(critico.expressao, critico.rotulo)}
+                  title="Dano crítico: soma o máximo dos dados"
+                >
+                  Crítico
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
       {aberta ? (
         <div className="carta__corpo">
           {carta.caracteristicas.map((caracteristica, indice) => (
@@ -83,11 +134,14 @@ export function CartasDeDominio({
   ficha,
   srd,
   aoMudar,
+  aoRolar,
 }: {
   ficha: Ficha;
   srd: Srd;
   aoMudar: (patch: Partial<Ficha>) => void;
+  aoRolar: (expressao: string, rotulo: string) => void;
 }) {
+  const prof = proficienciaDaFicha(ficha);
   const [busca, setBusca] = useState('');
   const [mostrarTodas, setMostrarTodas] = useState(false);
 
@@ -140,7 +194,9 @@ export function CartasDeDominio({
                 key={carta.id}
                 carta={carta}
                 escolhida
+                proficiencia={prof}
                 aoAlternar={() => alternar(carta.id)}
+                aoRolar={aoRolar}
               />
             ))}
           </ul>
@@ -180,7 +236,9 @@ export function CartasDeDominio({
               key={carta.id}
               carta={carta}
               escolhida={false}
+              proficiencia={prof}
               aoAlternar={() => alternar(carta.id)}
+              aoRolar={aoRolar}
             />
           ))}
         </ul>

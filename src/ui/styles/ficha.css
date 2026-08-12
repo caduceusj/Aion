@@ -956,3 +956,55 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Botões de dano das cartas em mãos. */
+.carta__danos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: 0 var(--sp-3) var(--sp-2);
+}
+
+.carta__dano {
+  display: flex;
+  gap: var(--sp-1);
+}
+
+.carta__rolar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 30px;
+  border: 1px solid var(--sf-hairline);
+  border-radius: var(--r-sm);
+  color: var(--ink-dim);
+  font-size: var(--fs-xs);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.carta__rolar:hover {
+  color: var(--amber-300);
+  border-color: var(--amber-700);
+}
+
+.carta__rolar:active {
+  transform: translateY(1px);
+}
+
+.carta__rolar-expressao {
+  color: var(--ink-faint);
+  font-size: var(--fs-micro);
+}
+
+.carta__rolar:hover .carta__rolar-expressao {
+  color: var(--amber-500);
+}
+
+.carta__rolar--critico {
+  flex: 0 0 auto;
+  padding: 0 var(--sp-3);
+  color: var(--crit-success);
+  border-color: rgba(255, 209, 102, 0.28);
+}

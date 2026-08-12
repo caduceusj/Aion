@@ -747,7 +747,7 @@ export function FichaPanel() {
         {srd ? (
           <section className="ficha__secao">
             <h3 className="rotulo ficha__secao-titulo">Cartas de domínio</h3>
-            <CartasDeDominio ficha={ficha} srd={srd} aoMudar={patch} />
+            <CartasDeDominio ficha={ficha} srd={srd} aoMudar={patch} aoRolar={rolar} />
           </section>
         ) : null}
 

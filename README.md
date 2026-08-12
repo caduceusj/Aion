@@ -45,6 +45,8 @@ você mesmo roda, para os aparelhos se acharem.
 - Escolher a classe traz domínios, PV e Evasão iniciais; a subclasse define
   qual atributo faz a rolagem de Conjuração
 - Baralho de domínio filtrado pelos seus domínios e pelo seu nível
+- Cartas com dano viram botão de rolagem: o Aion lê a expressão no texto da
+  carta e aplica a Proficiência quando é o caso
 - Dados de dualidade (`dd`): 2d12 de Esperança e Medo, com cores próprias na mesa
 - Empate é sucesso crítico e entra no mesmo drama do 20 natural
 - Ficha que monta as rolagens: toque no atributo e ele rola com o modificador certo
