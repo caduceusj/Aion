@@ -97,7 +97,10 @@ export function MesaPanel() {
               />
               <span className="mesa__dica">
                 Rode <code className="mono">npm run relay</code> em um computador da rede
-                e use o IP dele aqui.
+                e use o IP dele aqui — <code className="mono">ws://192.168.0.10:8787</code>,
+                não <code className="mono">localhost</code>, senão os outros aparelhos não
+                acham. A mesa compartilhada precisa desse processo em algum lugar; o resto
+                do Aion funciona sem ele.
               </span>
             </label>
 

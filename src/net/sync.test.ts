@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { roll } from '@/engine';
 import { fichaDeExemplo, ataqueComArma, danoDaArma, type Arma } from '@/daggerheart/ficha';
 import { gerarCodigoDeSala, normalizarCodigo, type RolagemCompartilhada } from './types';
+import { urlPadraoDoRelay } from './sync';
 
 describe('códigos de sala', () => {
   it('gera do tamanho pedido', () => {
@@ -108,5 +109,63 @@ describe('reprodução de uma rolagem recebida', () => {
     expect(reproduzida.dice.map((d) => d.skinOverride)).toEqual(
       original.dice.map((d) => d.skinOverride),
     );
+  });
+});
+
+/**
+ * O endereço padrão do relay depende de onde o app está servido. Testar isso
+ * no navegador exigiria hospedar de verdade em cada host; aqui basta trocar
+ * `window.location`.
+ */
+describe('endereço padrão do relay', () => {
+  const original = globalThis.window;
+
+  const comLocalizacao = (href: string): string => {
+    const url = new URL(href);
+    (globalThis as { window?: unknown }).window = {
+      location: {
+        href,
+        hostname: url.hostname,
+        host: url.host,
+        protocol: url.protocol,
+        search: url.search,
+      },
+    };
+    try {
+      return urlPadraoDoRelay();
+    } finally {
+      (globalThis as { window?: unknown }).window = original;
+    }
+  };
+
+  it('em desenvolvimento aponta para o relay local', () => {
+    expect(comLocalizacao('http://localhost:5173/')).toBe('ws://localhost:8787');
+    expect(comLocalizacao('http://127.0.0.1:4173/')).toBe('ws://localhost:8787');
+  });
+
+  it('em host estático fica vazio em vez de chutar endereço morto', () => {
+    // GitHub Pages e afins servem o app, mas nunca um relay. Um palpite ali
+    // viraria erro de conexão sem explicação.
+    expect(comLocalizacao('https://caduceusj.github.io/Aion/')).toBe('');
+    expect(comLocalizacao('https://algo.pages.dev/')).toBe('');
+    expect(comLocalizacao('https://algo.netlify.app/')).toBe('');
+    expect(comLocalizacao('https://algo.vercel.app/')).toBe('');
+  });
+
+  it('em host próprio chuta o relay ao lado, que pode existir', () => {
+    expect(comLocalizacao('https://mesa.exemplo.com/')).toBe('wss://mesa.exemplo.com/mesa');
+    expect(comLocalizacao('http://192.168.0.10:8080/')).toBe('ws://192.168.0.10:8080/mesa');
+  });
+
+  it('o parâmetro da URL manda em tudo — é o link de convite', () => {
+    expect(
+      comLocalizacao('https://caduceusj.github.io/Aion/?sala=XKQ7&relay=ws%3A%2F%2F10.0.0.5%3A8787'),
+    ).toBe('ws://10.0.0.5:8787');
+  });
+
+  it('sem window não quebra', () => {
+    (globalThis as { window?: unknown }).window = undefined;
+    expect(urlPadraoDoRelay()).toBe('');
+    (globalThis as { window?: unknown }).window = original;
   });
 });

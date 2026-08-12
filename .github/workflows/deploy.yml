@@ -1,0 +1,58 @@
+name: Publicar no GitHub Pages
+
+on:
+  push:
+    branches: [claude/rpg-dice-roller-ay4f4r, main]
+  # Permite publicar na mão pela aba Actions.
+  workflow_dispatch:
+
+# Só o necessário para publicar: ler o código e falar com o Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Uma publicação por vez. `cancel-in-progress: false` porque cancelar um
+# deploy no meio pode deixar o site num estado incompleto.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construir:
+    name: Construir
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Os testes rodam antes do build de propósito: é um rolador de dados,
+      # e publicar matemática quebrada é pior do que não publicar.
+      - name: Testes
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  publicar:
+    name: Publicar
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

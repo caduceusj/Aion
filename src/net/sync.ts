@@ -203,21 +203,37 @@ export function criarConexao(ouvintes: OuvintesDaRede = {}): ConexaoDaMesa {
   };
 }
 
-/** Endereço padrão do relay, com os parâmetros da URL tendo prioridade. */
+/** Hospedagens estáticas conhecidas: servem o app, mas nunca um relay. */
+const HOSPEDAGEM_ESTATICA = /(^|\.)(github\.io|pages\.dev|netlify\.app|vercel\.app)$/i;
+
+/**
+ * Endereço padrão do relay.
+ *
+ * O parâmetro `?relay=` da URL manda em tudo — é assim que o link de convite
+ * leva o convidado direto para a mesa certa.
+ *
+ * Fora isso, o palpite só vale quando pode dar certo. Em desenvolvimento, o
+ * relay costuma estar na mesma máquina. Em um host estático não existe relay
+ * algum, e chutar `wss://<host>/mesa` produziria um endereço morto e um erro
+ * de conexão sem explicação — melhor deixar o campo vazio, que já desabilita
+ * o botão de entrar e deixa a dica visível.
+ */
 export function urlPadraoDoRelay(): string {
-  if (typeof window === 'undefined') return 'ws://localhost:8787';
+  if (typeof window === 'undefined') return '';
 
   const parametro = new URLSearchParams(window.location.search).get('relay');
   if (parametro) return parametro;
 
-  // Servido pelo mesmo host? Tenta o relay ao lado, no caminho /mesa.
-  const { protocol, hostname } = window.location;
-  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-    const ws = protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${ws}//${window.location.host}/mesa`;
+  const { protocol, hostname, host } = window.location;
+
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'ws://localhost:8787';
   }
 
-  return 'ws://localhost:8787';
+  if (HOSPEDAGEM_ESTATICA.test(hostname)) return '';
+
+  // Host próprio: pode muito bem estar servindo o relay ao lado, em /mesa.
+  return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/mesa`;
 }
 
 /** Código de sala vindo da URL, para entrar por link. */
