@@ -1,0 +1,224 @@
+.app {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ----------------------------------------------------------- cabeçalho */
+
+.cabecalho {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-hud);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  padding-top: max(var(--sp-3), env(safe-area-inset-top, 0px));
+  background: linear-gradient(to bottom, rgba(6, 8, 15, 0.86), rgba(6, 8, 15, 0));
+  pointer-events: none;
+}
+
+.cabecalho > * {
+  pointer-events: auto;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--amber-300);
+}
+
+.marca__glifo {
+  filter: drop-shadow(0 0 12px var(--amber-glow));
+}
+
+.marca__nome {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-bright);
+}
+
+.cabecalho__direita {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.seletor-personagem {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 34px;
+  padding: 0 var(--sp-2) 0 var(--sp-3);
+  border: 1px solid var(--sf-hairline);
+  border-radius: var(--r-pill);
+  background: rgba(18, 24, 38, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.seletor-personagem__cor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+}
+
+.seletor-personagem select {
+  max-width: 130px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+  padding-right: var(--sp-1);
+}
+
+.seletor-personagem select:focus {
+  outline: none;
+}
+
+.cabecalho__nav {
+  display: flex;
+  gap: var(--sp-1);
+  padding: 3px;
+  border: 1px solid var(--sf-hairline);
+  border-radius: var(--r-pill);
+  background: rgba(18, 24, 38, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.cabecalho__botao {
+  width: 34px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  color: var(--ink-faint);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.cabecalho__botao:hover {
+  color: var(--ink-bright);
+}
+
+.cabecalho__botao[data-ativo='sim'] {
+  color: var(--amber-300);
+  background: rgba(232, 181, 99, 0.14);
+}
+
+/* -------------------------------------------------------- rodapé mesa */
+
+.rodape-mesa {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-hud);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  pointer-events: none;
+}
+
+.rodape-mesa > * {
+  pointer-events: auto;
+}
+
+/* A faixa de atalhos fica logo acima da doca, na mesma coluna. */
+.rodape-mesa .faixa-atalhos {
+  padding-bottom: var(--sp-1);
+}
+
+/* --------------------------------------------------------------- trilho */
+
+.trilho {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-panel);
+  width: min(var(--rail-w), 100vw);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--sf-hairline);
+  background: rgba(11, 15, 26, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: var(--shadow-lg);
+  animation: trilho-entra var(--dur-mid) var(--ease-out);
+}
+
+@keyframes trilho-entra {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+.trilho__fechar {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  color: var(--ink-faint);
+}
+
+.trilho__fechar:hover {
+  color: var(--amber-300);
+}
+
+.trilho-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-panel) - 1);
+  background: rgba(4, 6, 11, 0.5);
+  animation: trilho-fundo-entra var(--dur-mid) var(--ease-out);
+}
+
+@keyframes trilho-fundo-entra {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Em telas largas o trilho convive com a mesa em vez de cobri-la. */
+@media (min-width: 1100px) {
+  .trilho {
+    animation: none;
+  }
+
+  .trilho-fundo {
+    display: none;
+  }
+
+  .app[data-trilho='sim'] .rodape-mesa,
+  .app[data-trilho='sim'] .cabecalho,
+  .app[data-trilho='sim'] .resultado {
+    right: var(--rail-w);
+  }
+}
+
+@media (max-width: 520px) {
+  .marca__nome {
+    letter-spacing: 0.22em;
+  }
+
+  .seletor-personagem select {
+    max-width: 88px;
+  }
+}

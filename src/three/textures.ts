@@ -102,8 +102,13 @@ const emptyTexture = (): THREE.CanvasTexture => {
 };
 
 /**
- * Desenha uma face. O fundo fica transparente — a cor do corpo vem do
- * material, então uma mesma geometria serve a todas as skins.
+ * Desenha uma face.
+ *
+ * O fundo é pintado com a cor do corpo, e não deixado transparente: o
+ * material multiplica a cor pelo mapa, então um fundo transparente (RGB
+ * zero) renderizaria o dado inteiro preto. Pintar o corpo aqui também
+ * resolve as bordas — as UVs extrapolam [0,1] de propósito, e o clamp
+ * estende justamente a cor do corpo até os cantos da face.
  */
 export function createFaceTexture(options: FaceTextureOptions): THREE.CanvasTexture {
   if (!hasCanvas()) return emptyTexture();
@@ -118,6 +123,23 @@ export function createFaceTexture(options: FaceTextureOptions): THREE.CanvasText
 
   const label = options.label;
   const center = size / 2;
+
+  ctx.fillStyle = options.body;
+  ctx.fillRect(0, 0, size, size);
+
+  // Um brilho suave no centro da face dá relevo sem precisar de normal map.
+  const sheen = ctx.createRadialGradient(
+    center,
+    center * 0.72,
+    size * 0.04,
+    center,
+    center,
+    size * 0.78,
+  );
+  sheen.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
+  sheen.addColorStop(1, 'rgba(0, 0, 0, 0.14)');
+  ctx.fillStyle = sheen;
+  ctx.fillRect(0, 0, size, size);
 
   if (label.length > 0) {
     // O glifo ocupa um disco central; quanto mais dígitos, menor a fonte,
@@ -155,8 +177,8 @@ export function createFaceTexture(options: FaceTextureOptions): THREE.CanvasText
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 8;
   // As UVs das faces extrapolam [0,1] de propósito: a textura é ajustada
-  // ao círculo inscrito da face, então os cantos caem fora. A borda do
-  // canvas é transparente, e o clamp apenas estende essa transparência.
+  // ao círculo inscrito da face, então os cantos caem fora. O clamp
+  // estende a cor do corpo pintada na borda do canvas.
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
   texture.needsUpdate = true;

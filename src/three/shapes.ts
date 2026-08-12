@@ -311,7 +311,9 @@ function assignFaceValues(kind: PolyhedronKind, normals: V3[]): number[] {
     pairs.forEach(([a, b], index) => {
       const value = fudge[index % fudge.length] ?? 0;
       values[a] = value;
-      values[b] = -value;
+      // `-0` é igual a 0 na aritmética mas não em comparações estritas, e
+      // vazaria como "-0" na face. Normaliza.
+      values[b] = value === 0 ? 0 : -value;
     });
     return values;
   }
@@ -420,6 +422,69 @@ function buildShape(kind: PolyhedronKind): DieShape {
     hullFaces: faces,
     radius: 1,
   };
+}
+
+/**
+ * Índice da face oposta a cada face, ou -1 quando não existe.
+ * O tetraedro não tem faces opostas — todas se encaram em ângulo.
+ */
+export function buildOppositeMap(faceNormals: readonly THREE.Vector3[]): number[] {
+  return faceNormals.map((normal, index) => {
+    let best = -1;
+    let bestDot = -0.98;
+    faceNormals.forEach((other, otherIndex) => {
+      if (otherIndex === index) return;
+      const d = normal.dot(other);
+      if (d < bestDot) {
+        bestDot = d;
+        best = otherIndex;
+      }
+    });
+    return best;
+  });
+}
+
+/**
+ * Reetiqueta um dado para que a face de cima exiba o valor sorteado.
+ *
+ * Troca dois PARES OPOSTOS inteiros: o par que está para cima e o par que
+ * carrega o valor desejado. Trocar pares completos preserva a soma das
+ * faces opostas, então o dado continua sendo um dado de verdade — não um
+ * adesivo trocado. Em sólidos sem faces opostas (d4) faz uma troca simples.
+ *
+ * Devolve o novo vetor de valores por face.
+ */
+export function permuteFaceValues(
+  faceValues: readonly number[],
+  opposites: readonly number[],
+  upIndex: number,
+  targetValue: number,
+): number[] {
+  const displayed = [...faceValues];
+  if (faceValues[upIndex] === targetValue) return displayed;
+
+  const targetIndex = faceValues.indexOf(targetValue);
+  if (targetIndex < 0 || targetIndex === upIndex) return displayed;
+
+  displayed[upIndex] = faceValues[targetIndex] ?? targetValue;
+  displayed[targetIndex] = faceValues[upIndex] ?? targetValue;
+
+  const upOpposite = opposites[upIndex] ?? -1;
+  const targetOpposite = opposites[targetIndex] ?? -1;
+
+  // Se os dois pares se cruzam (a face alvo já é a oposta da de cima), a
+  // troca simples acima já resolveu o par inteiro.
+  if (
+    upOpposite >= 0 &&
+    targetOpposite >= 0 &&
+    upOpposite !== targetIndex &&
+    targetOpposite !== upIndex
+  ) {
+    displayed[upOpposite] = faceValues[targetOpposite] ?? 0;
+    displayed[targetOpposite] = faceValues[upOpposite] ?? 0;
+  }
+
+  return displayed;
 }
 
 export function createShapeLibrary(): ShapeLibrary {

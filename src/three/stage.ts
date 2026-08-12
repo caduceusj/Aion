@@ -13,7 +13,7 @@ import * as CANNON from 'cannon-es';
 import type { DieRoll, PolyhedronKind } from '@/engine/types';
 import type { DiceStage, DiceSkin, RollRequest, StageEvents } from '@/state/types';
 import type { DieShape } from './types';
-import { createShapeLibrary } from './shapes';
+import { buildOppositeMap, createShapeLibrary, permuteFaceValues } from './shapes';
 import { SKIN_COLORS, createFaceTexture, needsUnderline } from './textures';
 
 interface ActiveDie {
@@ -28,6 +28,7 @@ interface ActiveDie {
 }
 
 const FIXED_STEP = 1 / 120;
+const MAX_SUBSTEPS = 14;
 const QUIET_FRAMES_NEEDED = 10;
 const QUIET_LINEAR = 0.08;
 const QUIET_ANGULAR = 0.08;
@@ -83,10 +84,10 @@ export function createDiceStage(
 
   // ------------------------------------------------------------ iluminação
   // Uma mesa de taverna: chave quente em cima, preenchimento frio e baixo.
-  const ambient = new THREE.AmbientLight(0x3b4a6b, 0.55);
+  const ambient = new THREE.AmbientLight(0x6b7ea8, 1.15);
   scene.add(ambient);
 
-  const key = new THREE.DirectionalLight(0xffd9a0, 2.5);
+  const key = new THREE.DirectionalLight(0xffd9a0, 3.1);
   key.position.set(-7, 20, 8);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
@@ -100,12 +101,14 @@ export function createDiceStage(
   key.shadow.normalBias = 0.02;
   scene.add(key);
 
-  const rim = new THREE.DirectionalLight(0x6fd2e8, 0.7);
+  const rim = new THREE.DirectionalLight(0x6fd2e8, 1.1);
   rim.position.set(9, 8, -10);
   scene.add(rim);
 
-  const lantern = new THREE.PointLight(0xffb765, 45, 34, 2);
-  lantern.position.set(0, 9, 2);
+  // Intensidade alta porque a queda é física (decay 2): a essa distância
+  // sobra apenas um halo quente sobre o centro da mesa.
+  const lantern = new THREE.PointLight(0xffb765, 260, 40, 2);
+  lantern.position.set(0, 8, 2);
   scene.add(lantern);
 
   // ----------------------------------------------------------------- mesa
@@ -113,7 +116,8 @@ export function createDiceStage(
   const table = new THREE.Mesh(
     new THREE.PlaneGeometry(90, 90),
     new THREE.MeshStandardMaterial({
-      color: 0x12302a,
+      // A fibra é quase neutra; o tom da mesa vem daqui.
+      color: 0x24564a,
       roughness: 0.97,
       metalness: 0,
       ...(feltTexture ? { map: feltTexture } : {}),
@@ -208,8 +212,10 @@ export function createDiceStage(
       textureCache.set(textureKey, texture);
     }
 
+    // A cor do corpo já está pintada na textura; a cor do material fica
+    // branca para não multiplicar duas vezes e escurecer o dado.
     const material = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(definition.body),
+      color: 0xffffff,
       metalness: definition.metalness,
       roughness: definition.roughness,
       map: texture,
@@ -304,8 +310,8 @@ export function createDiceStage(
   // ------------------------------------------------------------ arremesso
   function dieSizeFor(count: number): number {
     const spread = Math.min(arenaHalfX, arenaHalfZ);
-    const raw = spread / (2.6 + Math.sqrt(Math.max(count, 1)) * 0.9);
-    return THREE.MathUtils.clamp(raw, 0.34, 1.05);
+    const raw = spread / (5 + Math.sqrt(Math.max(count, 1)) * 1.6);
+    return THREE.MathUtils.clamp(raw, 0.3, 0.72);
   }
 
   function spawnDie(die: DieRoll, skin: DiceSkin, size: number, index: number): ActiveDie {
@@ -334,18 +340,24 @@ export function createDiceStage(
       }),
     );
 
-    // Entram de fora da mesa, alternando os lados, e voam para o centro.
+    // Entram alternando os lados e voam para o centro. As paredes do
+    // cannon-es são semiespaços infinitos: nascer do lado de fora colocaria
+    // o dado dentro do sólido, então o lançamento começa logo por dentro.
     const side = index % 2 === 0 ? -1 : 1;
     const depth = ((index % 5) - 2) * 0.55;
     body.position.set(
-      side * (arenaHalfX + 1.5),
-      5 + (index % 4) * 0.9,
-      depth + (Math.random() - 0.5) * 2,
+      side * Math.max(arenaHalfX - size * 1.6, size * 2),
+      6 + (index % 4) * 1.1,
+      THREE.MathUtils.clamp(
+        depth + (Math.random() - 0.5) * 2,
+        -arenaHalfZ + size * 2,
+        arenaHalfZ - size * 2,
+      ),
     );
     body.velocity.set(
-      -side * (11 + Math.random() * 7),
+      -side * (10 + Math.random() * 6),
       1 + Math.random() * 3,
-      (Math.random() - 0.5) * 9,
+      (Math.random() - 0.5) * 8,
     );
     body.angularVelocity.set(
       (Math.random() - 0.5) * 26,
@@ -402,50 +414,27 @@ export function createDiceStage(
     return best;
   }
 
-  /** Índice da face oposta a `index`, ou -1 quando não existe (d4). */
-  function oppositeFace(shape: DieShape, index: number): number {
-    const normal = shape.faceNormals[index];
-    if (!normal) return -1;
+  /** Mapa de faces opostas por sólido — calculado uma vez, reaproveitado. */
+  const oppositeCache = new Map<PolyhedronKind, number[]>();
 
-    let best = -1;
-    let bestDot = -0.98;
-    shape.faceNormals.forEach((other, otherIndex) => {
-      if (otherIndex === index) return;
-      const d = normal.dot(other);
-      if (d < bestDot) {
-        bestDot = d;
-        best = otherIndex;
-      }
-    });
-    return best;
+  function oppositesFor(shape: DieShape): number[] {
+    const cached = oppositeCache.get(shape.kind);
+    if (cached) return cached;
+    const map = buildOppositeMap(shape.faceNormals);
+    oppositeCache.set(shape.kind, map);
+    return map;
   }
 
-  /**
-   * Reetiqueta o dado para que a face de cima mostre o valor sorteado.
-   *
-   * Troca dois pares opostos inteiros: o par que está para cima e o par que
-   * carrega o valor desejado. Como pares completos são trocados, a soma das
-   * faces opostas continua valendo N+1 — o dado segue sendo um dado.
-   */
+  /** Reetiqueta o dado para que a face de cima mostre o valor sorteado. */
   function revealValue(entry: ActiveDie, skin: DiceSkin): void {
     const { shape, die } = entry;
-    const target = die.face;
 
-    const upIndex = upwardFace(entry);
-    const targetIndex = shape.faceValues.indexOf(target);
-    if (targetIndex < 0 || targetIndex === upIndex) return;
-
-    const displayed = [...shape.faceValues];
-    const upOpposite = oppositeFace(shape, upIndex);
-    const targetOpposite = oppositeFace(shape, targetIndex);
-
-    displayed[upIndex] = shape.faceValues[targetIndex] ?? target;
-    displayed[targetIndex] = shape.faceValues[upIndex] ?? target;
-
-    if (upOpposite >= 0 && targetOpposite >= 0 && upOpposite !== targetIndex) {
-      displayed[upOpposite] = shape.faceValues[targetOpposite] ?? 0;
-      displayed[targetOpposite] = shape.faceValues[upOpposite] ?? 0;
-    }
+    const displayed = permuteFaceValues(
+      shape.faceValues,
+      oppositesFor(shape),
+      upwardFace(entry),
+      die.face,
+    );
 
     entry.mesh.material = displayed.map((value) => materialFor(skin, die.shape, value));
   }
@@ -496,13 +485,16 @@ export function createDiceStage(
 
   function step(delta: number): void {
     accumulator += delta * speed;
+    // O teto de substeps evita a espiral da morte em quadros lentos; o
+    // resto do tempo é descartado, e a simulação anda mais devagar em vez
+    // de travar a aba.
     let guard = 0;
-    while (accumulator >= FIXED_STEP && guard < 8) {
+    while (accumulator >= FIXED_STEP && guard < MAX_SUBSTEPS) {
       world.step(FIXED_STEP);
       accumulator -= FIXED_STEP;
       guard += 1;
     }
-    if (accumulator > FIXED_STEP * 8) accumulator = 0;
+    if (accumulator > FIXED_STEP * MAX_SUBSTEPS) accumulator = 0;
   }
 
   function syncMeshes(): void {
@@ -683,35 +675,33 @@ export function createDiceStage(
   };
 }
 
-/** Feltro com um leve granulado e um halo quente no centro da mesa. */
+/**
+ * Fibra do feltro: uma textura pequena e repetível.
+ *
+ * O granulado não pode vir de uma textura única esticada sobre a mesa
+ * inteira — cada texel viraria uma mancha do tamanho de um dado. Aqui ela
+ * é fina e se repete; o halo quente do centro fica por conta do lampião,
+ * que é luz de verdade e acompanha os dados.
+ */
 function createFeltTexture(): THREE.CanvasTexture | null {
   if (typeof document === 'undefined') return null;
 
-  const size = 512;
+  const size = 256;
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
 
-  const gradient = ctx.createRadialGradient(
-    size / 2,
-    size / 2,
-    size * 0.05,
-    size / 2,
-    size / 2,
-    size * 0.62,
-  );
-  gradient.addColorStop(0, '#25574c');
-  gradient.addColorStop(0.55, '#173a33');
-  gradient.addColorStop(1, '#0c211d');
-  ctx.fillStyle = gradient;
+  // A fibra é clara de propósito: quem dá o tom é a cor do material. Uma
+  // textura escura multiplicada por uma cor escura apaga a mesa.
+  ctx.fillStyle = '#d6d6d6';
   ctx.fillRect(0, 0, size, size);
 
   const image = ctx.getImageData(0, 0, size, size);
   const data = image.data;
   for (let i = 0; i < data.length; i += 4) {
-    const noise = (Math.random() - 0.5) * 18;
+    const noise = (Math.random() - 0.5) * 22;
     data[i] = Math.max(0, Math.min(255, (data[i] ?? 0) + noise));
     data[i + 1] = Math.max(0, Math.min(255, (data[i + 1] ?? 0) + noise));
     data[i + 2] = Math.max(0, Math.min(255, (data[i + 2] ?? 0) + noise));
@@ -720,7 +710,9 @@ function createFeltTexture(): THREE.CanvasTexture | null {
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = THREE.ClampToEdgeWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(26, 26);
+  texture.anisotropy = 8;
   return texture;
 }

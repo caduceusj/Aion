@@ -50,6 +50,23 @@ for (const vp of VIEWPORTS) {
     problems.push(`[${vp.name}] botão d20 não encontrado`);
   }
 
+  // Uma expressão com vários dados e descarte, que é onde a mesa fica cheia.
+  const campo = page.getByLabel('Notação da rolagem');
+  await campo.fill('4d6kh3+2[Atributos]');
+  await campo.press('Enter');
+  await page.waitForTimeout(5000);
+  await page.screenshot({ path: `${outDir}/${vp.name}-varios-dados.png` });
+
+  // Histórico com o detalhamento aberto.
+  await page.locator('.cabecalho__nav button[aria-label="Histórico"]').click();
+  await page.waitForTimeout(400);
+  const cartao = page.locator('.entrada__cabecalho').first();
+  if (await cartao.count()) {
+    await cartao.click();
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: `${outDir}/${vp.name}-detalhamento.png` });
+  }
+
   await page.close();
 }
 

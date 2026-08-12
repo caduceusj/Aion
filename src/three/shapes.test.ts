@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PolyhedronKind } from '@/engine/types';
-import { createShapeLibrary } from './shapes';
+import { buildOppositeMap, createShapeLibrary, permuteFaceValues } from './shapes';
 import { SKIN_COLORS, SKIN_ORDER, createFaceTexture, needsUnderline } from './textures';
 
 const library = createShapeLibrary();
@@ -228,5 +228,80 @@ describe('texturas', () => {
     expect(needsUnderline(9, 20)).toBe(true);
     expect(needsUnderline(8, 20)).toBe(false);
     expect(needsUnderline(6, 6)).toBe(false);
+  });
+});
+
+describe('reetiquetagem para o valor sorteado', () => {
+  const testaveis: PolyhedronKind[] = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100', 'dF'];
+
+  for (const kind of testaveis) {
+    const shape = library.get(kind);
+    const opposites = buildOppositeMap(shape.faceNormals);
+
+    it(`${kind}: a face de cima passa a exibir o valor pedido, venha de onde vier`, () => {
+      // Exaustivo: toda combinação de face que assentou × valor sorteado.
+      for (let upIndex = 0; upIndex < shape.faceValues.length; upIndex += 1) {
+        for (const target of shape.faceValues) {
+          const displayed = permuteFaceValues(
+            shape.faceValues,
+            opposites,
+            upIndex,
+            target,
+          );
+          expect(
+            displayed[upIndex],
+            `${kind}: caiu na face ${upIndex}, queria ${target}`,
+          ).toBe(target);
+        }
+      }
+    });
+
+    it(`${kind}: continua sendo o mesmo conjunto de valores`, () => {
+      const esperado = [...shape.faceValues].sort((a, b) => a - b);
+      for (let upIndex = 0; upIndex < shape.faceValues.length; upIndex += 1) {
+        for (const target of shape.faceValues) {
+          const displayed = permuteFaceValues(shape.faceValues, opposites, upIndex, target);
+          expect([...displayed].sort((a, b) => a - b)).toEqual(esperado);
+        }
+      }
+    });
+
+    if (kind !== 'd4') {
+      it(`${kind}: faces opostas continuam somando o mesmo`, () => {
+        // Um dado reetiquetado precisa continuar coerente: se as opostas
+        // deixassem de somar N+1, o jogador veria um dado impossível.
+        const somaOriginal = (shape.faceValues[0] ?? 0) + (shape.faceValues[opposites[0] ?? 0] ?? 0);
+
+        for (let upIndex = 0; upIndex < shape.faceValues.length; upIndex += 1) {
+          for (const target of shape.faceValues) {
+            const displayed = permuteFaceValues(shape.faceValues, opposites, upIndex, target);
+            opposites.forEach((oposta, index) => {
+              if (oposta < 0) return;
+              expect(
+                (displayed[index] ?? 0) + (displayed[oposta] ?? 0),
+                `${kind}: face ${index} e sua oposta, caindo em ${upIndex} para ${target}`,
+              ).toBe(somaOriginal);
+            });
+          }
+        }
+      });
+    }
+  }
+
+  it('não mexe em nada quando a face de cima já está certa', () => {
+    const shape = library.get('d20');
+    const opposites = buildOppositeMap(shape.faceNormals);
+    const alvo = shape.faceValues[7] ?? 1;
+    expect(permuteFaceValues(shape.faceValues, opposites, 7, alvo)).toEqual([
+      ...shape.faceValues,
+    ]);
+  });
+
+  it('ignora um valor que não existe no dado', () => {
+    const shape = library.get('d6');
+    const opposites = buildOppositeMap(shape.faceNormals);
+    expect(permuteFaceValues(shape.faceValues, opposites, 0, 99)).toEqual([
+      ...shape.faceValues,
+    ]);
   });
 });

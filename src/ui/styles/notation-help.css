@@ -1,0 +1,130 @@
+.ajuda-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  padding: var(--sp-4);
+  background: rgba(4, 6, 11, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: ajuda-entrada var(--dur-mid) var(--ease-out);
+}
+
+@keyframes ajuda-entrada {
+  from {
+    opacity: 0;
+  }
+}
+
+.ajuda {
+  width: min(760px, 100%);
+  max-height: min(80dvh, 720px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--sf-hairline-strong);
+  border-radius: var(--r-lg);
+  background: var(--sf-raised);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.ajuda__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-5) var(--sp-4);
+  border-bottom: 1px solid var(--sf-hairline);
+}
+
+.ajuda__titulo {
+  font-size: var(--fs-lg);
+  color: var(--ink-bright);
+  letter-spacing: 0.01em;
+}
+
+.ajuda__sub {
+  margin-top: 2px;
+  font-size: var(--fs-sm);
+  color: var(--ink-faint);
+}
+
+.ajuda__fechar {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  color: var(--ink-dim);
+  flex-shrink: 0;
+}
+
+.ajuda__fechar:hover {
+  color: var(--amber-300);
+}
+
+.ajuda__corpo {
+  overflow-y: auto;
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
+}
+
+.ajuda__secao + .ajuda__secao {
+  margin-top: var(--sp-5);
+}
+
+.ajuda__grupo {
+  color: var(--amber-500);
+  margin-bottom: var(--sp-2);
+}
+
+.ajuda__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ajuda__linha {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 130px 1fr auto;
+  gap: var(--sp-3);
+  align-items: baseline;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  text-align: left;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.ajuda__linha:hover {
+  background: var(--sf-overlay);
+}
+
+.ajuda__sintaxe {
+  color: var(--amber-300);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.ajuda__descricao {
+  color: var(--ink);
+  font-size: var(--fs-sm);
+}
+
+.ajuda__exemplo {
+  color: var(--ink-faint);
+  font-size: var(--fs-xs);
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .ajuda__linha {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: var(--sp-3);
+  }
+
+  .ajuda__exemplo {
+    text-align: left;
+  }
+}

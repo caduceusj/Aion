@@ -1,0 +1,244 @@
+/* Posicionada pelo contêiner .rodape-mesa, que empilha a faixa de atalhos
+   logo acima — fixá-la aqui a tiraria do fluxo e as duas se sobreporiam. */
+.doca {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4) calc(var(--sp-3) + var(--safe-b));
+  background: linear-gradient(to top, rgba(6, 8, 15, 0.94) 55%, rgba(6, 8, 15, 0));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* ------------------------------------------------------------ dados rápidos */
+
+.doca__dados {
+  display: flex;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.doca__dados::-webkit-scrollbar {
+  display: none;
+}
+
+.dado-rapido {
+  position: relative;
+  flex: 1 0 auto;
+  min-width: 58px;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--sp-2) var(--sp-1);
+  scroll-snap-align: start;
+  border: 1px solid var(--sf-hairline);
+  border-radius: var(--r-md);
+  background: linear-gradient(180deg, rgba(26, 34, 51, 0.72), rgba(18, 24, 38, 0.72));
+  color: var(--ink-dim);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.dado-rapido:hover {
+  color: var(--amber-300);
+  border-color: var(--sf-hairline-strong);
+}
+
+.dado-rapido:active {
+  transform: translateY(2px) scale(0.97);
+}
+
+.dado-rapido__glifo {
+  color: inherit;
+}
+
+.dado-rapido__rotulo {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--tracking-wide);
+  font-weight: 600;
+}
+
+.dado-rapido__qtd {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  background: var(--amber-300);
+  color: #2a1c05;
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ------------------------------------------------------------------- campo */
+
+.doca__linha {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: stretch;
+}
+
+.doca__campo {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+}
+
+.doca__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 42px 0 var(--sp-4);
+  border: 1px solid var(--sf-hairline);
+  border-radius: var(--r-md);
+  background: rgba(9, 13, 22, 0.9);
+  color: var(--ink-bright);
+  font-size: var(--fs-md);
+  letter-spacing: 0.02em;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.doca__input::placeholder {
+  color: var(--ink-faint);
+}
+
+.doca__input:focus {
+  outline: none;
+  border-color: var(--amber-500);
+  box-shadow: var(--glow-amber);
+}
+
+.doca__input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.doca__ajuda {
+  position: absolute;
+  right: var(--sp-2);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  color: var(--ink-faint);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.doca__ajuda:hover {
+  color: var(--amber-300);
+}
+
+/* ------------------------------------------------------------------ ações */
+
+.doca__acoes {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: stretch;
+}
+
+.doca__botao {
+  width: 48px;
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--sf-hairline);
+  border-radius: var(--r-md);
+  background: rgba(18, 24, 38, 0.8);
+  color: var(--ink-dim);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.doca__botao:hover:not(:disabled) {
+  color: var(--amber-300);
+  border-color: var(--sf-hairline-strong);
+}
+
+.doca__botao:active:not(:disabled) {
+  transform: translateY(2px);
+}
+
+.doca__botao:disabled {
+  opacity: 0.35;
+}
+
+.doca__rolar {
+  min-height: 48px;
+  padding: 0 var(--sp-5);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  border-radius: var(--r-md);
+  border: 1px solid var(--amber-500);
+  background: linear-gradient(180deg, var(--amber-300), var(--amber-500));
+  color: #2a1c05;
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  box-shadow: var(--shadow-md);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    filter var(--dur-fast) var(--ease-out);
+}
+
+.doca__rolar:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.doca__rolar:active:not(:disabled) {
+  transform: translateY(2px);
+}
+
+.doca__rolar:disabled {
+  opacity: 0.4;
+  filter: saturate(0.4);
+}
+
+/* Enquanto os dados rolam, o botão pulsa de leve em vez de girar um spinner. */
+.doca__rolar[data-rolando='sim'] {
+  animation: doca-pulso 1s var(--ease-in-out) infinite;
+}
+
+@keyframes doca-pulso {
+  50% {
+    filter: brightness(1.2);
+  }
+}
+
+.doca__erro {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--danger);
+  font-size: var(--fs-sm);
+  padding-left: var(--sp-1);
+}
+
+@media (max-width: 720px) {
+  .doca__rolar span {
+    display: none;
+  }
+
+  .doca__rolar {
+    padding: 0 var(--sp-4);
+  }
+}
+
