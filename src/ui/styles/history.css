@@ -388,6 +388,20 @@
   opacity: 0.95;
 }
 
+/*
+ * Dado que não rolou na mesa — explosão ou rerolagem, que só existem depois
+ * que os dados já pararam. O contorno tracejado diz isso sem gritar; o
+ * título da pastilha explica por extenso.
+ */
+.pastilha[data-sorteado='sim']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px dashed color-mix(in srgb, var(--ink-faint) 70%, transparent);
+  pointer-events: none;
+}
+
 .detalhe__matematica {
   display: flex;
   align-items: flex-start;

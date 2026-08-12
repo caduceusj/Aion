@@ -38,6 +38,10 @@ export function DiceBreakdown({ result }: { result: RollResult }) {
                   die.dropped ? 'Descartado' : null,
                   die.exploded ? 'Explodiu' : null,
                   die.rerolled ? 'Rerrolado' : null,
+                  // Honestidade sobre a procedência: quase todo dado é lido na
+                  // mesa, mas explosões e rerolagens nascem depois que ela já
+                  // parou e não têm como ter sido arremessadas.
+                  die.fisico ? 'Lido na mesa' : 'Sorteado (não rolou na mesa)',
                 ]
                   .filter(Boolean)
                   .join(' · ');
@@ -50,6 +54,7 @@ export function DiceBreakdown({ result }: { result: RollResult }) {
                     data-descartado={die.dropped ? 'sim' : undefined}
                     data-critico={die.critical ?? undefined}
                     data-sucesso={die.success === true ? 'sim' : undefined}
+                    data-sorteado={die.fisico ? undefined : 'sim'}
                   >
                     <GlifoDado kind={die.shape} size={30} className="pastilha__silhueta" />
                     <span className="pastilha__valor mono">{die.value}</span>

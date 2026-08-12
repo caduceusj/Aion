@@ -1,30 +1,42 @@
 /**
  * A mesa 3D: cena, luz, física e o arremesso dos dados.
  *
- * O resultado de cada dado já vem decidido pelo motor. A física existe para
- * dar peso e drama, não para sortear — ver `docs/ARCHITECTURE.md`. Quando um
- * dado assenta, descobrimos qual face ficou para cima e trocamos os rótulos
- * de dois pares opostos, de modo que a face de cima mostre o valor sorteado
- * e o dado continue coerente (faces opostas somam N+1).
+ * Quem decide o resultado é o dado. A cena arremessa os poliedros, espera
+ * pararem, LÊ a face que ficou para cima e devolve esses números — nenhuma
+ * face é reetiquetada, nenhum valor troca depois de aparecer. O motor recebe
+ * as faces lidas e faz a conta em cima delas.
+ *
+ * `exibir` é o caminho inverso, e existe por um motivo só: uma rolagem que
+ * aconteceu no aparelho de outra pessoa. Aí os dados entram já deitados na
+ * face certa, desde o primeiro quadro — sem física fingida e, de novo, sem
+ * número trocando na frente de ninguém.
  */
 
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import type { DieRoll, PolyhedronKind } from '@/engine/types';
-import type { DiceStage, DiceSkin, RollRequest, StageEvents } from '@/state/types';
+import type { DadoPlanejado } from '@/engine';
+import type { PolyhedronKind } from '@/engine/types';
+import type {
+  DiceStage,
+  DiceSkin,
+  PedidoDeExibicao,
+  RollRequest,
+  StageEvents,
+} from '@/state/types';
 import type { DieShape } from './types';
-import { buildOppositeMap, createShapeLibrary, permuteFaceValues } from './shapes';
+import { createShapeLibrary } from './shapes';
 import { SKIN_COLORS, createFaceTexture, needsUnderline } from './textures';
 
 interface ActiveDie {
-  die: DieRoll;
+  plano: DadoPlanejado;
   shape: DieShape;
   mesh: THREE.Mesh;
   body: CANNON.Body;
   aura: THREE.Mesh | null;
   /** Quadros consecutivos em repouso. */
   quietFrames: number;
-  resolved: boolean;
+  /** Face lida quando o dado parou. `null` enquanto ainda rola. */
+  valorLido: number | null;
 }
 
 const FIXED_STEP = 1 / 120;
@@ -45,7 +57,10 @@ function faceLabel(kind: PolyhedronKind, value: number): string {
 /** Palco inerte: usado quando não há WebGL, para o app seguir funcionando. */
 function createInertStage(): DiceStage {
   return {
-    roll: () => Promise.resolve(),
+    // Sem mesa não há face para ler: devolve vazio e o store cai no gerador.
+    arremessar: () => Promise.resolve([]),
+    exibir: () => Promise.resolve(),
+    esmaecer: () => {},
     clear: () => {},
     setSpeed: () => {},
     dispose: () => {},
@@ -238,9 +253,8 @@ export function createDiceStage(
   const active: ActiveDie[] = [];
   const retiring: Array<{ mesh: THREE.Mesh; aura: THREE.Mesh | null; born: number }> = [];
 
-  let settleResolve: (() => void) | null = null;
+  let settleResolve: ((valores: number[]) => void) | null = null;
   let settleDeadline = 0;
-  let currentRollId: string | null = null;
 
   const pointer = new THREE.Vector2(0, 0);
   const cameraBase = camera.position.clone();
@@ -321,17 +335,17 @@ export function createDiceStage(
    * A cor do dado. Normalmente é a do personagem, mas o par de dualidade do
    * Daggerheart força as suas: Esperança dourada, Medo obsidiana.
    */
-  function skinDoDado(die: DieRoll, fallback: DiceSkin): DiceSkin {
-    const override = die.skinOverride;
+  function skinDoDado(override: string | undefined, fallback: DiceSkin): DiceSkin {
     if (override && override in SKIN_COLORS) return override as DiceSkin;
     return fallback;
   }
 
-  function spawnDie(die: DieRoll, skin: DiceSkin, size: number, index: number): ActiveDie {
-    const shape = shapes.get(die.shape);
-    const cor = skinDoDado(die, skin);
+  /** Monta o corpo e a malha de um dado, sem decidir onde ele entra. */
+  function criarDado(plano: DadoPlanejado, skin: DiceSkin, size: number): ActiveDie {
+    const shape = shapes.get(plano.shape);
+    const cor = skinDoDado(plano.skinOverride, skin);
 
-    const materials = shape.faceValues.map((value) => materialFor(cor, die.shape, value));
+    const materials = shape.faceValues.map((value) => materialFor(cor, plano.shape, value));
     const mesh = new THREE.Mesh(shape.geometry, materials);
     mesh.scale.setScalar(size);
     mesh.castShadow = true;
@@ -353,6 +367,14 @@ export function createDiceStage(
         faces: shape.hullFaces,
       }),
     );
+    world.addBody(body);
+
+    return { plano, shape, mesh, body, aura: null, quietFrames: 0, valorLido: null };
+  }
+
+  function spawnDie(plano: DadoPlanejado, skin: DiceSkin, size: number, index: number): ActiveDie {
+    const entry = criarDado(plano, skin, size);
+    const { body } = entry;
 
     // Entram alternando os lados e voam para o centro. As paredes do
     // cannon-es são semiespaços infinitos: nascer do lado de fora colocaria
@@ -384,11 +406,95 @@ export function createDiceStage(
       Math.random() * Math.PI * 2,
     );
 
-    world.addBody(body);
-
     body.addEventListener('collide', handleCollision);
+    return entry;
+  }
 
-    return { die, shape, mesh, body, aura: null, quietFrames: 0, resolved: false };
+  /**
+   * Põe o dado na mesa já deitado na face pedida, sem física.
+   *
+   * Serve às rolagens que aconteceram em outro aparelho: o valor é o que a
+   * mesa de lá leu, e aqui ele só precisa aparecer. O corpo entra com massa
+   * zero e dormindo, para nada empurrar nada.
+   */
+  function posicionarDado(
+    plano: DadoPlanejado,
+    valor: number,
+    skin: DiceSkin,
+    size: number,
+    index: number,
+    total: number,
+  ): ActiveDie {
+    const entry = criarDado(plano, skin, size);
+    const { body, shape } = entry;
+
+    body.mass = 0;
+    body.type = CANNON.Body.STATIC;
+    body.updateMassProperties();
+
+    const orientacao = orientacaoParaFace(shape, valor, index);
+    body.quaternion.set(orientacao.x, orientacao.y, orientacao.z, orientacao.w);
+
+    // Grade centrada: cabe o mesmo número de dados de qualquer rolagem sem
+    // ninguém empilhar ou sair do enquadramento.
+    const colunas = Math.max(1, Math.ceil(Math.sqrt(total)));
+    const linhas = Math.max(1, Math.ceil(total / colunas));
+    const passoX = Math.min((arenaHalfX * 2) / (colunas + 1), size * 3.4);
+    const passoZ = Math.min((arenaHalfZ * 2) / (linhas + 1), size * 3.4);
+    const coluna = index % colunas;
+    const linha = Math.floor(index / colunas);
+
+    body.position.set(
+      (coluna - (colunas - 1) / 2) * passoX,
+      alturaDeRepouso(entry, orientacao),
+      (linha - (linhas - 1) / 2) * passoZ,
+    );
+    body.velocity.setZero();
+    body.angularVelocity.setZero();
+    body.sleep();
+
+    entry.valorLido = valor;
+    return entry;
+  }
+
+  /**
+   * Rotação que deixa a face de valor `valor` apontando para cima.
+   *
+   * Quando o valor se repete em mais de uma face — os "+"/"−" do Fudge — a
+   * escolha varia com o índice, para dois dados iguais não caírem gêmeos.
+   * Um giro em torno da vertical desfaz o resto do alinhamento perfeito.
+   */
+  function orientacaoParaFace(shape: DieShape, valor: number, index: number): THREE.Quaternion {
+    const candidatos: number[] = [];
+    shape.faceValues.forEach((face, i) => {
+      if (face === valor) candidatos.push(i);
+    });
+
+    const escolhido = candidatos[index % Math.max(candidatos.length, 1)] ?? 0;
+    const normal = shape.faceNormals[escolhido];
+    if (!normal) return new THREE.Quaternion();
+
+    const alinhamento = new THREE.Quaternion().setFromUnitVectors(
+      normal.clone().normalize(),
+      new THREE.Vector3(0, 1, 0),
+    );
+    const giro = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(0, 1, 0),
+      (index * 2.39996) % (Math.PI * 2),
+    );
+    return giro.multiply(alinhamento);
+  }
+
+  /** Altura em que o vértice mais baixo do dado encosta no feltro. */
+  function alturaDeRepouso(entry: ActiveDie, orientacao: THREE.Quaternion): number {
+    const escala = entry.mesh.scale.x;
+    let menor = Infinity;
+    const vertice = new THREE.Vector3();
+    for (const [x, y, z] of entry.shape.hullVertices) {
+      vertice.set(x * escala, y * escala, z * escala).applyQuaternion(orientacao);
+      menor = Math.min(menor, vertice.y);
+    }
+    return Number.isFinite(menor) ? -menor : escala;
   }
 
   function handleCollision(event: { contact?: CANNON.ContactEquation }): void {
@@ -405,10 +511,19 @@ export function createDiceStage(
     events.onImpact(THREE.MathUtils.clamp(relative / 16, 0.08, 1), 'd6');
   }
 
-  // ------------------------------------------------ revelação do resultado
+  // ----------------------------------------------------- leitura da face
 
-  /** Índice da face que está para cima neste momento. */
-  function upwardFace(entry: ActiveDie): number {
+  /**
+   * Índice da face virada para cima, do jeito que um humano leria.
+   *
+   * O critério é a normal mais alinhada com a vertical. O tetraedro é o
+   * único caso ambíguo: apoiado numa face, as outras três ficam inclinadas
+   * exatamente no mesmo ângulo, e o desempate por ruído de ponto flutuante
+   * escolheria uma face que o jogador não tem como identificar. Aí o
+   * critério passa a ser a face voltada para a câmera — a que está
+   * literalmente de frente para quem olha.
+   */
+  function lerFace(entry: ActiveDie): number {
     const quaternion = new THREE.Quaternion(
       entry.body.quaternion.x,
       entry.body.quaternion.y,
@@ -416,30 +531,44 @@ export function createDiceStage(
       entry.body.quaternion.w,
     );
 
-    let best = 0;
-    let bestDot = -Infinity;
-    entry.shape.faceNormals.forEach((normal, index) => {
-      const world = normal.clone().applyQuaternion(quaternion);
-      if (world.y > bestDot) {
-        bestDot = world.y;
-        best = index;
-      }
+    const alturas = entry.shape.faceNormals.map(
+      (normal) => normal.clone().applyQuaternion(quaternion).y,
+    );
+    const maisAlta = Math.max(...alturas);
+
+    const empatadas: number[] = [];
+    alturas.forEach((y, index) => {
+      if (maisAlta - y < 0.02) empatadas.push(index);
     });
-    return best;
+
+    const primeira = empatadas[0] ?? 0;
+    if (empatadas.length === 1) return primeira;
+
+    const paraCamera = camera.position.clone().normalize();
+    let escolhida = primeira;
+    let melhor = -Infinity;
+    for (const index of empatadas) {
+      const normal = entry.shape.faceNormals[index];
+      if (!normal) continue;
+      const alinhamento = normal.clone().applyQuaternion(quaternion).dot(paraCamera);
+      if (alinhamento > melhor) {
+        melhor = alinhamento;
+        escolhida = index;
+      }
+    }
+    return escolhida;
   }
 
   /**
-   * Deita o dado na face que está mais para cima e o pousa na mesa.
+   * Deita o dado sobre a face que está apoiada na mesa.
    *
-   * Só é usado quando o tempo limite estoura: gira o mínimo necessário para
-   * a face de cima ficar exatamente na horizontal e baixa o corpo até o
-   * vértice mais baixo tocar o feltro.
+   * Só é usado quando o tempo limite estoura: em vez de congelar um dado
+   * torto, equilibrado numa quina, gira o mínimo necessário para a face de
+   * baixo ficar plana no feltro. É a face de BAIXO e não a de cima porque
+   * num tetraedro nenhuma face olha para cima — deitar pela de cima o
+   * deixaria em pé sobre um vértice.
    */
   function snapToRest(entry: ActiveDie): void {
-    const upIndex = upwardFace(entry);
-    const localUp = entry.shape.faceNormals[upIndex];
-    if (!localUp) return;
-
     const current = new THREE.Quaternion(
       entry.body.quaternion.x,
       entry.body.quaternion.y,
@@ -447,56 +576,48 @@ export function createDiceStage(
       entry.body.quaternion.w,
     );
 
-    const worldUp = localUp.clone().applyQuaternion(current);
+    let apoiada: THREE.Vector3 | null = null;
+    let menor = Infinity;
+    for (const normal of entry.shape.faceNormals) {
+      const mundo = normal.clone().applyQuaternion(current);
+      if (mundo.y < menor) {
+        menor = mundo.y;
+        apoiada = mundo;
+      }
+    }
+    if (!apoiada) return;
+
     const correction = new THREE.Quaternion().setFromUnitVectors(
-      worldUp.normalize(),
-      new THREE.Vector3(0, 1, 0),
+      apoiada.normalize(),
+      new THREE.Vector3(0, -1, 0),
     );
     const settled = correction.multiply(current);
 
     entry.body.quaternion.set(settled.x, settled.y, settled.z, settled.w);
-
-    // Pousa exatamente sobre o feltro: o vértice mais baixo encosta em y = 0.
-    const scale = entry.mesh.scale.x;
-    let lowest = Infinity;
-    const vertex = new THREE.Vector3();
-    for (const [x, y, z] of entry.shape.hullVertices) {
-      vertex.set(x * scale, y * scale, z * scale).applyQuaternion(settled);
-      lowest = Math.min(lowest, vertex.y);
-    }
-    if (Number.isFinite(lowest)) entry.body.position.y = -lowest;
-
+    entry.body.position.y = alturaDeRepouso(entry, settled);
     entry.body.sleep();
   }
 
-  /** Mapa de faces opostas por sólido — calculado uma vez, reaproveitado. */
-  const oppositeCache = new Map<PolyhedronKind, number[]>();
+  /**
+   * Aura de crítico, decidida pelo número que o dado mostrou.
+   *
+   * Não há consulta a resultado nenhum: se a face lida é a maior do sólido,
+   * é dourada; se é a menor, é vermelha. O empate da dualidade é o crítico
+   * do Daggerheart e acende os dois dados.
+   */
+  function marcarCritico(entry: ActiveDie, empateDeDualidade: boolean): void {
+    const valor = entry.valorLido;
+    if (valor === null) return;
 
-  function oppositesFor(shape: DieShape): number[] {
-    const cached = oppositeCache.get(shape.kind);
-    if (cached) return cached;
-    const map = buildOppositeMap(shape.faceNormals);
-    oppositeCache.set(shape.kind, map);
-    return map;
-  }
+    const { sides, faceKind } = entry.plano;
+    const maior = faceKind === 'fudge' ? 1 : faceKind === 'percentile' ? 90 : sides;
+    const menor = faceKind === 'fudge' ? -1 : faceKind === 'percentile' ? 0 : 1;
 
-  /** Reetiqueta o dado para que a face de cima mostre o valor sorteado. */
-  function revealValue(entry: ActiveDie, skin: DiceSkin): void {
-    const { shape, die } = entry;
-
-    const displayed = permuteFaceValues(
-      shape.faceValues,
-      oppositesFor(shape),
-      upwardFace(entry),
-      die.face,
-    );
-
-    const cor = skinDoDado(die, skin);
-    entry.mesh.material = displayed.map((value) => materialFor(cor, die.shape, value));
-  }
-
-  function addAura(entry: ActiveDie): void {
-    const kind = entry.die.critical;
+    let kind: 'max' | 'min' | null = null;
+    if (empateDeDualidade) kind = 'max';
+    else if (entry.plano.papel) kind = null; // metade de um percentil não tem crítico próprio
+    else if (maior !== menor && valor === maior) kind = 'max';
+    else if (maior !== menor && valor === menor) kind = 'min';
     if (!kind) return;
 
     const aura = new THREE.Mesh(entry.shape.geometry, auraMaterials[kind]);
@@ -507,23 +628,29 @@ export function createDiceStage(
     entry.aura = aura;
   }
 
-  function finishDie(entry: ActiveDie, skin: DiceSkin): void {
-    if (entry.resolved) return;
-    entry.resolved = true;
-
-    revealValue(entry, skin);
-    addAura(entry);
-
-    // Dados descartados recuam visualmente: continuam na mesa, mas não
-    // disputam a atenção com os que contam.
-    if (entry.die.dropped) {
-      entry.mesh.scale.multiplyScalar(0.82);
+  /** Lê todos os dados parados e acende os críticos. */
+  function lerTodos(): number[] {
+    for (const entry of active) {
+      if (entry.valorLido !== null) continue;
+      entry.valorLido = entry.shape.faceValues[lerFace(entry)] ?? 0;
     }
+
+    const esperanca = active.find((entry) => entry.plano.role === 'esperanca');
+    const medo = active.find((entry) => entry.plano.role === 'medo');
+    const empate =
+      esperanca !== undefined &&
+      medo !== undefined &&
+      esperanca.valorLido === medo.valorLido;
+
+    for (const entry of active) {
+      const dualidade = empate && entry.plano.role !== null;
+      marcarCritico(entry, dualidade);
+    }
+
+    return active.map((entry) => entry.valorLido ?? 0);
   }
 
   // ------------------------------------------------------------------ ciclo
-  let currentSkin: DiceSkin = 'ambar';
-
   function clearDice(): void {
     const now = performance.now();
     for (const entry of active) {
@@ -594,22 +721,21 @@ export function createDiceStage(
     if (timedOut) {
       // Em máquina lenta a simulação pode não terminar a tempo. Em vez de
       // apenas congelar — o que deixaria dados tortos, apoiados em quina —
-      // deita cada um na face que estava mais para cima.
+      // deita cada um sobre a face em que já estava se apoiando. A leitura
+      // acontece depois disso, então continua sendo a face que o jogador vê.
       for (const entry of active) {
         entry.body.velocity.setZero();
         entry.body.angularVelocity.setZero();
         snapToRest(entry);
       }
+      syncMeshes();
     }
 
-    for (const entry of active) finishDie(entry, currentSkin);
+    const valores = lerTodos();
 
     const resolve = settleResolve;
-    const rollId = currentRollId;
     settleResolve = null;
-    currentRollId = null;
-    resolve();
-    if (rollId && events.onSettled) events.onSettled(rollId);
+    resolve(valores);
   }
 
   function updateRetiring(now: number): void {
@@ -668,37 +794,74 @@ export function createDiceStage(
   frameHandle = requestAnimationFrame(animate);
 
   // ------------------------------------------------------------------- API
-  /** Encerra a espera da rolagem anterior, se ainda houver uma pendente. */
+  /**
+   * Encerra a espera da rolagem anterior, se ainda houver uma pendente.
+   *
+   * Resolve com lista vazia de propósito: quem pediu vai ver que não recebeu
+   * uma face para cada dado e descartar o arremesso abortado, em vez de
+   * fazer a conta com meia mesa.
+   */
   function resolvePending(): void {
     if (!settleResolve) return;
     const resolve = settleResolve;
     settleResolve = null;
-    currentRollId = null;
-    resolve();
+    resolve([]);
   }
 
   return {
-    roll(request: RollRequest): Promise<void> {
+    arremessar(pedido: RollRequest): Promise<number[]> {
       // Rolar de novo no meio de uma rolagem substitui a anterior; sem isso
       // a promessa dela ficaria pendurada para sempre.
       resolvePending();
       clearDice();
-      currentSkin = request.skin;
-      currentRollId = request.id;
 
-      const dice = request.result.dice;
-      if (dice.length === 0) return Promise.resolve();
+      const dados = pedido.dados;
+      if (dados.length === 0) return Promise.resolve([]);
 
-      const size = dieSizeFor(dice.length);
-      dice.forEach((die, index) => {
-        active.push(spawnDie(die, request.skin, size, index));
+      const size = dieSizeFor(dados.length);
+      dados.forEach((plano, index) => {
+        active.push(spawnDie(plano, pedido.skin, size, index));
       });
 
       settleDeadline = performance.now() + SETTLE_TIMEOUT_MS / Math.max(speed, 0.25);
 
-      return new Promise<void>((resolve) => {
+      return new Promise<number[]>((resolve) => {
         settleResolve = resolve;
       });
+    },
+
+    exibir(pedido: PedidoDeExibicao): Promise<void> {
+      resolvePending();
+      clearDice();
+
+      const dados = pedido.dados;
+      if (dados.length === 0) return Promise.resolve();
+
+      const size = dieSizeFor(dados.length);
+      dados.forEach((item, index) => {
+        active.push(
+          posicionarDado(item.plano, item.valor, pedido.skin, size, index, dados.length),
+        );
+      });
+      syncMeshes();
+
+      // Os corpos já estão parados: o assentamento normal detecta isso em
+      // poucos quadros e dispara o mesmo som e a mesma revelação de sempre.
+      settleDeadline = performance.now() + SETTLE_TIMEOUT_MS / Math.max(speed, 0.25);
+
+      return new Promise<number[]>((resolve) => {
+        settleResolve = resolve;
+      }).then(() => undefined);
+    },
+
+    esmaecer(indices: readonly number[]): void {
+      for (const index of indices) {
+        const entry = active[index];
+        if (!entry) continue;
+        // Continuam na mesa, mas param de disputar a atenção com os que contam.
+        entry.mesh.scale.multiplyScalar(0.82);
+        if (entry.aura) entry.aura.scale.multiplyScalar(0.82);
+      }
     },
 
     clear(): void {

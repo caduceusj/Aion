@@ -17,9 +17,10 @@ entre aparelhos.
 ## O que é
 
 Aion é uma mesa de dados para jogar RPG. Não é um gerador de números com uma
-animação por cima: os dados são poliedros reais simulados com física, a
-matemática é auditável e cada rolagem guarda a semente que a produziu — se
-alguém na mesa duvidar do resultado, dá para reproduzi-lo.
+animação por cima — é o contrário disso: **quem decide o resultado é o dado**.
+Os poliedros são simulados com física de verdade, e o valor que vale é a face
+que ficou para cima quando o dado parou. A mesa apenas lê esse número. Ele
+nunca é reetiquetado, nunca troca depois de aparecer na tela.
 
 Funciona offline e sem conta. Tudo — texturas dos dados, sons, ícones — é
 gerado em tempo de execução, e o material do Daggerheart vem embutido. A única
@@ -36,7 +37,8 @@ você mesmo roda, para os aparelhos se acharem.
 - Atalhos salvos por personagem ("Ataque", "Dano", "Iniciativa")
 
 **Imersão**
-- Dados 3D com física real (three.js + cannon-es): d4, d6, d8, d10, d12, d20, d100, Fudge
+- Dados 3D com física real (three.js + cannon-es): d4, d6, d8, d10, d12, d20, d100, Fudge —
+  e é a física que decide, não uma animação sobre um número já sorteado
 - Som sintetizado em WebAudio — impactos, fanfarra de crítico, baque de falha
 - Efeitos de crítico e falha crítica com partículas
 - Vibração no celular
@@ -60,13 +62,15 @@ você mesmo roda, para os aparelhos se acharem.
 
 **Mesa compartilhada**
 - Todos os aparelhos na mesma sala veem as rolagens uns dos outros
-- Só a expressão e a semente trafegam: cada aparelho reexecuta o motor e chega ao
-  mesmo resultado, com a física rodando em cada tela
+- Trafegam a expressão e as faces que apareceram na mesa de quem rolou; os
+  outros aparelhos mostram os mesmos dados nas mesmas faces e refazem a conta
 - Presença de quem está na mesa, contador de Medo do Mestre compartilhado
 - Rolagem oculta do Mestre, revelada para todos quando ele quiser
 
 **Mesa**
 - Histórico com detalhamento dado a dado: o que foi mantido, descartado, rerrolado, explodido
+- Cada dado diz de onde veio: lido na mesa, ou sorteado (explosões e rerolagens,
+  que nascem depois que os dados já pararam)
 - Semente por rolagem para auditoria e replay
 - Vários personagens, cada um com sua cor de dado
 
@@ -105,8 +109,9 @@ npm run verifica:mesa         # confere a mesa de ponta a ponta
 
 No app, abra **Mesa**, aponte o endereço para o IP dessa máquina
 (`ws://192.168.0.10:8787`), escolha um código de sala e mande o link de convite.
-O relay não guarda histórico nem sabe o resultado de dado nenhum: as rolagens
-viajam como expressão + semente e são recalculadas em cada aparelho.
+O relay não guarda histórico nem calcula nada: as rolagens viajam como
+expressão + faces lidas, e cada aparelho refaz a soma e mostra os mesmos dados
+nas mesmas faces.
 
 ## Atalhos de teclado
 

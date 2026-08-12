@@ -2,9 +2,9 @@
  * Verificação de ponta a ponta da mesa compartilhada.
  *
  * Sobe o relay de verdade, conecta dois clientes WebSocket de verdade e
- * confere a propriedade que sustenta a mesa inteira: como só a expressão e
- * a semente trafegam, o segundo aparelho precisa chegar exatamente ao mesmo
- * resultado que o primeiro.
+ * confere a propriedade que sustenta a mesa inteira: como trafegam a
+ * expressão e as FACES lidas na mesa de quem rolou, o segundo aparelho
+ * precisa chegar exatamente aos mesmos dados e ao mesmo total.
  *
  *   node scripts/verifica-mesa.mjs
  */
@@ -32,7 +32,8 @@ await build({
   outfile: bundle,
   logLevel: 'error',
 });
-const { roll } = await import(bundle);
+const { parse, planejarDados, combinarLeituras, rollComValores, randomSeed } =
+  await import(bundle);
 
 const relay = spawn('node', ['server/relay.mjs'], {
   env: { ...process.env, PORT: PORTA },
@@ -72,8 +73,23 @@ try {
   checa(presenca?.participantes.length === 2, 'os dois se enxergam na mesa');
   checa(presenca?.participantes.some((p) => p.mestre), 'o Mestre aparece marcado');
 
-  // O teste central: A rola, B recebe só expressão + semente.
-  const original = roll('dd+2[Ataque]');
+  // O teste central: A rola na mesa dele e manda as faces que apareceram.
+  // Aqui elas são fixas de propósito — é o papel da física na tela real.
+  const EXPRESSAO = 'dd+2[Ataque]';
+  const FACES_LIDAS = [11, 4]; // Esperança 11, Medo 4
+  const semente = randomSeed();
+  const planejados = planejarDados(parse(EXPRESSAO));
+  const original = rollComValores(
+    EXPRESSAO,
+    combinarLeituras(planejados, FACES_LIDAS).valores,
+    semente,
+  );
+
+  checa(
+    original.duality.hope === 11 && original.duality.fear === 4,
+    'o motor usa a face lida, e não um sorteio',
+  );
+
   a.ws.send(
     JSON.stringify({
       tipo: 'rolagem',
@@ -81,6 +97,7 @@ try {
         id: 'h1',
         expressao: original.expression,
         semente: original.seed,
+        valores: FACES_LIDAS,
         momento: original.timestamp,
         personagem: 'Vess',
         skin: 'ambar',
@@ -99,7 +116,20 @@ try {
   );
 
   if (recebida) {
-    const reproduzida = roll(recebida.carga.expressao, { seed: recebida.carga.semente });
+    const dados = planejarDados(parse(recebida.carga.expressao));
+    const reproduzida = rollComValores(
+      recebida.carga.expressao,
+      combinarLeituras(dados, recebida.carga.valores).valores,
+      recebida.carga.semente,
+    );
+    checa(
+      JSON.stringify(recebida.carga.valores) === JSON.stringify(FACES_LIDAS),
+      'as faces lidas atravessam o relay intactas',
+    );
+    checa(
+      dados.length === FACES_LIDAS.length,
+      'o outro aparelho planeja a mesma quantidade de dados',
+    );
     checa(
       reproduzida.total === original.total,
       `o total bate dos dois lados (${reproduzida.total})`,

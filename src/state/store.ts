@@ -1,16 +1,33 @@
 /**
  * Store da aplicação.
  *
- * O ciclo de uma rolagem passa todo por aqui:
- *   rollExpression → motor avalia → entra no histórico → pendingRequest
- *   → a cena 3D executa → onStageSettled → fase 'revelado'
+ * O ciclo de uma rolagem com física passa todo por aqui, e a ordem importa:
  *
- * Com a física desligada o caminho encurta: o resultado já nasce revelado.
+ *   rollExpression → planeja os dados → pendingRequest → a cena arremessa
+ *   → concluirArremesso(faces lidas) → motor faz a conta em cima delas
+ *   → histórico → fase 'revelado'
+ *
+ * Repare que o motor entra DEPOIS da mesa. É essa inversão que faz o número
+ * que aparece na face ser o número que vale: não há resultado antes do dado
+ * parar, então não há nada para trocar depois.
+ *
+ * Com a física desligada o caminho encurta e o motor sorteia como sempre —
+ * é o mesmo motor, só com outra fonte de valores.
  */
 
 import { create } from 'zustand';
 import type { PolyhedronKind } from '@/engine/types';
-import { roll as rolarExpressao, tryRoll, validate } from '@/engine';
+import {
+  combinarLeituras,
+  parse,
+  planejarDados,
+  randomSeed,
+  roll as rolarExpressao,
+  rollComValores,
+  tryRoll,
+  validate,
+  type DadoPlanejado,
+} from '@/engine';
 import { fichaEmBranco, type Ficha } from '@/daggerheart/ficha';
 import { criarConexao, salaDaUrl, urlPadraoDoRelay } from '@/net/sync';
 import type { RolagemCompartilhada } from '@/net/types';
@@ -104,17 +121,27 @@ const conexao = criarConexao({
 /**
  * Reproduz localmente uma rolagem feita em outro aparelho.
  *
- * Só chegaram a expressão e a semente: o motor é reexecutado aqui, o
- * resultado sai idêntico ao de quem rolou, e a física roda nesta tela
- * também. Nada é retransmitido, senão a mesa entraria em eco.
+ * Chegam a expressão, a semente e — o que importa — as faces que a mesa de
+ * lá leu. Este aparelho não rola nada: recria os mesmos dados, deitados nas
+ * mesmas faces, e faz a mesma conta. Ninguém vê um número mudar, aqui nem
+ * lá. Nada é retransmitido, senão a mesa entraria em eco.
  */
 function aplicarRolagemRemota(carga: RolagemCompartilhada): void {
   const state = useAionStore.getState();
   if (state.history.some((entry) => entry.id === carga.id)) return;
 
+  const brutos = carga.valores ?? [];
+
+  let dados: DadoPlanejado[] = [];
   let result;
   try {
-    result = rolarExpressao(carga.expressao, { seed: carga.semente });
+    dados = planejarDados(parse(carga.expressao));
+    const leituras = combinarLeituras(dados, brutos);
+    result =
+      leituras.valores.length > 0
+        ? rollComValores(carga.expressao, leituras.valores, carga.semente)
+        : // Aparelho antigo, que ainda manda só expressão e semente.
+          rolarExpressao(carga.expressao, { seed: carga.semente });
   } catch {
     return; // expressão que este cliente não entende: ignorar é melhor que quebrar
   }
@@ -133,16 +160,124 @@ function aplicarRolagemRemota(carga: RolagemCompartilhada): void {
   };
 
   const usePhysics = state.settings.physics3d && !state.settings.reducedMotion;
+  const podeExibir = usePhysics && dados.length > 0 && brutos.length >= dados.length;
+  const idDaExibicao = uid('e');
+  if (podeExibir) marcarDescartes(idDaExibicao, result, combinarLeituras(dados, brutos).origem);
 
   useAionStore.setState({
     history: trimHistory([entry, ...state.history]),
     lastResult: result,
     lastEntryId: entry.id,
-    phase: usePhysics ? 'lancando' : 'revelado',
-    pendingRequest: usePhysics
-      ? { id: uid('r'), result, skin: carga.skin }
+    // Já nasce revelado: os dados aparecem parados, não há o que esperar.
+    phase: 'revelado',
+    pendingRequest: null,
+    pendingExibicao: podeExibir
+      ? {
+          id: idDaExibicao,
+          dados: dados.map((plano, index) => ({ plano, valor: brutos[index] ?? 1 })),
+          skin: carga.skin,
+        }
       : null,
   });
+}
+
+/**
+ * Um arremesso esperando os dados pararem.
+ *
+ * Vive fora do store porque é maquinário, não estado de interface: nada na
+ * tela depende disso, e enquanto os dados rolam simplesmente não existe
+ * resultado para mostrar.
+ */
+interface ArremessoEmCurso {
+  id: string;
+  entryId: string;
+  expressao: string;
+  semente: string;
+  dados: DadoPlanejado[];
+  skin: DiceSkin;
+  characterId: string | null;
+  macroName: string | null;
+  hidden: boolean;
+}
+
+let arremessoEmCurso: ArremessoEmCurso | null = null;
+
+/**
+ * Quais dados da mesa saíram da conta no último pedido.
+ *
+ * Só dá para saber isso depois que a conta é feita — quem sobrevive a um
+ * `4d6kh3` depende dos números que saíram. Por isso o esmaecimento acontece
+ * num segundo momento, e não junto com o assentamento.
+ */
+let descartesDaMesa: { id: string; indices: number[] } | null = null;
+
+function marcarDescartes(
+  id: string,
+  result: import('@/engine/types').RollResult,
+  origem: readonly number[][],
+): void {
+  const indices: number[] = [];
+  for (const die of result.dice) {
+    if (!die.dropped || die.indiceNaFila === null) continue;
+    for (const indice of origem[die.indiceNaFila] ?? []) indices.push(indice);
+  }
+  descartesDaMesa = { id, indices };
+}
+
+interface DadosDaEntrada {
+  entryId?: string;
+  characterId: string | null;
+  macroName: string | null;
+  hidden: boolean;
+  skin: DiceSkin;
+}
+
+/**
+ * Fecha o ciclo: resultado no histórico, na tela e na mesa compartilhada.
+ *
+ * `facesLidas` são as faces que apareceram nos dados desta tela. Vão junto
+ * para os outros aparelhos porque é a única forma de eles mostrarem os
+ * mesmos dados mostrando os mesmos números.
+ */
+function registrarResultado(
+  result: import('@/engine/types').RollResult,
+  dados: DadosDaEntrada,
+  facesLidas: readonly number[] = [],
+): void {
+  const state = useAionStore.getState();
+
+  const entry: HistoryEntry = {
+    id: dados.entryId ?? uid('h'),
+    result,
+    characterId: dados.characterId,
+    macroName: dados.macroName,
+    hidden: dados.hidden,
+    pinned: false,
+  };
+
+  useAionStore.setState({
+    history: trimHistory([entry, ...state.history]),
+    lastResult: result,
+    lastEntryId: entry.id,
+    inputError: null,
+    phase: 'revelado',
+    pendingRequest: null,
+  });
+
+  if (state.mesa.estado === 'conectado') {
+    conexao.enviarRolagem({
+      id: entry.id,
+      expressao: result.expression,
+      semente: result.seed,
+      valores: [...facesLidas],
+      momento: result.timestamp,
+      personagem:
+        state.characters.find((character) => character.id === dados.characterId)?.name ?? null,
+      skin: dados.skin,
+      atalho: entry.macroName,
+      oculta: entry.hidden,
+    });
+  }
 }
 
 export const useAionStore = create<AionState>((set, get) => ({
@@ -156,6 +291,7 @@ export const useAionStore = create<AionState>((set, get) => ({
   inputError: null,
   phase: 'ocioso',
   pendingRequest: null,
+  pendingExibicao: null,
   lastResult: null,
   lastEntryId: null,
   panel: null,
@@ -185,57 +321,79 @@ export const useAionStore = create<AionState>((set, get) => ({
   },
 
   rollExpression(expression, meta = {}) {
-    const outcome = tryRoll(expression);
-    if (!outcome.ok) {
-      set({ inputError: outcome.error });
+    // Ensaio: avalia uma vez e joga fora. Serve só para pegar o que a
+    // análise sintática não pega — divisão por zero, excesso de dados — sem
+    // deixar o erro estourar depois que os dados já estiverem no ar.
+    const ensaio = tryRoll(expression);
+    if (!ensaio.ok) {
+      set({ inputError: ensaio.error });
       return;
     }
 
     const state = get();
-    const result = outcome.result;
-
     const characterId =
       meta.characterId !== undefined ? meta.characterId : state.activeCharacterId;
-
-    const entry: HistoryEntry = {
-      id: uid('h'),
-      result,
-      characterId,
-      macroName: meta.macroName ?? null,
-      hidden: meta.hidden ?? state.settings.gmMode,
-      pinned: false,
-    };
-
     const skin: DiceSkin =
       state.characters.find((character) => character.id === characterId)?.skin ??
       state.settings.defaultSkin;
+    const macroName = meta.macroName ?? null;
+    const hidden = meta.hidden ?? state.settings.gmMode;
 
     const usePhysics = state.settings.physics3d && !state.settings.reducedMotion;
+    const dados = usePhysics ? planejarDados(parse(expression)) : [];
+
+    // Sem mesa, ou sem dado nenhum na expressão ("12+3"), o motor sorteia
+    // como sempre sorteou e o resultado já nasce pronto.
+    if (dados.length === 0) {
+      registrarResultado(ensaio.result, { characterId, macroName, hidden, skin });
+      return;
+    }
+
+    // Daqui em diante NÃO existe resultado. Os dados vão para a mesa e a
+    // conta só acontece quando eles pararem, em cima das faces lidas.
+    arremessoEmCurso = {
+      id: uid('r'),
+      entryId: uid('h'),
+      expressao: expression,
+      semente: randomSeed(),
+      dados,
+      skin,
+      characterId,
+      macroName,
+      hidden,
+    };
 
     set({
-      history: trimHistory([entry, ...state.history]),
-      lastResult: result,
-      lastEntryId: entry.id,
       inputError: null,
-      phase: usePhysics ? 'lancando' : 'revelado',
-      pendingRequest: usePhysics ? { id: uid('r'), result, skin } : null,
+      phase: 'lancando',
+      pendingExibicao: null,
+      pendingRequest: { id: arremessoEmCurso.id, dados, skin },
     });
+  },
 
-    // Vão só a expressão e a semente: os outros aparelhos reexecutam o
-    // motor e chegam ao mesmo resultado, com a física rodando em cada tela.
-    if (state.mesa.estado === 'conectado') {
-      conexao.enviarRolagem({
-        id: entry.id,
-        expressao: result.expression,
-        semente: result.seed,
-        momento: result.timestamp,
-        personagem:
-          state.characters.find((character) => character.id === characterId)?.name ?? null,
-        skin,
-        atalho: entry.macroName,
-        oculta: entry.hidden,
-      });
+  concluirArremesso(id, valores) {
+    const pedido = arremessoEmCurso;
+    if (!pedido || pedido.id !== id) return;
+    arremessoEmCurso = null;
+
+    // As faces vêm cruas da mesa; só o percentil precisa de tradução, e é
+    // uma soma de dezenas com unidades, não uma troca de valor.
+    const leituras = combinarLeituras(pedido.dados, valores);
+
+    let result;
+    try {
+      result = rollComValores(pedido.expressao, leituras.valores, pedido.semente);
+    } catch {
+      set({ phase: 'ocioso', pendingRequest: null });
+      return;
     }
+
+    marcarDescartes(id, result, leituras.origem);
+    registrarResultado(result, pedido, valores);
+  },
+
+  indicesDescartados(id) {
+    return descartesDaMesa?.id === id ? descartesDaMesa.indices : [];
   },
 
   rollFromInput() {
@@ -265,7 +423,7 @@ export const useAionStore = create<AionState>((set, get) => ({
   },
 
   onStageSettled() {
-    set({ phase: 'revelado', pendingRequest: null });
+    set({ phase: 'revelado', pendingRequest: null, pendingExibicao: null });
   },
 
   // ----------------------------------------------------------- histórico

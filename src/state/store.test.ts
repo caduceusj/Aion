@@ -4,17 +4,25 @@ import { useAionStore } from './store';
 import { DEFAULT_PERSISTED, loadState, saveState } from './persistence';
 import { DEFAULT_SETTINGS } from './seed';
 
+/**
+ * A física fica desligada por padrão nos testes.
+ *
+ * Não é conveniência: sem WebGL não existe mesa, e com a mesa ligada uma
+ * rolagem fica pendurada esperando faces que nunca chegam. Os testes do
+ * caminho com mesa ligam a física explicitamente e entregam as faces na mão.
+ */
 const reset = (): void => {
   useAionStore.setState({
     history: [],
     macros: [],
     characters: [],
     activeCharacterId: null,
-    settings: { ...DEFAULT_SETTINGS },
+    settings: { ...DEFAULT_SETTINGS, physics3d: false },
     input: '',
     inputError: null,
     phase: 'ocioso',
     pendingRequest: null,
+    pendingExibicao: null,
     lastResult: null,
     lastEntryId: null,
     panel: null,
@@ -24,16 +32,14 @@ const reset = (): void => {
 beforeEach(reset);
 
 describe('ciclo de rolagem', () => {
-  it('uma expressão válida cria entrada e enfileira a cena', () => {
+  it('uma expressão válida vira entrada de histórico', () => {
     useAionStore.getState().rollExpression('1d20+5');
     const state = useAionStore.getState();
 
     expect(state.history).toHaveLength(1);
     expect(state.inputError).toBeNull();
     expect(state.lastResult).not.toBeNull();
-    expect(state.phase).toBe('lancando');
-    expect(state.pendingRequest).not.toBeNull();
-    expect(state.pendingRequest?.result).toBe(state.lastResult);
+    expect(state.phase).toBe('revelado');
     expect(state.lastEntryId).toBe(state.history[0]?.id);
   });
 
@@ -53,17 +59,7 @@ describe('ciclo de rolagem', () => {
     expect(useAionStore.getState().inputError?.message).toContain('zero');
   });
 
-  it('onStageSettled fecha o ciclo', () => {
-    useAionStore.getState().rollExpression('2d6');
-    useAionStore.getState().onStageSettled();
-    const state = useAionStore.getState();
-
-    expect(state.phase).toBe('revelado');
-    expect(state.pendingRequest).toBeNull();
-  });
-
   it('sem física o resultado já nasce revelado', () => {
-    useAionStore.getState().updateSettings({ physics3d: false });
     useAionStore.getState().rollExpression('2d6');
     const state = useAionStore.getState();
 
@@ -73,13 +69,133 @@ describe('ciclo de rolagem', () => {
   });
 
   it('movimento reduzido também pula a física', () => {
-    useAionStore.getState().updateSettings({ reducedMotion: true });
+    useAionStore.getState().updateSettings({ physics3d: true, reducedMotion: true });
     useAionStore.getState().rollExpression('2d6');
     expect(useAionStore.getState().pendingRequest).toBeNull();
     expect(useAionStore.getState().phase).toBe('revelado');
   });
+});
+
+describe('a mesa decide o resultado', () => {
+  const comMesa = (): void => {
+    useAionStore.getState().updateSettings({ physics3d: true, reducedMotion: false });
+  };
+
+  it('enquanto os dados rolam não existe resultado nenhum', () => {
+    comMesa();
+    useAionStore.getState().rollExpression('2d6');
+    const state = useAionStore.getState();
+
+    expect(state.phase).toBe('lancando');
+    expect(state.pendingRequest).not.toBeNull();
+    expect(state.pendingRequest?.dados).toHaveLength(2);
+    // Nada foi decidido: o histórico só recebe a entrada quando os dados param.
+    expect(state.history).toHaveLength(0);
+    expect(state.lastResult).toBeNull();
+  });
+
+  it('o total é a soma das faces lidas, sem exceção', () => {
+    comMesa();
+    useAionStore.getState().rollExpression('3d6+2');
+
+    const pedido = useAionStore.getState().pendingRequest;
+    expect(pedido?.dados).toHaveLength(3);
+    useAionStore.getState().concluirArremesso(pedido?.id ?? '', [4, 1, 6]);
+
+    const result = useAionStore.getState().lastResult;
+    expect(result?.dice.map((die) => die.face)).toEqual([4, 1, 6]);
+    expect(result?.total).toBe(13);
+    expect(result?.dice.every((die) => die.fisico)).toBe(true);
+  });
+
+  it('a face lida é a que fica no dado — nada é reescrito depois', () => {
+    comMesa();
+    useAionStore.getState().rollExpression('1d20');
+
+    const pedido = useAionStore.getState().pendingRequest;
+    useAionStore.getState().concluirArremesso(pedido?.id ?? '', [20]);
+
+    const result = useAionStore.getState().lastResult;
+    expect(result?.dice[0]?.face).toBe(20);
+    expect(result?.dice[0]?.value).toBe(20);
+    expect(result?.total).toBe(20);
+    expect(result?.critical).toBe('max');
+  });
+
+  it('a dualidade lê Esperança e Medo na ordem em que foram arremessados', () => {
+    comMesa();
+    useAionStore.getState().rollExpression('dd+2');
+
+    const pedido = useAionStore.getState().pendingRequest;
+    expect(pedido?.dados.map((dado) => dado.role)).toEqual(['esperanca', 'medo']);
+
+    useAionStore.getState().concluirArremesso(pedido?.id ?? '', [9, 3]);
+
+    const result = useAionStore.getState().lastResult;
+    expect(result?.duality).toEqual({ hope: 9, fear: 3, outcome: 'esperanca' });
+    expect(result?.total).toBe(14);
+  });
+
+  it('um percentil são dois dados na mesa: dezenas e unidades', () => {
+    comMesa();
+    useAionStore.getState().rollExpression('1d%');
+
+    const pedido = useAionStore.getState().pendingRequest;
+    expect(pedido?.dados.map((dado) => dado.papel)).toEqual(['dezena', 'unidade']);
+
+    // 70 nas dezenas + 4 nas unidades = 74.
+    useAionStore.getState().concluirArremesso(pedido?.id ?? '', [70, 4]);
+    expect(useAionStore.getState().lastResult?.total).toBe(74);
+
+    useAionStore.getState().rollExpression('1d%');
+    const segundo = useAionStore.getState().pendingRequest;
+    // 00 com 10 nas unidades é o 100, como manda a convenção.
+    useAionStore.getState().concluirArremesso(segundo?.id ?? '', [0, 10]);
+    expect(useAionStore.getState().lastResult?.total).toBe(100);
+  });
+
+  it('descarte aponta para os dados certos na mesa', () => {
+    comMesa();
+    useAionStore.getState().rollExpression('4d6kh3');
+
+    const pedido = useAionStore.getState().pendingRequest;
+    useAionStore.getState().concluirArremesso(pedido?.id ?? '', [5, 2, 6, 4]);
+
+    expect(useAionStore.getState().lastResult?.total).toBe(15);
+    // O 2 é o segundo dado arremessado.
+    expect(useAionStore.getState().indicesDescartados(pedido?.id ?? '')).toEqual([1]);
+  });
+
+  it('faces que a mesa não entregou caem no gerador e ficam marcadas', () => {
+    comMesa();
+    useAionStore.getState().rollExpression('2d6');
+
+    const pedido = useAionStore.getState().pendingRequest;
+    // Mesa que devolveu menos faces que o pedido (aba em segundo plano, WebGL
+    // ausente): a rolagem não pode simplesmente sumir.
+    useAionStore.getState().concluirArremesso(pedido?.id ?? '', [6]);
+
+    const dice = useAionStore.getState().lastResult?.dice ?? [];
+    expect(dice).toHaveLength(2);
+    expect(dice[0]?.face).toBe(6);
+    expect(dice[0]?.fisico).toBe(true);
+    expect(dice[1]?.fisico).toBe(false);
+  });
+
+  it('um arremesso substituído no meio do caminho é ignorado', () => {
+    comMesa();
+    useAionStore.getState().rollExpression('1d20');
+    const antigo = useAionStore.getState().pendingRequest?.id ?? '';
+
+    useAionStore.getState().rollExpression('1d20');
+    useAionStore.getState().concluirArremesso(antigo, [20]);
+
+    expect(useAionStore.getState().history).toHaveLength(0);
+    expect(useAionStore.getState().phase).toBe('lancando');
+  });
 
   it('cada rolagem recebe um id de requisição próprio', () => {
+    comMesa();
     useAionStore.getState().rollExpression('1d20');
     const first = useAionStore.getState().pendingRequest?.id;
     useAionStore.getState().rollExpression('1d20');
@@ -88,6 +204,23 @@ describe('ciclo de rolagem', () => {
     expect(first).toBeDefined();
     expect(second).toBeDefined();
     expect(second).not.toBe(first);
+  });
+
+  it('expressão sem dado algum não vai para a mesa', () => {
+    comMesa();
+    useAionStore.getState().rollExpression('12+3');
+
+    expect(useAionStore.getState().pendingRequest).toBeNull();
+    expect(useAionStore.getState().lastResult?.total).toBe(15);
+  });
+
+  it('onStageSettled fecha o ciclo da exibição', () => {
+    useAionStore.getState().onStageSettled();
+    const state = useAionStore.getState();
+
+    expect(state.phase).toBe('revelado');
+    expect(state.pendingRequest).toBeNull();
+    expect(state.pendingExibicao).toBeNull();
   });
 });
 
@@ -307,6 +440,7 @@ describe('personagens', () => {
   });
 
   it('a skin do personagem ativo vai para a cena', () => {
+    useAionStore.getState().updateSettings({ physics3d: true, reducedMotion: false });
     useAionStore.getState().addCharacter('Ruby', 'rubi');
     useAionStore.getState().rollExpression('1d20');
     expect(useAionStore.getState().pendingRequest?.skin).toBe('rubi');

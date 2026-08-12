@@ -1,10 +1,14 @@
 /**
  * Contrato da mesa compartilhada.
  *
- * A rolagem NÃO trafega como resultado pronto: vão só a expressão e a
- * semente, e cada aparelho reexecuta o motor. Como o motor é determinístico,
- * todos chegam ao mesmo resultado — e, de quebra, a física roda nativamente
- * em cada tela, em vez de alguém receber um número já rolado.
+ * A rolagem trafega como expressão, semente e as FACES que a mesa de quem
+ * rolou leu. O total não vai junto: cada aparelho refaz a conta em cima das
+ * mesmas faces e chega ao mesmo número.
+ *
+ * Mandar as faces em vez de deixar cada tela rolar as suas é o que garante
+ * a mesa única — os dados de um jogador não podem cair diferente na tela do
+ * outro. Quem recebe mostra os dados já deitados nessas faces, então o
+ * número não muda na frente de ninguém.
  */
 
 import type { DiceSkin } from '@/state/types';
@@ -30,6 +34,14 @@ export interface RolagemCompartilhada {
   id: string;
   expressao: string;
   semente: string;
+  /**
+   * Faces lidas na mesa de quem rolou, na ordem de `planejarDados`.
+   *
+   * Ausente ou vazio quando não houve mesa (física desligada do outro lado)
+   * ou quando a versão do outro aparelho é anterior a isto: aí quem recebe
+   * cai na semente, que é o comportamento antigo.
+   */
+  valores?: number[];
   /** Epoch ms de quem rolou — mantém o histórico na mesma ordem em todos. */
   momento: number;
   personagem: string | null;

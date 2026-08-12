@@ -81,18 +81,45 @@ export interface Settings {
 /** Fase da rolagem, dirige animações e som. */
 export type RollPhase = 'ocioso' | 'lancando' | 'assentando' | 'revelado';
 
-/** Comando enviado do estado para a cena 3D. */
+/**
+ * Pedido de arremesso: o que jogar na mesa.
+ *
+ * Note que NÃO há resultado aqui. O resultado é o que a física produzir —
+ * a cena lê a face de cima quando o dado para, e é esse número que vale.
+ */
 export interface RollRequest {
-  /** Id único desta requisição — evita rolagens duplicadas. */
+  /** Id único desta requisição — evita arremessos duplicados. */
   id: string;
-  result: RollResult;
+  dados: import('@/engine').DadoPlanejado[];
+  skin: DiceSkin;
+}
+
+/** Dados que já têm valor e só precisam ser exibidos assentados. */
+export interface PedidoDeExibicao {
+  id: string;
+  dados: Array<{
+    plano: import('@/engine').DadoPlanejado;
+    /** A face que a mesa de quem rolou leu. Aparece já para cima. */
+    valor: number;
+  }>;
   skin: DiceSkin;
 }
 
 /** Interface que a cena 3D expõe para o resto do app. */
 export interface DiceStage {
-  /** Roda os dados. Resolve quando todos assentam. */
-  roll(request: RollRequest): Promise<void>;
+  /**
+   * Arremessa os dados e resolve com as faces LIDAS quando todos param,
+   * na mesma ordem em que foram pedidos.
+   */
+  arremessar(pedido: RollRequest): Promise<number[]>;
+  /**
+   * Põe na mesa dados que já têm valor, deitados na face certa desde o
+   * primeiro quadro. É assim que a rolagem de outra pessoa aparece: sem
+   * física fingida e sem número trocando na sua frente.
+   */
+  exibir(pedido: PedidoDeExibicao): Promise<void>;
+  /** Esmaece os dados descartados, depois que a conta é feita. */
+  esmaecer(indices: readonly number[]): void;
   /** Limpa a mesa. */
   clear(): void;
   /** Ajusta o passo do tempo da simulação. */
@@ -103,12 +130,16 @@ export interface DiceStage {
   resize(): void;
 }
 
-/** Eventos que a cena 3D emite para áudio/UI reagirem. */
+/**
+ * Eventos que a cena 3D emite para áudio/UI reagirem.
+ *
+ * Não há evento de "assentou": quem arremessou recebe as faces lidas pela
+ * própria promessa, e é lá que o som da revelação toca — depois de existir
+ * um resultado, nunca antes.
+ */
 export interface StageEvents {
   /** Um dado bateu em algo. `intensity` 0..1. */
   onImpact?: (intensity: number, shape: string) => void;
-  /** Todos os dados pararam. */
-  onSettled?: (rollId: string) => void;
 }
 
 /** Painel lateral aberto. */
@@ -148,8 +179,10 @@ export interface AionState {
   /** Erro de validação do campo, ou null. */
   inputError: RollError | null;
   phase: RollPhase;
-  /** Rolagem aguardando a cena 3D executar. */
+  /** Arremesso aguardando a cena 3D executar. */
   pendingRequest: RollRequest | null;
+  /** Rolagem de outro aparelho, esperando ser exibida já assentada. */
+  pendingExibicao: PedidoDeExibicao | null;
   /** Última rolagem concluída — alimenta o painel de resultado. */
   lastResult: RollResult | null;
   /** Id da entrada de histórico da última rolagem. */
@@ -171,7 +204,17 @@ export interface AionState {
   rollAdvantage(mode: 'vantagem' | 'desvantagem'): void;
   /** Repete a última rolagem. */
   repeatLast(): void;
-  /** Chamado pela cena 3D quando os dados assentam. */
+  /**
+   * Chamado pela cena 3D quando os dados param, com as faces lidas.
+   * É aqui que a rolagem vira resultado.
+   */
+  concluirArremesso(id: string, valores: readonly number[]): void;
+  /**
+   * Quais dados da mesa ficaram de fora da conta neste pedido, para a cena
+   * poder esmaecê-los. Só faz sentido depois de `concluirArremesso`.
+   */
+  indicesDescartados(id: string): number[];
+  /** Chamado quando a exibição de uma rolagem remota termina. */
   onStageSettled(): void;
 
   // ---- Histórico ----

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import * as THREE from 'three';
 import type { PolyhedronKind } from '@/engine/types';
-import { buildOppositeMap, createShapeLibrary, permuteFaceValues } from './shapes';
+import type { DieShape } from './types';
+import { createShapeLibrary } from './shapes';
 import { SKIN_COLORS, SKIN_ORDER, createFaceTexture, needsUnderline } from './textures';
 
 const library = createShapeLibrary();
@@ -231,77 +233,56 @@ describe('texturas', () => {
   });
 });
 
-describe('reetiquetagem para o valor sorteado', () => {
+describe('ler a face de cima', () => {
   const testaveis: PolyhedronKind[] = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100', 'dF'];
+
+  /** A mesma leitura que a cena faz: a normal mais alinhada com a vertical. */
+  function faceMaisAlta(shape: DieShape, orientacao: THREE.Quaternion): number {
+    let melhor = 0;
+    let maior = -Infinity;
+    shape.faceNormals.forEach((normal, index) => {
+      const y = normal.clone().applyQuaternion(orientacao).y;
+      if (y > maior) {
+        maior = y;
+        melhor = index;
+      }
+    });
+    return melhor;
+  }
 
   for (const kind of testaveis) {
     const shape = library.get(kind);
-    const opposites = buildOppositeMap(shape.faceNormals);
 
-    it(`${kind}: a face de cima passa a exibir o valor pedido, venha de onde vier`, () => {
-      // Exaustivo: toda combinação de face que assentou × valor sorteado.
-      for (let upIndex = 0; upIndex < shape.faceValues.length; upIndex += 1) {
-        for (const target of shape.faceValues) {
-          const displayed = permuteFaceValues(
-            shape.faceValues,
-            opposites,
-            upIndex,
-            target,
-          );
-          expect(
-            displayed[upIndex],
-            `${kind}: caiu na face ${upIndex}, queria ${target}`,
-          ).toBe(target);
-        }
-      }
-    });
-
-    it(`${kind}: continua sendo o mesmo conjunto de valores`, () => {
-      const esperado = [...shape.faceValues].sort((a, b) => a - b);
-      for (let upIndex = 0; upIndex < shape.faceValues.length; upIndex += 1) {
-        for (const target of shape.faceValues) {
-          const displayed = permuteFaceValues(shape.faceValues, opposites, upIndex, target);
-          expect([...displayed].sort((a, b) => a - b)).toEqual(esperado);
-        }
-      }
-    });
-
-    if (kind !== 'd4') {
-      it(`${kind}: faces opostas continuam somando o mesmo`, () => {
-        // Um dado reetiquetado precisa continuar coerente: se as opostas
-        // deixassem de somar N+1, o jogador veria um dado impossível.
-        const somaOriginal = (shape.faceValues[0] ?? 0) + (shape.faceValues[opposites[0] ?? 0] ?? 0);
-
-        for (let upIndex = 0; upIndex < shape.faceValues.length; upIndex += 1) {
-          for (const target of shape.faceValues) {
-            const displayed = permuteFaceValues(shape.faceValues, opposites, upIndex, target);
-            opposites.forEach((oposta, index) => {
-              if (oposta < 0) return;
-              expect(
-                (displayed[index] ?? 0) + (displayed[oposta] ?? 0),
-                `${kind}: face ${index} e sua oposta, caindo em ${upIndex} para ${target}`,
-              ).toBe(somaOriginal);
-            });
-          }
-        }
+    it(`${kind}: deitar uma face para cima e lê-la de volta devolve a mesma face`, () => {
+      // É a garantia de que `exibir` mostra o número que prometeu: girar o
+      // dado para a face F ficar em cima e depois ler tem que dar F.
+      shape.faceNormals.forEach((normal, index) => {
+        const orientacao = new THREE.Quaternion().setFromUnitVectors(
+          normal.clone().normalize(),
+          new THREE.Vector3(0, 1, 0),
+        );
+        expect(faceMaisAlta(shape, orientacao), `${kind}: face ${index}`).toBe(index);
       });
-    }
+    });
+
+    it(`${kind}: toda face tem um número e a leitura nunca cai fora`, () => {
+      expect(shape.faceValues).toHaveLength(shape.faceNormals.length);
+      for (const value of shape.faceValues) expect(Number.isFinite(value)).toBe(true);
+    });
   }
 
-  it('não mexe em nada quando a face de cima já está certa', () => {
+  it('a leitura de um d20 assentado devolve um valor de 1 a 20', () => {
     const shape = library.get('d20');
-    const opposites = buildOppositeMap(shape.faceNormals);
-    const alvo = shape.faceValues[7] ?? 1;
-    expect(permuteFaceValues(shape.faceValues, opposites, 7, alvo)).toEqual([
-      ...shape.faceValues,
-    ]);
-  });
-
-  it('ignora um valor que não existe no dado', () => {
-    const shape = library.get('d6');
-    const opposites = buildOppositeMap(shape.faceNormals);
-    expect(permuteFaceValues(shape.faceValues, opposites, 0, 99)).toEqual([
-      ...shape.faceValues,
-    ]);
+    for (let i = 0; i < shape.faceNormals.length; i += 1) {
+      const normal = shape.faceNormals[i];
+      if (!normal) continue;
+      const orientacao = new THREE.Quaternion().setFromUnitVectors(
+        normal.clone().normalize(),
+        new THREE.Vector3(0, 1, 0),
+      );
+      const lido = shape.faceValues[faceMaisAlta(shape, orientacao)] ?? 0;
+      expect(lido).toBeGreaterThanOrEqual(1);
+      expect(lido).toBeLessThanOrEqual(20);
+    }
   });
 });

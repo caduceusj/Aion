@@ -22,6 +22,7 @@ import type { Cond, DiceSpec, Node, ParsedExpression } from './parser';
 import { MAX_DICE } from './parser';
 import { DiceError } from './tokenizer';
 import { createRng, type Rng } from './rng';
+import { fonteDoGerador, type FaceObtida, type FonteDeValores } from './fonte';
 import { buildDetail, formatSpec, renderExpression } from './format';
 
 const MAX_REROLLS = 100;
@@ -84,10 +85,15 @@ function alwaysTrue(cond: Cond, spec: DiceSpec): boolean {
   return facesOf(spec).every((face) => matches(cond, face));
 }
 
-function rollFace(rng: Rng, spec: DiceSpec): number {
-  if (spec.faceKind === 'fudge') return rng.int(-1, 1);
-  if (spec.faceKind === 'percentile') return rng.int(1, 100);
-  return rng.int(1, spec.sides);
+/**
+ * Pede a próxima face à fonte. É aqui que o motor deixou de sortear: o
+ * valor pode vir da mesa 3D, da rede ou do gerador, e ele não distingue.
+ */
+function rollFace(ctx: Context, spec: DiceSpec): FaceObtida {
+  return ctx.fonte.proxima({
+    sides: spec.faceKind === 'percentile' ? 100 : spec.sides,
+    faceKind: spec.faceKind,
+  });
 }
 
 function maxFace(spec: DiceSpec): number {
@@ -109,12 +115,13 @@ function criticalOf(spec: DiceSpec, face: number): DieRoll['critical'] {
 }
 
 /** Cores fixas do par de dualidade: Esperança dourada, Medo obsidiana. */
-const HOPE_SKIN = 'ambar';
-const FEAR_SKIN = 'obsidiana';
+export const HOPE_SKIN = 'ambar';
+export const FEAR_SKIN = 'obsidiana';
 const DUALITY_SIDES = 12;
 
 interface Context {
   rng: Rng;
+  fonte: FonteDeValores;
   dice: DieRoll[];
   groups: DiceGroup[];
   duality: DualityInfo | null;
@@ -134,14 +141,20 @@ function rollSingle(spec: DiceSpec, ctx: Context, groupIndex: number): DieRoll {
   }
 
   const history: number[] = [];
-  let face = rollFace(ctx.rng, spec);
+  const primeira = rollFace(ctx, spec);
+  let face = primeira.valor;
+  // Um dado só é "da mesa" se a face que vale foi lida de lá. Rerrolar
+  // consome do gerador, e a marca acompanha a última face aceita.
+  let fisico = primeira.fisico;
   history.push(face);
   let rerolled = false;
 
   if (spec.reroll && !alwaysTrue(spec.reroll.cond, spec)) {
     let attempts = 0;
     while (matches(spec.reroll.cond, face) && attempts < MAX_REROLLS) {
-      face = rollFace(ctx.rng, spec);
+      const nova = rollFace(ctx, spec);
+      face = nova.valor;
+      fisico = nova.fisico;
       history.push(face);
       attempts += 1;
       rerolled = true;
@@ -165,6 +178,10 @@ function rollSingle(spec: DiceSpec, ctx: Context, groupIndex: number): DieRoll {
     success: null,
     groupIndex,
     role: null,
+    fisico,
+    // Sempre o índice da PRIMEIRA tirada: é aquele dado, na mesa, que este
+    // `DieRoll` representa, mesmo que a face tenha sido rerrolada depois.
+    indiceNaFila: primeira.indice,
   };
 
   ctx.dice.push(die);
@@ -183,7 +200,7 @@ function applyExplosions(spec: DiceSpec, ctx: Context, groupIndex: number, dice:
       let chained = 0;
       let last = die.face;
       while (matches(cond, last) && chained < ctx.maxExplosions) {
-        last = rollFace(ctx.rng, spec);
+        last = rollFace(ctx, spec).valor;
         die.history.push(last);
         die.value += last;
         die.exploded = true;
@@ -315,10 +332,20 @@ function evaluateDuality(ctx: Context, pos: number): number {
   }
 
   const groupIndex = ctx.groups.length;
-  const hope = ctx.rng.int(1, DUALITY_SIDES);
-  const fear = ctx.rng.int(1, DUALITY_SIDES);
+  const pedido = { sides: DUALITY_SIDES, faceKind: 'numeric' as const };
+  // A ordem importa: o planejamento lista Esperança antes de Medo, então é
+  // nessa ordem que a mesa devolve as faces lidas.
+  const faceEsperanca = ctx.fonte.proxima(pedido);
+  const faceMedo = ctx.fonte.proxima(pedido);
+  const hope = faceEsperanca.valor;
+  const fear = faceMedo.valor;
 
-  const make = (value: number, role: 'esperanca' | 'medo', skin: string): DieRoll => ({
+  const make = (
+    value: number,
+    role: 'esperanca' | 'medo',
+    skin: string,
+    { fisico, indice }: FaceObtida,
+  ): DieRoll => ({
     id: ctx.rng.id('d'),
     sides: DUALITY_SIDES,
     faceKind: 'numeric',
@@ -335,10 +362,12 @@ function evaluateDuality(ctx: Context, pos: number): number {
     groupIndex,
     role,
     skinOverride: skin,
+    fisico,
+    indiceNaFila: indice,
   });
 
-  const hopeDie = make(hope, 'esperanca', HOPE_SKIN);
-  const fearDie = make(fear, 'medo', FEAR_SKIN);
+  const hopeDie = make(hope, 'esperanca', HOPE_SKIN, faceEsperanca);
+  const fearDie = make(fear, 'medo', FEAR_SKIN, faceMedo);
   ctx.dice.push(hopeDie, fearDie);
 
   const outcome: DualityInfo['outcome'] =
@@ -419,8 +448,12 @@ export function evaluate(
   seed: string,
   options: RollOptions = {},
 ): RollResult {
+  const rng = createRng(seed);
+
   const ctx: Context = {
-    rng: createRng(seed),
+    rng,
+    // Sem fonte explícita, o motor sorteia como sempre sorteou.
+    fonte: options.fonte ?? fonteDoGerador(rng),
     dice: [],
     groups: [],
     duality: null,

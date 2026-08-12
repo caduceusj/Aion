@@ -81,6 +81,21 @@ export interface DieRoll {
   /** Papel na dualidade, quando faz parte de um par Esperança/Medo. */
   role: DieRole;
   /**
+   * A face que vale foi LIDA de um dado que existiu na mesa, e não sorteada.
+   *
+   * Falso quando não havia mesa (física desligada, movimento reduzido) ou
+   * quando o dado nasceu de uma explosão/rerolagem, que são imprevisíveis e
+   * portanto não podem ser arremessadas de antemão.
+   */
+  fisico: boolean;
+  /**
+   * Posição, na lista de faces lidas, do dado da mesa que originou este.
+   * É o fio que liga o resultado ao objeto 3D — sem ele não dá para saber
+   * qual dado na tela corresponde a qual dado da conta quando há explosões
+   * ou pares de percentil no meio. `null` quando a face foi sorteada.
+   */
+  indiceNaFila: number | null;
+  /**
    * Força uma cor específica para este dado na mesa, ignorando a do
    * personagem. É assim que Esperança e Medo caem com cores diferentes.
    */
@@ -150,6 +165,11 @@ export interface RollError {
 export interface RollOptions {
   /** Semente fixa. Ausente = semente criptográfica nova. */
   seed?: string;
+  /**
+   * De onde vêm as faces. Ausente = o gerador semeado.
+   * É por aqui que os valores lidos na mesa 3D entram no motor.
+   */
+  fonte?: import('./fonte').FonteDeValores;
   /** Limite de dados por expressão (proteção contra 9999d20). */
   maxDice?: number;
   /** Limite de explosões por dado. */

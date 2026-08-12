@@ -9,11 +9,17 @@ import type { DiceEngine, RollError, RollOptions, RollResult } from './types';
 import { DiceError } from './tokenizer';
 import { parse } from './parser';
 import { evaluate } from './evaluator';
-import { randomSeed } from './rng';
+import { createRng, randomSeed } from './rng';
+import { fonteDaFila } from './fonte';
 
 export type * from './types';
 export { shapeForSides } from './evaluator';
-export { randomSeed } from './rng';
+export { fonteDaFila, fonteDoGerador } from './fonte';
+export type { FonteDeValores, PedidoDeFace } from './fonte';
+export { combinarLeituras, planejarDados } from './planejamento';
+export type { DadoPlanejado, Leituras } from './planejamento';
+export { parse } from './parser';
+export { createRng, randomSeed } from './rng';
 export { DiceError } from './tokenizer';
 export { MAX_DICE, MAX_SIDES } from './parser';
 
@@ -35,6 +41,22 @@ export function roll(input: string, options: RollOptions = {}): RollResult {
   const parsed = parse(input);
   const seed = options.seed ?? randomSeed();
   return evaluate(parsed, input, seed, options);
+}
+
+/**
+ * Rola usando valores já conhecidos — lidos na mesa 3D ou recebidos de
+ * outro aparelho. A ordem precisa ser a de `planejarDados`.
+ *
+ * Explosões e rerolagens consomem além da fila e caem no gerador semeado;
+ * esses dados vêm marcados com `fisico: false`.
+ */
+export function rollComValores(
+  input: string,
+  valores: readonly number[],
+  seed: string,
+): RollResult {
+  const parsed = parse(input);
+  return evaluate(parsed, input, seed, { fonte: fonteDaFila(valores, createRng(seed)) });
 }
 
 export function validate(input: string): RollError | null {
