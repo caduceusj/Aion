@@ -7,6 +7,7 @@
  */
 
 import type { Character, HistoryEntry, Macro, Settings } from './types';
+import { fichaDeExemplo, fichaEmBranco, type Ficha } from '@/daggerheart/ficha';
 import { DEFAULT_SETTINGS, SEED_CHARACTER, SEED_MACROS } from './seed';
 
 const STORAGE_KEY = 'aion:v1';
@@ -20,7 +21,14 @@ export interface PersistedState {
   characters: Character[];
   activeCharacterId: string | null;
   settings: Settings;
+  fichas: Ficha[];
+  fichaAtivaId: string | null;
+  /** Endereço do relay da mesa, para não redigitar a cada sessão. */
+  relayUrl: string;
+  souMestre: boolean;
 }
+
+const FICHA_EXEMPLO = fichaDeExemplo('fic_exemplo');
 
 export const DEFAULT_PERSISTED: PersistedState = {
   history: [],
@@ -28,6 +36,10 @@ export const DEFAULT_PERSISTED: PersistedState = {
   characters: [SEED_CHARACTER],
   activeCharacterId: SEED_CHARACTER.id,
   settings: DEFAULT_SETTINGS,
+  fichas: [FICHA_EXEMPLO],
+  fichaAtivaId: FICHA_EXEMPLO.id,
+  relayUrl: '',
+  souMestre: false,
 };
 
 function storage(): Storage | null {
@@ -146,6 +158,74 @@ function parseHistory(raw: unknown): HistoryEntry[] {
     }));
 }
 
+/**
+ * Fichas voltam do disco campo a campo, sobre uma ficha em branco. Uma ficha
+ * salva por uma versão anterior do app continua abrindo, só que com os
+ * campos novos nos padrões.
+ */
+function parseFichas(raw: unknown): Ficha[] {
+  if (!Array.isArray(raw)) return [...DEFAULT_PERSISTED.fichas];
+
+  const fichas = raw
+    .filter(isObject)
+    .filter((item) => typeof item.id === 'string')
+    .map((item) => {
+      const base = fichaEmBranco(str(item.id), str(item.nome, 'Sem nome'));
+      const atributos = isObject(item.atributos) ? item.atributos : {};
+
+      return {
+        ...base,
+        nome: str(item.nome, base.nome).slice(0, 40),
+        nivel: Math.max(1, Math.min(10, Math.floor(num(item.nivel, base.nivel)))),
+        classe: str(item.classe, '').slice(0, 40),
+        ancestralidade: str(item.ancestralidade, '').slice(0, 40),
+        comunidade: str(item.comunidade, '').slice(0, 40),
+        atributos: {
+          agilidade: num(atributos.agilidade, 0),
+          forca: num(atributos.forca, 0),
+          precisao: num(atributos.precisao, 0),
+          instinto: num(atributos.instinto, 0),
+          presenca: num(atributos.presenca, 0),
+          saber: num(atributos.saber, 0),
+        },
+        evasao: num(item.evasao, base.evasao),
+        limiarMaior: num(item.limiarMaior, base.limiarMaior),
+        limiarSevero: num(item.limiarSevero, base.limiarSevero),
+        pontosDeVidaTotal: num(item.pontosDeVidaTotal, base.pontosDeVidaTotal),
+        pontosDeVidaMarcados: num(item.pontosDeVidaMarcados, 0),
+        estresseTotal: num(item.estresseTotal, base.estresseTotal),
+        estresseMarcado: num(item.estresseMarcado, 0),
+        armaduraTotal: num(item.armaduraTotal, base.armaduraTotal),
+        armaduraMarcada: num(item.armaduraMarcada, 0),
+        esperanca: num(item.esperanca, base.esperanca),
+        armas: Array.isArray(item.armas)
+          ? item.armas.filter(isObject).map((arma, index) => ({
+              id: str(arma.id, `arm_${index}`),
+              nome: str(arma.nome, 'Arma').slice(0, 40),
+              atributo: str(arma.atributo, 'forca') as Ficha['armas'][number]['atributo'],
+              dado: str(arma.dado, 'd6') as Ficha['armas'][number]['dado'],
+              bonus: num(arma.bonus, 0),
+              tipo: arma.tipo === 'magico' ? ('magico' as const) : ('fisico' as const),
+              alcance: str(arma.alcance, '').slice(0, 30),
+            }))
+          : [],
+        experiencias: Array.isArray(item.experiencias)
+          ? item.experiencias.filter(isObject).map((exp, index) => ({
+              id: str(exp.id, `exp_${index}`),
+              nome: str(exp.nome, 'Experiência').slice(0, 40),
+              bonus: num(exp.bonus, 2),
+            }))
+          : [],
+        proficienciaManual:
+          typeof item.proficienciaManual === 'number'
+            ? Math.max(1, Math.floor(item.proficienciaManual))
+            : null,
+      };
+    });
+
+  return fichas.length > 0 ? fichas : [fichaDeExemplo('fic_exemplo')];
+}
+
 export function loadState(): PersistedState {
   const store = storage();
   if (!store) return structuredCopy(DEFAULT_PERSISTED);
@@ -161,7 +241,16 @@ export function loadState(): PersistedState {
     const characters = parseCharacters(parsed.characters);
     const activeId = typeof parsed.activeCharacterId === 'string' ? parsed.activeCharacterId : null;
 
+    const fichas = parseFichas(parsed.fichas);
+    const fichaAtiva = typeof parsed.fichaAtivaId === 'string' ? parsed.fichaAtivaId : null;
+
     return {
+      fichas,
+      fichaAtivaId: fichas.some((ficha) => ficha.id === fichaAtiva)
+        ? fichaAtiva
+        : (fichas[0]?.id ?? null),
+      relayUrl: str(parsed.relayUrl, ''),
+      souMestre: bool(parsed.souMestre, false),
       history: parseHistory(parsed.history),
       macros: parseMacros(parsed.macros),
       characters,
@@ -196,6 +285,10 @@ export function saveState(state: PersistedState): void {
           characters: state.characters,
           activeCharacterId: state.activeCharacterId,
           settings: state.settings,
+          fichas: state.fichas,
+          fichaAtivaId: state.fichaAtivaId,
+          relayUrl: state.relayUrl,
+          souMestre: state.souMestre,
         }),
       );
     } catch {
@@ -219,5 +312,14 @@ function structuredCopy(state: PersistedState): PersistedState {
     characters: state.characters.map((character) => ({ ...character })),
     activeCharacterId: state.activeCharacterId,
     settings: { ...state.settings },
+    fichas: state.fichas.map((ficha) => ({
+      ...ficha,
+      atributos: { ...ficha.atributos },
+      armas: ficha.armas.map((arma) => ({ ...arma })),
+      experiencias: ficha.experiencias.map((exp) => ({ ...exp })),
+    })),
+    fichaAtivaId: state.fichaAtivaId,
+    relayUrl: state.relayUrl,
+    souMestre: state.souMestre,
   };
 }

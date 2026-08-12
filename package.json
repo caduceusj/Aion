@@ -12,7 +12,9 @@
     "preview": "vite preview --port 4173",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "relay": "node server/relay.mjs",
+    "verifica:mesa": "node scripts/verifica-mesa.mjs"
   },
   "dependencies": {
     "cannon-es": "^0.20.0",
@@ -28,10 +30,12 @@
     "@types/react-dom": "^19.2.4",
     "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^6.0.5",
+    "esbuild": "^0.28.2",
     "jsdom": "^30.0.1",
     "playwright": "^1.62.1",
     "typescript": "^7.0.2",
     "vite": "^8.2.1",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "ws": "^8.21.3"
   }
 }

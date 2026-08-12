@@ -16,18 +16,55 @@ servidor, sem chamadas de rede em tempo de execução.
 
 ```
 src/
-├── engine/    Motor de rolagem. TypeScript puro, sem dependências,
-│              sem DOM. Determinístico dada uma semente.
-├── three/     Cena 3D: geometrias poliédricas, texturas de face,
-│              física e câmera. Não conhece React.
-├── audio/     Síntese WebAudio. Não conhece React.
-├── state/     Store zustand + persistência. Cola entre camadas.
-└── ui/        Componentes React. Só consome as camadas acima.
+├── engine/       Motor de rolagem. TypeScript puro, sem dependências,
+│                 sem DOM. Determinístico dada uma semente.
+├── daggerheart/  Regras do sistema e a ficha que monta as rolagens.
+│                 Só produz strings de notação — não calcula resultado.
+├── three/        Cena 3D: geometrias poliédricas, texturas de face,
+│                 física e câmera. Não conhece React.
+├── audio/        Síntese WebAudio. Não conhece React.
+├── net/          Cliente da mesa compartilhada. Só entrega e recebe
+│                 mensagens; quem decide o que fazer é o store.
+├── state/        Store zustand + persistência. Cola entre camadas.
+└── ui/           Componentes React. Só consome as camadas acima.
+
+server/
+└── relay.mjs     Relay WebSocket. Repassa mensagens de uma sala e nada
+                  mais: não guarda histórico nem sabe resultado de dado.
 ```
 
 Regra de dependência: as setas apontam sempre para baixo.
-`ui → state → engine`, `ui → three`, `ui → audio`.
-`engine` não importa nada. `three` e `audio` importam apenas tipos.
+`ui → state → engine`, `ui → three`, `ui → audio`, `state → net`,
+`state → daggerheart`. `engine` não importa nada. `three`, `audio` e `net`
+importam apenas tipos.
+
+## Daggerheart
+
+`daggerheart/regras.ts` guarda todo número e texto do sistema em um lugar só,
+para corrigir uma regra ser mexer em uma linha. `daggerheart/ficha.ts` monta as
+expressões a partir do personagem.
+
+A divisão de trabalho é deliberada: o Aion automatiza a **montagem** das
+rolagens, que é mecânica e sem ambiguidade, mas os números da ficha (limiares
+de dano, Evasão, dados de arma) são digitados pelo jogador, porque dependem de
+classe, ancestral, comunidade e equipamento.
+
+Nada aqui calcula resultado: tudo vira uma string de notação que passa pelo
+motor como qualquer outra rolagem, e por isso continua auditável pela semente.
+
+## Mesa compartilhada
+
+Uma rolagem **não** trafega como resultado pronto. Vão só a expressão e a
+semente, e cada aparelho reexecuta o motor. Como o motor é determinístico,
+todos chegam ao mesmo número — e a física roda nativamente em cada tela, em vez
+de alguém receber um resultado já rolado por outro.
+
+Isso também significa que o relay não precisa ser confiável: ele não pode
+inventar um resultado, só repassar uma expressão e uma semente que qualquer um
+pode reproduzir.
+
+`scripts/verifica-mesa.mjs` sobe o relay de verdade, conecta dois clientes e
+confere exatamente essa propriedade.
 
 ## Contratos
 

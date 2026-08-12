@@ -2,10 +2,11 @@
 
 # ⬢ AION
 
-**Mesa de dados imersiva para RPG de mesa.**
+**Mesa de dados imersiva para RPG de mesa, com suporte dedicado a Daggerheart.**
 
 Dados poliédricos de verdade, com física, caindo em uma mesa de feltro à luz de lampião.
-Notação completa, histórico auditável, zero servidor.
+Notação completa, histórico auditável, ficha que rola sozinha e mesa compartilhada
+entre aparelhos.
 
 </div>
 
@@ -36,9 +37,25 @@ Tudo — texturas dos dados, sons, ícones — é gerado em tempo de execução.
 - Efeitos de crítico e falha crítica com partículas
 - Vibração no celular
 
+**Daggerheart**
+- Dados de dualidade (`dd`): 2d12 de Esperança e Medo, com cores próprias na mesa
+- Empate é sucesso crítico e entra no mesmo drama do 20 natural
+- Ficha que monta as rolagens: toque no atributo e ele rola com o modificador certo
+- Ataque usa o atributo da arma; dano multiplica os dados pela proficiência do nível
+- Dano crítico soma o máximo dos dados automaticamente
+- Vantagem e desvantagem (±1d6) que se cancelam, e Experiências como bônus
+- Leitura do desfecho: escolha a Dificuldade e ele diz qual dos quatro resultados saiu
+- Trilhas de Vida, Estresse, Armadura e Esperança, e leitura de dano pelos limiares
+
+**Mesa compartilhada**
+- Todos os aparelhos na mesma sala veem as rolagens uns dos outros
+- Só a expressão e a semente trafegam: cada aparelho reexecuta o motor e chega ao
+  mesmo resultado, com a física rodando em cada tela
+- Presença de quem está na mesa, contador de Medo do Mestre compartilhado
+- Rolagem oculta do Mestre, revelada para todos quando ele quiser
+
 **Mesa**
 - Histórico com detalhamento dado a dado: o que foi mantido, descartado, rerrolado, explodido
-- Rolagem oculta do mestre, revelada quando ele quiser
 - Semente por rolagem para auditoria e replay
 - Vários personagens, cada um com sua cor de dado
 
@@ -59,6 +76,22 @@ npm run preview    # serve o build
 
 Requer Node 20+.
 
+### Mesa compartilhada
+
+O Aion não tem servidor próprio — o relay é um processo de ~150 linhas que só
+repassa mensagens entre os aparelhos de uma sala. Rode em qualquer máquina da rede:
+
+```bash
+npm run relay                 # porta 8787
+PORT=9000 npm run relay
+npm run verifica:mesa         # confere a mesa de ponta a ponta
+```
+
+No app, abra **Mesa**, aponte o endereço para o IP dessa máquina
+(`ws://192.168.0.10:8787`), escolha um código de sala e mande o link de convite.
+O relay não guarda histórico nem sabe o resultado de dado nenhum: as rolagens
+viajam como expressão + semente e são recalculadas em cada aparelho.
+
 ## Atalhos de teclado
 
 | Tecla | Ação |
@@ -68,6 +101,7 @@ Requer Node 20+.
 | `r` | Repete a última rolagem |
 | `v` / `d` | Vantagem / desvantagem |
 | `h` / `a` / `,` | Histórico / atalhos / ajustes |
+| `f` / `m` | Ficha de Daggerheart / mesa compartilhada |
 | `Esc` | Fecha o painel aberto |
 
 ## Notação
@@ -88,6 +122,9 @@ Requer Node 20+.
 | `4dF` | Dados Fudge/Fate |
 | `d%` | Percentil |
 | `1d20+7[Ataque]` | Com rótulo |
+| `dd` | Dualidade: 2d12 de Esperança e Medo (Daggerheart) |
+| `dd+2` | Dualidade com o modificador do atributo |
+| `dd+2+1d6` | Com vantagem (`-1d6` para desvantagem) |
 
 ## Arquitetura
 

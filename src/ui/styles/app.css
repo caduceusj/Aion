@@ -227,6 +227,42 @@
    painéis precisam reservar esse espaço para não colidirem com ele. */
 .trilho .historico__topo,
 .trilho .atalhos__topo,
-.trilho .ajustes__topo {
+.trilho .ajustes__topo,
+.trilho .ficha__topo,
+.trilho .mesa__topo {
   padding-right: calc(var(--sp-4) + 34px);
+}
+
+/* Abas dentro da gaveta: só existem enquanto o trilho cobre o cabeçalho. */
+.trilho__abas {
+  display: flex;
+  gap: var(--sp-1);
+  padding: var(--sp-2) calc(var(--sp-4) + 34px) var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--sf-hairline);
+  background: rgba(6, 8, 15, 0.5);
+}
+
+.trilho__aba {
+  flex: 1;
+  min-height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  color: var(--ink-faint);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.trilho__aba:hover {
+  color: var(--ink-bright);
+}
+
+.trilho__aba[data-ativo='sim'] {
+  color: var(--amber-300);
+  background: rgba(232, 181, 99, 0.14);
+}
+
+@media (min-width: 1100px) {
+  .trilho__abas {
+    display: none;
+  }
 }

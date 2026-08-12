@@ -224,3 +224,22 @@ export function GlifoDado({
     </svg>
   );
 }
+
+export const IconFicha = (props: IconProps) => (
+  <Glyph {...props}>
+    <path d="M6.5 3.2h11a1.6 1.6 0 0 1 1.6 1.6v14.4a1.6 1.6 0 0 1-1.6 1.6h-11a1.6 1.6 0 0 1-1.6-1.6V4.8a1.6 1.6 0 0 1 1.6-1.6z" />
+    <path d="M8.4 7.6h7.2M8.4 11.4h7.2M8.4 15.2h4.4" />
+  </Glyph>
+);
+
+export const IconMesa = (props: IconProps) => (
+  <Glyph {...props}>
+    <circle cx="12" cy="12" r="3.2" />
+    <circle cx="12" cy="3.9" r="1.7" />
+    <circle cx="12" cy="20.1" r="1.7" />
+    <circle cx="4.9" cy="7.9" r="1.7" />
+    <circle cx="19.1" cy="7.9" r="1.7" />
+    <circle cx="4.9" cy="16.1" r="1.7" />
+    <circle cx="19.1" cy="16.1" r="1.7" />
+  </Glyph>
+);

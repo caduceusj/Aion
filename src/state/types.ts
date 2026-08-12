@@ -112,7 +112,23 @@ export interface StageEvents {
 }
 
 /** Painel lateral aberto. */
-export type PanelId = 'historico' | 'atalhos' | 'ajustes' | null;
+export type PanelId = 'historico' | 'atalhos' | 'ajustes' | 'ficha' | 'mesa' | null;
+
+/** Estado da mesa compartilhada entre aparelhos. */
+export interface EstadoDaMesa {
+  estado: import('@/net/types').EstadoDaRede;
+  /** Código curto que os jogadores digitam para entrar. */
+  codigo: string;
+  /** Endereço do relay. */
+  url: string;
+  /** Id deste aparelho na sala. */
+  suaId: string;
+  participantes: import('@/net/types').Participante[];
+  erro: string | null;
+  /** Contador de Medo do Mestre (Daggerheart), igual para todos. */
+  medo: number;
+  souMestre: boolean;
+}
 
 /**
  * Contrato completo do store. Toda a interface programa contra esta
@@ -177,6 +193,23 @@ export interface AionState {
   updateCharacter(id: string, patch: Partial<Character>): void;
   removeCharacter(id: string): void;
   setActiveCharacter(id: string | null): void;
+
+  // ---- Fichas de Daggerheart ----
+  fichas: import('@/daggerheart/ficha').Ficha[];
+  fichaAtivaId: string | null;
+  adicionarFicha(nome?: string): void;
+  atualizarFicha(id: string, patch: Partial<import('@/daggerheart/ficha').Ficha>): void;
+  removerFicha(id: string): void;
+  definirFichaAtiva(id: string | null): void;
+  /** Rola algo montado pela ficha, já com rótulo. */
+  rolarDaFicha(expressao: string, rotulo: string): void;
+
+  // ---- Mesa compartilhada ----
+  mesa: EstadoDaMesa;
+  conectarMesa(opcoes: { codigo: string; url?: string; mestre?: boolean }): void;
+  desconectarMesa(): void;
+  /** Ajusta o Medo do Mestre e propaga para a mesa. */
+  definirMedo(valor: number): void;
 
   // ---- Preferências e UI ----
   updateSettings(patch: Partial<Settings>): void;

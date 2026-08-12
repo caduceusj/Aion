@@ -13,6 +13,8 @@ const ATALHOS_TECLADO: Array<[string, string]> = [
   ['V / D', 'Vantagem / desvantagem'],
   ['H', 'Abre e fecha o histórico'],
   ['A', 'Abre e fecha os atalhos'],
+  ['F', 'Abre e fecha a ficha'],
+  ['M', 'Abre e fecha a mesa compartilhada'],
   [',', 'Abre os ajustes'],
   ['Esc', 'Fecha o painel aberto'],
 ];

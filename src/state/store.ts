@@ -10,7 +10,10 @@
 
 import { create } from 'zustand';
 import type { PolyhedronKind } from '@/engine/types';
-import { tryRoll, validate } from '@/engine';
+import { roll as rolarExpressao, tryRoll, validate } from '@/engine';
+import { fichaEmBranco, type Ficha } from '@/daggerheart/ficha';
+import { criarConexao, salaDaUrl, urlPadraoDoRelay } from '@/net/sync';
+import type { RolagemCompartilhada } from '@/net/types';
 import type {
   AionState,
   Character,
@@ -68,6 +71,80 @@ const initialSettings = {
   reducedMotion: persisted.settings.reducedMotion || prefersReducedMotion(),
 };
 
+/**
+ * Conexão com a mesa. Vive fora do store porque é um recurso, não estado —
+ * o store só guarda o que ela reporta.
+ */
+const conexao = criarConexao({
+  onEstado(estado, erro) {
+    useAionStore.setState((s) => ({
+      mesa: { ...s.mesa, estado, erro: erro ?? (estado === 'conectado' ? null : s.mesa.erro) },
+    }));
+  },
+  onPresenca(participantes, suaId) {
+    useAionStore.setState((s) => ({
+      mesa: { ...s.mesa, participantes, suaId: suaId || s.mesa.suaId },
+    }));
+  },
+  onRolagem(carga) {
+    aplicarRolagemRemota(carga);
+  },
+  onRevelar(rolagemId) {
+    useAionStore.setState((s) => ({
+      history: s.history.map((entry) =>
+        entry.id === rolagemId ? { ...entry, hidden: false } : entry,
+      ),
+    }));
+  },
+  onMedo(valor) {
+    useAionStore.setState((s) => ({ mesa: { ...s.mesa, medo: valor } }));
+  },
+});
+
+/**
+ * Reproduz localmente uma rolagem feita em outro aparelho.
+ *
+ * Só chegaram a expressão e a semente: o motor é reexecutado aqui, o
+ * resultado sai idêntico ao de quem rolou, e a física roda nesta tela
+ * também. Nada é retransmitido, senão a mesa entraria em eco.
+ */
+function aplicarRolagemRemota(carga: RolagemCompartilhada): void {
+  const state = useAionStore.getState();
+  if (state.history.some((entry) => entry.id === carga.id)) return;
+
+  let result;
+  try {
+    result = rolarExpressao(carga.expressao, { seed: carga.semente });
+  } catch {
+    return; // expressão que este cliente não entende: ignorar é melhor que quebrar
+  }
+
+  // O horário é o de quem rolou, para o histórico ficar na mesma ordem em
+  // todos os aparelhos.
+  result = { ...result, timestamp: carga.momento };
+
+  const entry: HistoryEntry = {
+    id: carga.id,
+    result,
+    characterId: null,
+    macroName: carga.atalho ?? carga.personagem,
+    hidden: carga.oculta,
+    pinned: false,
+  };
+
+  const usePhysics = state.settings.physics3d && !state.settings.reducedMotion;
+
+  useAionStore.setState({
+    history: trimHistory([entry, ...state.history]),
+    lastResult: result,
+    lastEntryId: entry.id,
+    phase: usePhysics ? 'lancando' : 'revelado',
+    pendingRequest: usePhysics
+      ? { id: uid('r'), result, skin: carga.skin }
+      : null,
+  });
+}
+
 export const useAionStore = create<AionState>((set, get) => ({
   history: persisted.history,
   macros: persisted.macros,
@@ -82,6 +159,20 @@ export const useAionStore = create<AionState>((set, get) => ({
   lastResult: null,
   lastEntryId: null,
   panel: null,
+
+  fichas: persisted.fichas,
+  fichaAtivaId: persisted.fichaAtivaId,
+
+  mesa: {
+    estado: 'desconectado',
+    codigo: salaDaUrl() ?? '',
+    url: persisted.relayUrl || urlPadraoDoRelay(),
+    suaId: '',
+    participantes: [],
+    erro: null,
+    medo: 0,
+    souMestre: persisted.souMestre,
+  },
 
   // ------------------------------------------------------------- rolagem
   setInput(value) {
@@ -129,6 +220,22 @@ export const useAionStore = create<AionState>((set, get) => ({
       phase: usePhysics ? 'lancando' : 'revelado',
       pendingRequest: usePhysics ? { id: uid('r'), result, skin } : null,
     });
+
+    // Vão só a expressão e a semente: os outros aparelhos reexecutam o
+    // motor e chegam ao mesmo resultado, com a física rodando em cada tela.
+    if (state.mesa.estado === 'conectado') {
+      conexao.enviarRolagem({
+        id: entry.id,
+        expressao: result.expression,
+        semente: result.seed,
+        momento: result.timestamp,
+        personagem:
+          state.characters.find((character) => character.id === characterId)?.name ?? null,
+        skin,
+        atalho: entry.macroName,
+        oculta: entry.hidden,
+      });
+    }
   },
 
   rollFromInput() {
@@ -168,6 +275,7 @@ export const useAionStore = create<AionState>((set, get) => ({
         entry.id === id ? { ...entry, hidden: false } : entry,
       ),
     }));
+    if (get().mesa.estado === 'conectado') conexao.enviarRevelar(id);
   },
 
   togglePin(id) {
@@ -304,6 +412,87 @@ export const useAionStore = create<AionState>((set, get) => ({
     set({ activeCharacterId: id });
   },
 
+  // ------------------------------------------------------------- fichas
+  adicionarFicha(nome) {
+    const ficha = fichaEmBranco(uid('fic'), nome);
+    set((state) => ({
+      fichas: [...state.fichas, ficha],
+      fichaAtivaId: ficha.id,
+    }));
+  },
+
+  atualizarFicha(id, patch) {
+    set((state) => ({
+      fichas: state.fichas.map((ficha) =>
+        ficha.id === id ? { ...ficha, ...patch, id: ficha.id } : ficha,
+      ),
+    }));
+  },
+
+  removerFicha(id) {
+    set((state) => {
+      const fichas = state.fichas.filter((ficha) => ficha.id !== id);
+      return {
+        fichas,
+        fichaAtivaId:
+          state.fichaAtivaId === id ? (fichas[0]?.id ?? null) : state.fichaAtivaId,
+      };
+    });
+  },
+
+  definirFichaAtiva(id) {
+    set({ fichaAtivaId: id });
+  },
+
+  rolarDaFicha(expressao, rotulo) {
+    get().rollExpression(expressao, { macroName: rotulo });
+  },
+
+  // ----------------------------------------------------- mesa compartilhada
+  conectarMesa({ codigo, url, mestre }) {
+    const state = get();
+    const alvo = (url ?? state.mesa.url).trim();
+    const sala = codigo.trim().toUpperCase();
+    if (sala.length < 3 || alvo.length === 0) return;
+
+    const souMestre = mestre ?? state.mesa.souMestre;
+    const personagem = state.characters.find(
+      (character) => character.id === state.activeCharacterId,
+    );
+
+    set({
+      mesa: {
+        ...state.mesa,
+        codigo: sala,
+        url: alvo,
+        souMestre,
+        erro: null,
+        estado: 'conectando',
+      },
+    });
+
+    conexao.conectar({
+      url: alvo,
+      sala,
+      nome: personagem?.name ?? 'Convidado',
+      skin: personagem?.skin ?? state.settings.defaultSkin,
+      mestre: souMestre,
+    });
+  },
+
+  desconectarMesa() {
+    conexao.desconectar();
+    set((state) => ({
+      mesa: { ...state.mesa, estado: 'desconectado', participantes: [], suaId: '' },
+    }));
+  },
+
+  definirMedo(valor) {
+    const limitado = Math.max(0, Math.min(99, Math.floor(valor)));
+    set((state) => ({ mesa: { ...state.mesa, medo: limitado } }));
+    if (get().mesa.estado === 'conectado') conexao.enviarMedo(limitado);
+  },
+
   // --------------------------------------------------- preferências e UI
   updateSettings(patch) {
     set((state) => ({ settings: { ...state.settings, ...patch } }));
@@ -324,8 +513,16 @@ useAionStore.subscribe((state) => {
     characters: state.characters,
     activeCharacterId: state.activeCharacterId,
     settings: state.settings,
+    fichas: state.fichas,
+    fichaAtivaId: state.fichaAtivaId,
+    relayUrl: state.mesa.url,
+    souMestre: state.mesa.souMestre,
   });
 });
+
+/** Ficha ativa, ou null quando a mesa não está usando Daggerheart. */
+export const selectFichaAtiva = (state: AionState): Ficha | null =>
+  state.fichas.find((ficha) => ficha.id === state.fichaAtivaId) ?? null;
 
 /** Seletores usados em mais de um componente. */
 export const selectActiveCharacter = (state: AionState): Character | null =>

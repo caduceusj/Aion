@@ -383,6 +383,10 @@ describe('persistência', () => {
       characters: [{ id: 'c1', name: 'Um', skin: 'safira', accent: '#fff', createdAt: 0 }],
       activeCharacterId: 'c1',
       settings: { ...DEFAULT_SETTINGS, volume: 0.25 },
+      fichas: [],
+      fichaAtivaId: null,
+      relayUrl: "",
+      souMestre: false,
     });
 
     await new Promise((resolve) => setTimeout(resolve, 400));

@@ -10,12 +10,16 @@ import { ResultOverlay } from '@/ui/components/ResultOverlay';
 import { HistoryRail } from '@/ui/components/HistoryRail';
 import { MacroPanel, QuickMacroBar } from '@/ui/components/MacroPanel';
 import { SettingsPanel } from '@/ui/components/SettingsPanel';
+import { FichaPanel } from '@/ui/components/FichaPanel';
+import { MesaPanel } from '@/ui/components/MesaPanel';
 import {
   IconAjustes,
   IconAtalhos,
   IconDado,
   IconFechar,
   IconHistorico,
+  IconMesa,
+  IconFicha,
 } from '@/ui/components/Icons';
 import '@/ui/styles/app.css';
 
@@ -31,8 +35,10 @@ const HOTKEY_DICE: Record<string, PolyhedronKind> = {
 };
 
 const PAINEIS: Array<{ id: Exclude<PanelId, null>; rotulo: string; Icone: typeof IconDado }> = [
+  { id: 'ficha', rotulo: 'Ficha', Icone: IconFicha },
   { id: 'historico', rotulo: 'Histórico', Icone: IconHistorico },
   { id: 'atalhos', rotulo: 'Atalhos', Icone: IconAtalhos },
+  { id: 'mesa', rotulo: 'Mesa', Icone: IconMesa },
   { id: 'ajustes', rotulo: 'Ajustes', Icone: IconAjustes },
 ];
 
@@ -129,6 +135,12 @@ export function App() {
       } else if (tecla === 'a') {
         event.preventDefault();
         store.setPanel(store.panel === 'atalhos' ? null : 'atalhos');
+      } else if (tecla === 'f') {
+        event.preventDefault();
+        store.setPanel(store.panel === 'ficha' ? null : 'ficha');
+      } else if (tecla === 'm') {
+        event.preventDefault();
+        store.setPanel(store.panel === 'mesa' ? null : 'mesa');
       } else if (event.key === ',') {
         event.preventDefault();
         store.setPanel('ajustes');
@@ -232,8 +244,28 @@ export function App() {
             >
               <IconFechar size={18} />
             </button>
+
+            {/* Em telas estreitas a gaveta cobre o cabeçalho, então trocar de
+                painel exigiria fechá-la antes. Estas abas resolvem isso. */}
+            <nav className="trilho__abas" aria-label="Trocar de painel">
+              {PAINEIS.map(({ id, rotulo, Icone }) => (
+                <button
+                  key={id}
+                  type="button"
+                  className="trilho__aba"
+                  data-ativo={panel === id ? 'sim' : undefined}
+                  onClick={() => setPanel(id)}
+                  aria-label={rotulo}
+                  aria-pressed={panel === id}
+                >
+                  <Icone size={17} />
+                </button>
+              ))}
+            </nav>
+            {panel === 'ficha' ? <FichaPanel /> : null}
             {panel === 'historico' ? <HistoryRail /> : null}
             {panel === 'atalhos' ? <MacroPanel /> : null}
+            {panel === 'mesa' ? <MesaPanel /> : null}
             {panel === 'ajustes' ? <SettingsPanel /> : null}
           </aside>
         </>
