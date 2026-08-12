@@ -1,0 +1,124 @@
+/**
+ * Aion — sistema de design.
+ * Fonte única de cores, espaçamento, tipografia e sombras.
+ * Nenhum componente deve inventar valores fora daqui.
+ */
+
+:root {
+  /* --- Superfícies: noite profunda sobre feltro --- */
+  --sf-void: #06080f;
+  --sf-base: #0b0f1a;
+  --sf-raised: #121826;
+  --sf-overlay: #1a2233;
+  --sf-hairline: rgba(232, 181, 99, 0.14);
+  --sf-hairline-strong: rgba(232, 181, 99, 0.28);
+
+  /* --- Tinta --- */
+  --ink-bright: #f4f1ea;
+  --ink: #cdd3df;
+  --ink-dim: #8c96ab;
+  --ink-faint: #5c6579;
+
+  /* --- Âmbar arcano (marca) --- */
+  --amber-100: #f8e3bd;
+  --amber-300: #e8b563;
+  --amber-500: #c9954a;
+  --amber-700: #8a6329;
+  --amber-glow: rgba(232, 181, 99, 0.4);
+
+  /* --- Ciano rúnico (apoio) --- */
+  --rune-300: #7fdcea;
+  --rune-500: #4fa8bb;
+  --rune-700: #2b6b7a;
+
+  /* --- Semântica --- */
+  --crit-success: #ffd166;
+  --crit-success-glow: rgba(255, 209, 102, 0.55);
+  --crit-fail: #e0523f;
+  --crit-fail-glow: rgba(224, 82, 63, 0.5);
+  --success: #6fcf97;
+  --danger: #e0523f;
+
+  /* --- Feltro da mesa --- */
+  --felt-deep: #0d1f1c;
+  --felt: #12302a;
+  --felt-light: #1a4038;
+
+  /* --- Tipografia --- */
+  --font-ui: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  --fs-micro: 0.6875rem;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-base: 0.9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.375rem;
+  --fs-xl: 2rem;
+  --fs-display: clamp(3.5rem, 14vw, 7rem);
+
+  --tracking-wide: 0.08em;
+  --tracking-caps: 0.14em;
+
+  /* --- Espaçamento (escala 4px) --- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+
+  /* --- Raios --- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  /* --- Sombras e brilhos --- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.6);
+  --glow-amber: 0 0 0 1px var(--sf-hairline-strong), 0 0 24px -4px var(--amber-glow);
+
+  /* --- Movimento --- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 140ms;
+  --dur-mid: 260ms;
+  --dur-slow: 520ms;
+
+  /* --- Camadas --- */
+  --z-stage: 0;
+  --z-hud: 10;
+  --z-panel: 20;
+  --z-modal: 40;
+  --z-toast: 60;
+
+  /* --- Métricas de layout --- */
+  --rail-w: 320px;
+  --dock-h: 76px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+/* Skins de dados: cada personagem escolhe um. */
+:root {
+  --skin-ambar: #e8b563;
+  --skin-obsidiana: #3a4152;
+  --skin-esmeralda: #3fa07a;
+  --skin-rubi: #c94f5a;
+  --skin-safira: #4a7fd4;
+  --skin-ametista: #9b6fd4;
+  --skin-osso: #ddd4c0;
+  --skin-aco: #8f9aab;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-mid: 0ms;
+    --dur-slow: 0ms;
+  }
+}
