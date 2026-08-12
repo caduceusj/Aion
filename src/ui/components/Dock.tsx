@@ -180,7 +180,7 @@ export function Dock() {
                 onPointerUp={cancelLongPress}
                 onPointerLeave={cancelLongPress}
                 onPointerCancel={cancelLongPress}
-                aria-label={`Rolar ${count} ${label}${count > 1 ? '' : ''} (tecla ${hotkey})`}
+                aria-label={`Rolar ${count} ${label} (tecla ${hotkey})`}
                 title={`${label} — clique para rolar, shift ou roda para mudar a quantidade`}
               >
                 <GlifoDado kind={kind} size={26} className="dado-rapido__glifo" />

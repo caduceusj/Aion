@@ -84,7 +84,7 @@ export function createDiceStage(
 
   // ------------------------------------------------------------ iluminação
   // Uma mesa de taverna: chave quente em cima, preenchimento frio e baixo.
-  const ambient = new THREE.AmbientLight(0x6b7ea8, 1.15);
+  const ambient = new THREE.AmbientLight(0x5a6d96, 0.9);
   scene.add(ambient);
 
   const key = new THREE.DirectionalLight(0xffd9a0, 3.1);
@@ -117,7 +117,7 @@ export function createDiceStage(
     new THREE.PlaneGeometry(90, 90),
     new THREE.MeshStandardMaterial({
       // A fibra é quase neutra; o tom da mesa vem daqui.
-      color: 0x24564a,
+      color: 0x1d4034,
       roughness: 0.97,
       metalness: 0,
       ...(feltTexture ? { map: feltTexture } : {}),

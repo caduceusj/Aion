@@ -222,3 +222,11 @@
     max-width: 88px;
   }
 }
+
+/* O botão de fechar do trilho é absoluto no canto; os cabeçalhos dos
+   painéis precisam reservar esse espaço para não colidirem com ele. */
+.trilho .historico__topo,
+.trilho .atalhos__topo,
+.trilho .ajustes__topo {
+  padding-right: calc(var(--sp-4) + 34px);
+}

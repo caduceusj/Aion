@@ -57,14 +57,19 @@ for (const vp of VIEWPORTS) {
   await page.waitForTimeout(5000);
   await page.screenshot({ path: `${outDir}/${vp.name}-varios-dados.png` });
 
-  // Histórico com o detalhamento aberto.
-  await page.locator('.cabecalho__nav button[aria-label="Histórico"]').click();
-  await page.waitForTimeout(400);
+  // Histórico com o detalhamento aberto. Em telas largas o trilho já está
+  // visível, e clicar no botão o fecharia — por isso a checagem antes.
   const cartao = page.locator('.entrada__cabecalho').first();
+  if ((await cartao.count()) === 0) {
+    await page.locator('.cabecalho__nav button[aria-label="Histórico"]').click();
+    await page.waitForTimeout(400);
+  }
   if (await cartao.count()) {
     await cartao.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(600);
     await page.screenshot({ path: `${outDir}/${vp.name}-detalhamento.png` });
+  } else {
+    problems.push(`[${vp.name}] nenhuma entrada de histórico encontrada`);
   }
 
   await page.close();
