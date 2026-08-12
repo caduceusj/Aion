@@ -6,7 +6,7 @@
  * rerrolado. Nada de esconder dados atrás de um total.
  */
 
-import type { DiceGroup, DieRoll } from './types';
+import type { DiceGroup, DieRoll, DualityInfo } from './types';
 import type { Cond, DiceSpec, Node } from './parser';
 
 /** Marcadores usados no detalhamento. */
@@ -52,6 +52,8 @@ interface RenderOptions {
   spaced: boolean;
   /** Substitui cada grupo de dados pelo seu detalhamento. */
   expand: ((index: number, spec: DiceSpec) => string) | null;
+  /** Substitui o par de dualidade pelo seu detalhamento. */
+  expandDuality?: ((index: number) => string) | null;
 }
 
 function renderNode(
@@ -73,6 +75,13 @@ function renderNode(
       counter.index += 1;
       if (options.expand) return options.expand(index, node.spec);
       return formatSpec(node.spec);
+    }
+
+    case 'duality': {
+      const index = counter.index;
+      counter.index += 1;
+      if (options.expandDuality) return options.expandDuality(index);
+      return 'dd';
     }
 
     case 'binary': {
@@ -122,9 +131,16 @@ export function buildDetail(
   dice: DieRoll[],
   total: number,
   isSuccessPool: boolean,
+  duality: DualityInfo | null = null,
 ): string {
   const byId = new Map(dice.map((die) => [die.id, die]));
   const single = groups.length === 1;
+
+  const expandDuality = (): string => {
+    const hope = dice.find((die) => die.role === 'esperanca');
+    const fear = dice.find((die) => die.role === 'medo');
+    return `Esperança ${hope?.value ?? '?'} / Medo ${fear?.value ?? '?'}`;
+  };
 
   const expand = (index: number, spec: DiceSpec): string => {
     const group = groups[index];
@@ -139,12 +155,26 @@ export function buildDetail(
     return single ? `${group.notation}: ${list}` : `${group.notation}${list}`;
   };
 
-  const body = renderNode(root, 0, false, { spaced: true, expand }, { index: 0 });
+  const body = renderNode(
+    root,
+    0,
+    false,
+    { spaced: true, expand, expandDuality },
+    { index: 0 },
+  );
 
   const suffix = isSuccessPool
     ? `${total} ${Math.abs(total) === 1 ? 'sucesso' : 'sucessos'}`
     : String(total);
 
   const head = label ? `${label} — ` : '';
-  return `${head}${body} = ${suffix}`;
+  const tail = duality ? ` (${DUALITY_LABEL[duality.outcome]})` : '';
+  return `${head}${body} = ${suffix}${tail}`;
 }
+
+/** Como cada desfecho de dualidade é escrito para a mesa. */
+export const DUALITY_LABEL: Record<DualityInfo['outcome'], string> = {
+  esperanca: 'com Esperança',
+  medo: 'com Medo',
+  critico: 'sucesso crítico',
+};

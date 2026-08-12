@@ -5,6 +5,7 @@ import { IconFechar } from './Icons';
 import '@/ui/styles/notation-help.css';
 
 const GROUP_ORDER: Array<NotationHelpEntry['group']> = [
+  'Daggerheart',
   'Básico',
   'Manter e descartar',
   'Explodir e rerrolar',

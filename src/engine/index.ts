@@ -72,7 +72,12 @@ export interface NotationHelpEntry {
   syntax: string;
   label: string;
   example: string;
-  group: 'Básico' | 'Manter e descartar' | 'Explodir e rerrolar' | 'Pools de sucesso';
+  group:
+    | 'Básico'
+    | 'Manter e descartar'
+    | 'Explodir e rerrolar'
+    | 'Pools de sucesso'
+    | 'Daggerheart';
 }
 
 /** Referência de notação exibida na folha de ajuda da doca. */
@@ -208,5 +213,35 @@ export const NOTATION_HELP: NotationHelpEntry[] = [
     label: 'Sucesso com qualquer comparador',
     example: '>, <, >=, <=, =',
     group: 'Pools de sucesso',
+  },
+  {
+    syntax: 'dd',
+    label: 'Dualidade: 2d12, um de Esperança e um de Medo',
+    example: 'Todo teste de Daggerheart',
+    group: 'Daggerheart',
+  },
+  {
+    syntax: 'dd+2',
+    label: 'Dualidade somando o modificador do atributo',
+    example: 'Teste de Força +2',
+    group: 'Daggerheart',
+  },
+  {
+    syntax: 'dd+2+1d6',
+    label: 'Com vantagem (some 1d6)',
+    example: 'Aliado ajudando',
+    group: 'Daggerheart',
+  },
+  {
+    syntax: 'dd+2-1d6',
+    label: 'Com desvantagem (subtraia 1d6)',
+    example: 'Terreno ruim',
+    group: 'Daggerheart',
+  },
+  {
+    syntax: '2d8+3',
+    label: 'Dano: a proficiência multiplica os dados',
+    example: 'Proficiência 2 com arma d8+3',
+    group: 'Daggerheart',
   },
 ];

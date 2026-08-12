@@ -52,7 +52,9 @@ export type Node =
   | { kind: 'num'; value: number; pos: number }
   | { kind: 'neg'; operand: Node; pos: number }
   | { kind: 'binary'; op: '+' | '-' | '*' | '/'; left: Node; right: Node; pos: number }
-  | { kind: 'dice'; spec: DiceSpec; pos: number };
+  | { kind: 'dice'; spec: DiceSpec; pos: number }
+  /** Par de dualidade do Daggerheart: um d12 de Esperança e um de Medo. */
+  | { kind: 'duality'; pos: number };
 
 export interface ParsedExpression {
   root: Node;
@@ -179,6 +181,17 @@ class Parser {
       this.advance();
       this.depth -= 1;
       return inner;
+    }
+
+    // `dd` é o par de dualidade e precisa ser reconhecido antes de `d`,
+    // senão o tokenizador entregaria a palavra inteira como dado comum.
+    if (token.type === 'word' && token.text === 'dd') {
+      this.advance();
+      this.declaredDice += 2;
+      if (this.declaredDice > MAX_DICE) {
+        throw new DiceError(`Máximo de ${MAX_DICE} dados por expressão.`, token.pos);
+      }
+      return { kind: 'duality', pos: token.pos };
     }
 
     if (token.type === 'num') {

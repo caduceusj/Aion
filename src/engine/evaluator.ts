@@ -12,6 +12,7 @@
 import type {
   DiceGroup,
   DieRoll,
+  DualityInfo,
   FaceKind,
   PolyhedronKind,
   RollResult,
@@ -107,10 +108,16 @@ function criticalOf(spec: DiceSpec, face: number): DieRoll['critical'] {
   return null;
 }
 
+/** Cores fixas do par de dualidade: Esperança dourada, Medo obsidiana. */
+const HOPE_SKIN = 'ambar';
+const FEAR_SKIN = 'obsidiana';
+const DUALITY_SIDES = 12;
+
 interface Context {
   rng: Rng;
   dice: DieRoll[];
   groups: DiceGroup[];
+  duality: DualityInfo | null;
   maxDice: number;
   maxExplosions: number;
   usedDivision: boolean;
@@ -157,6 +164,7 @@ function rollSingle(spec: DiceSpec, ctx: Context, groupIndex: number): DieRoll {
     critical: criticalOf(spec, face),
     success: null,
     groupIndex,
+    role: null,
   };
 
   ctx.dice.push(die);
@@ -294,6 +302,64 @@ function evaluateDice(spec: DiceSpec, ctx: Context): number {
   return subtotal;
 }
 
+/**
+ * Par de dualidade do Daggerheart.
+ *
+ * Dois d12 rolados juntos: um de Esperança e um de Medo. O total é a soma,
+ * e quem ficou maior decide a consequência narrativa. Empate é sucesso
+ * crítico — por isso os dois dados são iguais em faces mas nunca em cor.
+ */
+function evaluateDuality(ctx: Context, pos: number): number {
+  if (ctx.dice.length + 2 > ctx.maxDice) {
+    throw new DiceError(`Máximo de ${ctx.maxDice} dados por expressão.`, pos);
+  }
+
+  const groupIndex = ctx.groups.length;
+  const hope = ctx.rng.int(1, DUALITY_SIDES);
+  const fear = ctx.rng.int(1, DUALITY_SIDES);
+
+  const make = (value: number, role: 'esperanca' | 'medo', skin: string): DieRoll => ({
+    id: ctx.rng.id('d'),
+    sides: DUALITY_SIDES,
+    faceKind: 'numeric',
+    shape: 'd12',
+    value,
+    face: value,
+    history: [value],
+    kept: true,
+    dropped: false,
+    rerolled: false,
+    exploded: false,
+    critical: null,
+    success: null,
+    groupIndex,
+    role,
+    skinOverride: skin,
+  });
+
+  const hopeDie = make(hope, 'esperanca', HOPE_SKIN);
+  const fearDie = make(fear, 'medo', FEAR_SKIN);
+  ctx.dice.push(hopeDie, fearDie);
+
+  const outcome: DualityInfo['outcome'] =
+    hope === fear ? 'critico' : hope > fear ? 'esperanca' : 'medo';
+
+  ctx.duality = { hope, fear, outcome };
+
+  ctx.groups.push({
+    index: groupIndex,
+    notation: 'dd',
+    count: 2,
+    sides: DUALITY_SIDES,
+    faceKind: 'numeric',
+    shape: 'd12',
+    dieIds: [hopeDie.id, fearDie.id],
+    subtotal: hope + fear,
+  });
+
+  return hope + fear;
+}
+
 function evaluateNode(node: Node, ctx: Context): number {
   switch (node.kind) {
     case 'num':
@@ -304,6 +370,9 @@ function evaluateNode(node: Node, ctx: Context): number {
 
     case 'dice':
       return evaluateDice(node.spec, ctx);
+
+    case 'duality':
+      return evaluateDuality(ctx, node.pos);
 
     case 'binary': {
       const left = evaluateNode(node.left, ctx);
@@ -354,6 +423,7 @@ export function evaluate(
     rng: createRng(seed),
     dice: [],
     groups: [],
+    duality: null,
     maxDice: Math.min(options.maxDice ?? MAX_DICE, MAX_DICE),
     maxExplosions: options.maxExplosions ?? DEFAULT_MAX_EXPLOSIONS,
     usedDivision: false,
@@ -381,11 +451,20 @@ export function evaluate(
       ctx.dice,
       total,
       isSuccessPool,
+      ctx.duality,
     ),
     isSuccessPool,
     successes: isSuccessPool ? ctx.successes : null,
     botches: isSuccessPool ? ctx.botches : null,
-    critical: overallCritical(ctx.dice),
+    // Um crítico de dualidade é o momento alto da mesa em Daggerheart:
+    // entra no mesmo canal visual e sonoro do 20 natural.
+    critical: ctx.duality
+      ? ctx.duality.outcome === 'critico'
+        ? 'max'
+        : null
+      : overallCritical(ctx.dice),
+    duality: ctx.duality,
+    label: parsed.label,
     seed,
     timestamp: Date.now(),
   };

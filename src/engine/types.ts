@@ -21,6 +21,28 @@ export type PolyhedronKind = 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20' | 'd100'
 export type CriticalKind = 'max' | 'min' | null;
 
 /**
+ * Papel de um dado dentro de um par de dualidade (Daggerheart).
+ * `null` para dados comuns.
+ */
+export type DieRole = 'esperanca' | 'medo' | null;
+
+/** Como uma rolagem de dualidade terminou. */
+export type DualityOutcome =
+  /** Dado de Esperança maior: o personagem ganha Esperança. */
+  | 'esperanca'
+  /** Dado de Medo maior: o Mestre ganha Medo. */
+  | 'medo'
+  /** Dados iguais: sucesso crítico. */
+  | 'critico';
+
+/** Resultado do par de dualidade de uma rolagem. */
+export interface DualityInfo {
+  hope: number;
+  fear: number;
+  outcome: DualityOutcome;
+}
+
+/**
  * Um único dado físico rolado, com todo o seu histórico.
  * `value` é o valor que efetivamente entrou na conta (0 se descartado).
  */
@@ -56,6 +78,13 @@ export interface DieRoll {
   success: boolean | null;
   /** Índice do grupo de dados na expressão (para cores distintas na mesa). */
   groupIndex: number;
+  /** Papel na dualidade, quando faz parte de um par Esperança/Medo. */
+  role: DieRole;
+  /**
+   * Força uma cor específica para este dado na mesa, ignorando a do
+   * personagem. É assim que Esperança e Medo caem com cores diferentes.
+   */
+  skinOverride?: string;
 }
 
 /** Um grupo `NdX` dentro da expressão, com seus modificadores aplicados. */
@@ -98,6 +127,10 @@ export interface RollResult {
    * de d20 (convenção D&D 5e) ou o único dado quando há um só.
    */
   critical: CriticalKind;
+  /** Par de dualidade, quando a expressão usa `dd`. */
+  duality: DualityInfo | null;
+  /** Rótulo entre colchetes, quando houver. */
+  label: string | null;
   /** Semente usada — permite reproduzir a rolagem para auditoria. */
   seed: string;
   /** Epoch ms. */

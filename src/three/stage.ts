@@ -317,10 +317,21 @@ export function createDiceStage(
     return THREE.MathUtils.clamp(raw, 0.3, 0.72);
   }
 
+  /**
+   * A cor do dado. Normalmente é a do personagem, mas o par de dualidade do
+   * Daggerheart força as suas: Esperança dourada, Medo obsidiana.
+   */
+  function skinDoDado(die: DieRoll, fallback: DiceSkin): DiceSkin {
+    const override = die.skinOverride;
+    if (override && override in SKIN_COLORS) return override as DiceSkin;
+    return fallback;
+  }
+
   function spawnDie(die: DieRoll, skin: DiceSkin, size: number, index: number): ActiveDie {
     const shape = shapes.get(die.shape);
+    const cor = skinDoDado(die, skin);
 
-    const materials = shape.faceValues.map((value) => materialFor(skin, die.shape, value));
+    const materials = shape.faceValues.map((value) => materialFor(cor, die.shape, value));
     const mesh = new THREE.Mesh(shape.geometry, materials);
     mesh.scale.setScalar(size);
     mesh.castShadow = true;
@@ -480,7 +491,8 @@ export function createDiceStage(
       die.face,
     );
 
-    entry.mesh.material = displayed.map((value) => materialFor(skin, die.shape, value));
+    const cor = skinDoDado(die, skin);
+    entry.mesh.material = displayed.map((value) => materialFor(cor, die.shape, value));
   }
 
   function addAura(entry: ActiveDie): void {
