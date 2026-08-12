@@ -32,8 +32,14 @@ export interface DieRoll {
   faceKind: FaceKind;
   /** Tipo de poliedro a renderizar. */
   shape: PolyhedronKind;
-  /** Valor final deste dado (após explosões/rerolagens). */
+  /** Valor final deste dado (após explosões/rerolagens e limites). */
   value: number;
+  /**
+   * Face natural que o dado exibe na mesa — o valor aceito após as
+   * rerolagens, antes de somar explosões e aplicar min/max. É este número
+   * que a cena 3D estampa na face de cima.
+   */
+  face: number;
   /** Toda a sequência rolada por este dado, em ordem. */
   history: number[];
   /** Entrou na soma final? */
