@@ -8,6 +8,8 @@ Dados poliédricos de verdade, com física, caindo em uma mesa de feltro à luz 
 Notação completa, histórico auditável, ficha que rola sozinha e mesa compartilhada
 entre aparelhos.
 
+**[▶ Abrir o Aion](https://caduceusj.github.io/Aion/)**
+
 </div>
 
 ---
@@ -74,6 +76,11 @@ você mesmo roda, para os aparelhos se acharem.
 - Críticos sempre trazem rótulo textual, nunca só cor
 
 ## Rodando
+
+A versão publicada vive em **https://caduceusj.github.io/Aion/**, atualizada a
+cada push pelo workflow em `.github/workflows/deploy.yml`. Lá funciona tudo
+menos a mesa compartilhada, que precisa do relay rodando em algum lugar —
+para isso, rode local:
 
 ```bash
 npm install
