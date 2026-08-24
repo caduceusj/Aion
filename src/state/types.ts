@@ -143,7 +143,20 @@ export interface StageEvents {
 }
 
 /** Painel lateral aberto. */
-export type PanelId = 'historico' | 'atalhos' | 'ajustes' | 'ficha' | 'mesa' | 'codice' | null;
+export type PanelId = 'historico' | 'atalhos' | 'ajustes' | 'ficha' | 'mesa' | null;
+
+/**
+ * Onde o app está.
+ *
+ * O Códice não é um painel da mesa: é outro lugar. Tratá-lo como vista de
+ * primeiro nível evita a ambiguidade de ter um "painel" que cobre a tela
+ * inteira e desliga os atalhos de todos os outros.
+ *
+ *   menu   — a porta de entrada, onde se escolhe entre os dois
+ *   mesa   — os dados, a doca, a ficha, o histórico
+ *   codice — a crônica de Valoran
+ */
+export type Vista = 'menu' | 'mesa' | 'codice';
 
 /** Estado da mesa compartilhada entre aparelhos. */
 export interface EstadoDaMesa {
@@ -188,6 +201,8 @@ export interface AionState {
   /** Id da entrada de histórico da última rolagem. */
   lastEntryId: string | null;
   panel: PanelId;
+  /** Vista atual. A `menu` é onde o app abre. */
+  vista: Vista;
 
   // ---- Rolagem ----
   setInput(value: string): void;
@@ -257,4 +272,11 @@ export interface AionState {
   // ---- Preferências e UI ----
   updateSettings(patch: Partial<Settings>): void;
   setPanel(panel: PanelId): void;
+  /** Troca de vista. Ao entrar no Códice, lembra de onde veio. */
+  irPara(vista: Vista): void;
+  /**
+   * Sai do Códice para onde o leitor estava antes — a mesa, se ele abriu o
+   * Códice no meio de uma sessão; o menu, se chegou por um link.
+   */
+  sairDoCodice(): void;
 }

@@ -5,6 +5,7 @@ import { Brasao } from '@/codex/valoran/heraldica';
 import { useAionStore } from '@/state/store';
 import {
   IconBusca,
+  IconCasa,
   IconCima,
   IconFechar,
   IconIndice,
@@ -43,7 +44,8 @@ function chaveDaUrl(): string | null {
  * Keaton" com um link em vez de instruções.
  */
 export function Codex() {
-  const setPanel = useAionStore((state) => state.setPanel);
+  const sairDoCodice = useAionStore((state) => state.sairDoCodice);
+  const irPara = useAionStore((state) => state.irPara);
 
   // Pilha e posição em um estado só: separados, um `navegar` teria de ler a
   // pilha antiga para decidir a posição nova, e é assim que se erra.
@@ -203,10 +205,20 @@ export function Codex() {
 
         <button
           type="button"
+          className="codice__menu"
+          onClick={() => irPara('menu')}
+          title="Menu principal"
+        >
+          <IconCasa size={17} />
+          <span>Menu</span>
+        </button>
+
+        <button
+          type="button"
           className="codice__fechar"
-          onClick={() => setPanel(null)}
-          aria-label="Fechar o códice"
-          title="Fechar (Esc)"
+          onClick={() => sairDoCodice()}
+          aria-label="Sair do códice"
+          title="Sair (Esc)"
         >
           <IconFechar size={18} />
         </button>

@@ -1307,3 +1307,37 @@
     max-height: 240px;
   }
 }
+
+/* Caminho de volta ao menu, do lado de dentro do Códice. */
+.codice__menu {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 30px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+  color: var(--cx-apagado);
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.codice__menu:hover {
+  color: var(--cx-ouro-claro);
+  border-color: var(--cx-linha);
+}
+
+@media (max-width: 560px) {
+  .codice__menu span {
+    display: none;
+  }
+
+  .codice__menu {
+    width: 30px;
+    padding: 0;
+    justify-content: center;
+  }
+}

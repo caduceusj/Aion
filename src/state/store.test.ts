@@ -20,6 +20,7 @@ const reset = (): void => {
     settings: { ...DEFAULT_SETTINGS, physics3d: false },
     input: '',
     inputError: null,
+    vista: 'menu',
     phase: 'ocioso',
     pendingRequest: null,
     pendingExibicao: null,
@@ -221,6 +222,56 @@ describe('a mesa decide o resultado', () => {
     expect(state.phase).toBe('revelado');
     expect(state.pendingRequest).toBeNull();
     expect(state.pendingExibicao).toBeNull();
+  });
+});
+
+describe('as três vistas', () => {
+  it('o app abre no menu', () => {
+    expect(useAionStore.getState().vista).toBe('menu');
+  });
+
+  it('o Códice devolve quem veio da mesa para a mesa', () => {
+    useAionStore.getState().irPara('mesa');
+    useAionStore.getState().irPara('codice');
+    expect(useAionStore.getState().vista).toBe('codice');
+
+    useAionStore.getState().sairDoCodice();
+    expect(useAionStore.getState().vista).toBe('mesa');
+  });
+
+  it('o Códice devolve quem veio do menu para o menu', () => {
+    // É o caso de quem chega por um link `#codice/...`: nunca esteve na
+    // mesa, e jogá-lo nela ao fechar seria uma surpresa.
+    useAionStore.getState().irPara('codice');
+    useAionStore.getState().sairDoCodice();
+    expect(useAionStore.getState().vista).toBe('menu');
+  });
+
+  it('sair da mesa fecha o painel aberto', () => {
+    useAionStore.getState().irPara('mesa');
+    useAionStore.getState().setPanel('ficha');
+    useAionStore.getState().irPara('codice');
+
+    expect(useAionStore.getState().panel).toBeNull();
+  });
+
+  it('voltar para a mesa não mexe no painel', () => {
+    useAionStore.getState().irPara('mesa');
+    useAionStore.getState().setPanel('historico');
+    useAionStore.getState().irPara('mesa');
+
+    expect(useAionStore.getState().panel).toBe('historico');
+  });
+
+  it('ir para a vista em que já se está não faz nada', () => {
+    useAionStore.getState().irPara('mesa');
+    useAionStore.getState().irPara('codice');
+    // Repetir 'codice' não pode fazer o códice virar a sua própria origem,
+    // senão fechar deixaria o leitor preso nele.
+    useAionStore.getState().irPara('codice');
+    useAionStore.getState().sairDoCodice();
+
+    expect(useAionStore.getState().vista).toBe('mesa');
   });
 });
 

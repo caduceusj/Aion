@@ -13,6 +13,7 @@ import { SettingsPanel } from '@/ui/components/SettingsPanel';
 import { FichaPanel } from '@/ui/components/FichaPanel';
 import { MesaPanel } from '@/ui/components/MesaPanel';
 import { Codex } from '@/ui/components/Codex';
+import { MenuPrincipal } from '@/ui/components/MenuPrincipal';
 import {
   IconAjustes,
   IconAtalhos,
@@ -38,7 +39,6 @@ const HOTKEY_DICE: Record<string, PolyhedronKind> = {
 
 const PAINEIS: Array<{ id: Exclude<PanelId, null>; rotulo: string; Icone: typeof IconDado }> = [
   { id: 'ficha', rotulo: 'Ficha', Icone: IconFicha },
-  { id: 'codice', rotulo: 'Códice', Icone: IconLivro },
   { id: 'historico', rotulo: 'Histórico', Icone: IconHistorico },
   { id: 'atalhos', rotulo: 'Atalhos', Icone: IconAtalhos },
   { id: 'mesa', rotulo: 'Mesa', Icone: IconMesa },
@@ -50,7 +50,9 @@ const LARGURA_TRILHO_FIXO = 1100;
 
 export function App() {
   const panel = useAionStore((state) => state.panel);
+  const vista = useAionStore((state) => state.vista);
   const setPanel = useAionStore((state) => state.setPanel);
+  const irPara = useAionStore((state) => state.irPara);
   const characters = useAionStore((state) => state.characters);
   const activeCharacterId = useAionStore((state) => state.activeCharacterId);
   const setActiveCharacter = useAionStore((state) => state.setActiveCharacter);
@@ -99,27 +101,28 @@ export function App() {
       const store = useAionStore.getState();
 
       if (event.key === 'Escape') {
-        if (store.panel !== null) {
-          event.preventDefault();
-          store.setPanel(null);
-        }
+        event.preventDefault();
+        if (store.vista === 'codice') store.sairDoCodice();
+        else if (store.panel !== null) store.setPanel(null);
+        else if (store.vista === 'mesa') store.irPara('menu');
         return;
       }
 
       if (digitando) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
 
-      // O códice abre e fecha pela mesma tecla, inclusive por cima de si
-      // mesmo — por isso vem antes da guarda logo abaixo.
+      // O Códice abre e fecha pela mesma tecla, de qualquer vista — por isso
+      // vem antes da guarda logo abaixo.
       if (event.key.toLowerCase() === 'c') {
         event.preventDefault();
-        store.setPanel(store.panel === 'codice' ? null : 'codice');
+        if (store.vista === 'codice') store.sairDoCodice();
+        else store.irPara('codice');
         return;
       }
 
-      // Com o códice aberto, as letras são para ler e buscar; rolar dados
-      // por baixo do que está sendo lido seria só barulho.
-      if (store.panel === 'codice') return;
+      // Fora da mesa as letras são para ler e buscar; rolar dados por baixo
+      // do que está sendo lido seria só barulho.
+      if (store.vista !== 'mesa') return;
 
       if (event.key === 'Enter') {
         event.preventDefault();
@@ -166,6 +169,33 @@ export function App() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  /**
+   * Um link para um verbete abre o Códice sozinho.
+   *
+   * O hash `#codice/<chave>` é lido lá dentro, mas quem chega pelo link
+   * ainda não tem o Códice montado para ler coisa alguma — sem isto, o
+   * endereço carregaria a mesa e ficaria esperando um clique que a pessoa
+   * não tem como adivinhar que precisa dar.
+   *
+   * Vem antes do trilho de tela larga de propósito: com o painel já
+   * definido aqui, o histórico não rouba a abertura.
+   */
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const abrirSeForVerbete = (): void => {
+      if (window.location.hash.startsWith('#codice/')) {
+        useAionStore.getState().irPara('codice');
+      }
+    };
+
+    abrirSeForVerbete();
+    // Também vale para um link colado com o app já aberto: aí não há
+    // recarga, e sem escutar `hashchange` a barra mudaria e a tela não.
+    window.addEventListener('hashchange', abrirSeForVerbete);
+    return () => window.removeEventListener('hashchange', abrirSeForVerbete);
+  }, []);
+
   // Em telas largas o trilho é permanente e mostra o histórico por padrão.
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -173,7 +203,9 @@ export function App() {
 
     const aplicar = (): void => {
       const store = useAionStore.getState();
-      if (media.matches && store.panel === null) store.setPanel('historico');
+      if (media.matches && store.vista === 'mesa' && store.panel === null) {
+        store.setPanel('historico');
+      }
     };
 
     aplicar();
@@ -184,15 +216,24 @@ export function App() {
   const personagem = characters.find((item) => item.id === activeCharacterId) ?? null;
   const skinAtiva = personagem?.skin ?? defaultSkin;
 
+  if (vista === 'menu') return <MenuPrincipal />;
+  if (vista === 'codice') return <Codex />;
+
   return (
-    <div className="app" data-trilho={panel !== null && panel !== 'codice' ? 'sim' : undefined}>
+    <div className="app" data-trilho={panel !== null ? 'sim' : undefined}>
       <Stage />
 
       <header className="cabecalho">
-        <div className="marca">
+        <button
+          type="button"
+          className="marca marca--botao"
+          onClick={() => irPara('menu')}
+          title="Voltar ao menu (Esc)"
+          aria-label="Voltar ao menu"
+        >
           <IconDado size={22} className="marca__glifo" />
           <span className="marca__nome">Aion</span>
-        </div>
+        </button>
 
         <div className="cabecalho__direita">
           {characters.length > 0 ? (
@@ -216,6 +257,16 @@ export function App() {
               </select>
             </label>
           ) : null}
+
+          <button
+            type="button"
+            className="cabecalho__codice"
+            onClick={() => irPara('codice')}
+            title="O Códice (C)"
+          >
+            <IconLivro size={17} />
+            <span>Códice</span>
+          </button>
 
           <nav className="cabecalho__nav" aria-label="Painéis">
             {PAINEIS.map(({ id, rotulo, Icone }) => (
@@ -243,9 +294,7 @@ export function App() {
         <Dock />
       </div>
 
-      {panel === 'codice' ? <Codex /> : null}
-
-      {panel !== null && panel !== 'codice' ? (
+      {panel !== null ? (
         <>
           <div
             className="trilho-fundo"

@@ -266,3 +266,48 @@
     display: none;
   }
 }
+
+/* A marca é o caminho de volta ao menu. */
+.marca--botao {
+  border-radius: var(--r-sm);
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.marca--botao:hover {
+  opacity: 0.78;
+}
+
+/* Atalho para o Códice, ao lado dos painéis da mesa. */
+.cabecalho__codice {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 34px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--sf-hairline);
+  border-radius: var(--r-pill);
+  background: rgba(18, 24, 38, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--ink-dim);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-wide);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.cabecalho__codice:hover {
+  color: #f0cd80;
+  border-color: rgba(201, 162, 75, 0.5);
+}
+
+@media (max-width: 640px) {
+  .cabecalho__codice span {
+    display: none;
+  }
+
+  .cabecalho__codice {
+    padding: 0;
+    width: 34px;
+    justify-content: center;
+  }
+}

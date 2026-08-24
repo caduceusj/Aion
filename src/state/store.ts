@@ -33,6 +33,7 @@ import { criarConexao, salaDaUrl, urlPadraoDoRelay } from '@/net/sync';
 import type { RolagemCompartilhada } from '@/net/types';
 import type {
   AionState,
+  Vista,
   Character,
   DiceSkin,
   HistoryEntry,
@@ -211,6 +212,15 @@ let arremessoEmCurso: ArremessoEmCurso | null = null;
  */
 let descartesDaMesa: { id: string; indices: number[] } | null = null;
 
+/**
+ * Para onde o Códice devolve quem o fecha.
+ *
+ * Maquinário, não estado de tela: nada é desenhado a partir disto. Começa no
+ * menu porque é de lá que se entra na primeira vez — e porque quem chega por
+ * um link `#codice/...` não veio da mesa e não deve ser jogado nela.
+ */
+let vistaAnteriorAoCodice: Vista = 'menu';
+
 function marcarDescartes(
   id: string,
   result: import('@/engine/types').RollResult,
@@ -289,6 +299,7 @@ export const useAionStore = create<AionState>((set, get) => ({
 
   input: '',
   inputError: null,
+  vista: 'menu',
   phase: 'ocioso',
   pendingRequest: null,
   pendingExibicao: null,
@@ -658,6 +669,19 @@ export const useAionStore = create<AionState>((set, get) => ({
 
   setPanel(panel: PanelId) {
     set({ panel });
+  },
+
+  irPara(vista) {
+    const atual = get().vista;
+    if (vista === atual) return;
+    if (vista === 'codice') vistaAnteriorAoCodice = atual;
+    // Sair da mesa fecha o trilho junto: reabrir e encontrar um painel de
+    // ficha aberto de uma sessão anterior é confuso.
+    set({ vista, ...(vista === 'mesa' ? {} : { panel: null }) });
+  },
+
+  sairDoCodice() {
+    set({ vista: vistaAnteriorAoCodice, panel: null });
   },
 }));
 
