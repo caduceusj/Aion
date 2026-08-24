@@ -12,6 +12,7 @@ import { MacroPanel, QuickMacroBar } from '@/ui/components/MacroPanel';
 import { SettingsPanel } from '@/ui/components/SettingsPanel';
 import { FichaPanel } from '@/ui/components/FichaPanel';
 import { MesaPanel } from '@/ui/components/MesaPanel';
+import { Codex } from '@/ui/components/Codex';
 import {
   IconAjustes,
   IconAtalhos,
@@ -20,6 +21,7 @@ import {
   IconHistorico,
   IconMesa,
   IconFicha,
+  IconLivro,
 } from '@/ui/components/Icons';
 import '@/ui/styles/app.css';
 
@@ -36,6 +38,7 @@ const HOTKEY_DICE: Record<string, PolyhedronKind> = {
 
 const PAINEIS: Array<{ id: Exclude<PanelId, null>; rotulo: string; Icone: typeof IconDado }> = [
   { id: 'ficha', rotulo: 'Ficha', Icone: IconFicha },
+  { id: 'codice', rotulo: 'Códice', Icone: IconLivro },
   { id: 'historico', rotulo: 'Histórico', Icone: IconHistorico },
   { id: 'atalhos', rotulo: 'Atalhos', Icone: IconAtalhos },
   { id: 'mesa', rotulo: 'Mesa', Icone: IconMesa },
@@ -106,6 +109,18 @@ export function App() {
       if (digitando) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
 
+      // O códice abre e fecha pela mesma tecla, inclusive por cima de si
+      // mesmo — por isso vem antes da guarda logo abaixo.
+      if (event.key.toLowerCase() === 'c') {
+        event.preventDefault();
+        store.setPanel(store.panel === 'codice' ? null : 'codice');
+        return;
+      }
+
+      // Com o códice aberto, as letras são para ler e buscar; rolar dados
+      // por baixo do que está sendo lido seria só barulho.
+      if (store.panel === 'codice') return;
+
       if (event.key === 'Enter') {
         event.preventDefault();
         window.dispatchEvent(new Event('aion:focar-notacao'));
@@ -170,7 +185,7 @@ export function App() {
   const skinAtiva = personagem?.skin ?? defaultSkin;
 
   return (
-    <div className="app" data-trilho={panel !== null ? 'sim' : undefined}>
+    <div className="app" data-trilho={panel !== null && panel !== 'codice' ? 'sim' : undefined}>
       <Stage />
 
       <header className="cabecalho">
@@ -228,7 +243,9 @@ export function App() {
         <Dock />
       </div>
 
-      {panel !== null ? (
+      {panel === 'codice' ? <Codex /> : null}
+
+      {panel !== null && panel !== 'codice' ? (
         <>
           <div
             className="trilho-fundo"

@@ -1,0 +1,1291 @@
+/**
+ * O Códice.
+ *
+ * A mesa do Aion é noite azulada; o códice é pergaminho e ouro sobre negro
+ * quente. A troca de temperatura é de propósito: é outro objeto — um livro
+ * de arquivo aberto por cima da mesa — e não outra tela do mesmo app.
+ *
+ * O que costura os dois é o âmbar: o dourado daqui (#c9a24b) e o da marca
+ * (#e8b563) são quase a mesma cor. Tudo o mais — espaçamento, raios, curvas
+ * de animação, camadas — continua vindo de tokens.css.
+ *
+ * As fontes são serifas do sistema, sem requisição de rede: o autor do
+ * documento original previu exatamente essa queda, e o Aion inteiro é
+ * offline. Trocar por Cinzel + EB Garamond é um <link> e dois tokens.
+ */
+
+.codice {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+
+  --cx-ouro: #c9a24b;
+  --cx-ouro-claro: #f0cd80;
+  --cx-ouro-fundo: #7f6329;
+  --cx-pergaminho: #ece0c6;
+  --cx-pergaminho-2: #cdbc98;
+  --cx-apagado: #948468;
+  --cx-carmim: #cb4a4c;
+  --cx-astral: #6c7fb0;
+  --cx-linha: rgba(201, 162, 75, 0.26);
+  --cx-linha-fraca: rgba(201, 162, 75, 0.12);
+  --cx-painel: rgba(25, 20, 16, 0.72);
+
+  --cx-display: 'Optima', 'Palatino Linotype', 'Palatino', 'Book Antiqua', Georgia, serif;
+  --cx-corpo: 'Palatino Linotype', 'Book Antiqua', 'Palatino', Georgia, 'Times New Roman', serif;
+
+  color: var(--cx-pergaminho);
+  font-family: var(--cx-corpo);
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(108, 127, 176, 0.1), transparent 55%),
+    radial-gradient(100% 60% at 50% 110%, rgba(156, 47, 51, 0.08), transparent 60%),
+    radial-gradient(140% 100% at 50% 40%, transparent 60%, rgba(0, 0, 0, 0.55) 100%),
+    /* Quase opaco: a mesa continua brilhando pelas beiradas, mas os botões
+       da doca deixam de fantasmar por trás da prosa. */
+    rgba(12, 10, 8, 0.995);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  animation: codice-entra var(--dur-mid) var(--ease-out);
+}
+
+@keyframes codice-entra {
+  from {
+    opacity: 0;
+    transform: scale(1.012);
+  }
+}
+
+/* Grão de papel: um SVG minúsculo, embutido, repetido. */
+.codice::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------ topo */
+
+.codice__topo {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  padding-top: max(var(--sp-3), env(safe-area-inset-top, 0px));
+  border-bottom: 1px solid var(--cx-linha-fraca);
+  background: linear-gradient(180deg, rgba(12, 10, 8, 0.94), rgba(12, 10, 8, 0.62));
+}
+
+.codice__marca {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  color: var(--cx-ouro);
+  min-width: 0;
+}
+
+.codice__marca svg {
+  align-self: center;
+  flex: 0 0 auto;
+}
+
+.codice__marca-nome {
+  font-family: var(--cx-display);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cx-pergaminho);
+  white-space: nowrap;
+}
+
+.codice__marca-obra {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  color: var(--cx-apagado);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.codice__marca:hover .codice__marca-nome {
+  color: var(--cx-ouro-claro);
+}
+
+.codice__historico {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+}
+
+.codice__historico button {
+  width: 30px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  color: var(--cx-apagado);
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.codice__historico button:hover:not(:disabled) {
+  color: var(--cx-ouro-claro);
+  background: rgba(201, 162, 75, 0.1);
+}
+
+.codice__historico button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.gira-esquerda {
+  transform: rotate(-90deg);
+}
+
+.gira-direita {
+  transform: rotate(90deg);
+}
+
+.codice__busca {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 34px;
+  padding: 0 var(--sp-3);
+  min-width: 0;
+  flex: 0 1 320px;
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-pill);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--cx-apagado);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.codice__busca:focus-within {
+  border-color: var(--cx-ouro);
+  color: var(--cx-ouro);
+}
+
+.codice__busca input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--cx-pergaminho);
+  font-family: var(--cx-corpo);
+  font-size: var(--fs-sm);
+}
+
+.codice__busca input::placeholder {
+  color: var(--cx-apagado);
+}
+
+.codice__busca input:focus {
+  outline: none;
+}
+
+.codice__busca input::-webkit-search-cancel-button {
+  filter: invert(0.6) sepia(1) saturate(2) hue-rotate(2deg);
+}
+
+.codice__fechar,
+.codice__indice-alternar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  color: var(--cx-apagado);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.codice__fechar:hover,
+.codice__indice-alternar:hover {
+  color: var(--cx-ouro-claro);
+}
+
+.codice__indice-alternar {
+  display: none;
+}
+
+/* ----------------------------------------------------------------- corpo */
+
+.codice__corpo {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 274px minmax(0, 1fr);
+  min-height: 0;
+}
+
+.codice__fundo-indice {
+  display: none;
+}
+
+/* --------------------------------------------------------------- índice */
+
+.codice__indice {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--sp-4) var(--sp-3) var(--sp-6);
+  border-right: 1px solid var(--cx-linha-fraca);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.indice__atlas {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-3);
+  text-align: left;
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+  color: var(--cx-pergaminho-2);
+  background: linear-gradient(135deg, rgba(201, 162, 75, 0.09), transparent 70%);
+  transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.indice__atlas span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.indice__atlas strong {
+  font-family: var(--cx-display);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.indice__atlas small {
+  font-size: var(--fs-micro);
+  color: var(--cx-apagado);
+  line-height: 1.4;
+}
+
+.indice__atlas:hover,
+.indice__atlas[data-ativo='sim'] {
+  border-color: var(--cx-ouro);
+  color: var(--cx-ouro-claro);
+}
+
+.indice__grupo {
+  margin-bottom: var(--sp-4);
+}
+
+.indice__rotulo {
+  margin-bottom: var(--sp-2);
+  padding-left: var(--sp-2);
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+}
+
+.indice__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 5px var(--sp-2);
+  text-align: left;
+  border-radius: var(--r-sm);
+  border-left: 2px solid transparent;
+  color: var(--cx-pergaminho-2);
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.indice__item svg {
+  flex: 0 0 auto;
+  opacity: 0.5;
+}
+
+.indice__item span {
+  min-width: 0;
+}
+
+.indice__item small {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: var(--fs-micro);
+  color: var(--cx-apagado);
+  font-style: italic;
+}
+
+.indice__item:hover {
+  color: var(--cx-ouro-claro);
+  background: rgba(201, 162, 75, 0.07);
+}
+
+.indice__item[data-ativo='sim'] {
+  color: var(--cx-ouro-claro);
+  border-left-color: var(--cx-ouro);
+  background: rgba(201, 162, 75, 0.1);
+}
+
+.indice__item[data-ativo='sim'] svg {
+  opacity: 1;
+}
+
+.indice__vazio,
+.indice__contagem {
+  padding: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--cx-apagado);
+  line-height: 1.5;
+}
+
+.indice__contagem {
+  border-top: 1px solid var(--cx-linha-fraca);
+  padding-top: var(--sp-3);
+  font-family: var(--cx-display);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: var(--fs-micro);
+}
+
+/* -------------------------------------------------------------- leitura */
+
+.codice__leitura {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+/* ------------------------------------------------------- elos e ênfases */
+
+.codice-elo {
+  display: inline;
+  padding: 0;
+  font: inherit;
+  color: var(--cx-ouro);
+  background: linear-gradient(var(--cx-linha), var(--cx-linha)) 0 92% / 100% 1px no-repeat;
+  transition: color var(--dur-fast) var(--ease-out), background-size var(--dur-fast) var(--ease-out);
+}
+
+.codice-elo:hover,
+.codice-elo:focus-visible {
+  color: var(--cx-ouro-claro);
+  background-image: linear-gradient(var(--cx-ouro-claro), var(--cx-ouro-claro));
+}
+
+.codice-enfase {
+  font-style: italic;
+  color: var(--cx-pergaminho);
+}
+
+/* -------------------------------------------------------------- verbete */
+
+.verbete {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: var(--sp-7) var(--sp-5) var(--sp-7);
+  animation: verbete-entra var(--dur-mid) var(--ease-out);
+}
+
+@keyframes verbete-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.verbete__topo {
+  text-align: center;
+  padding-bottom: var(--sp-5);
+  border-bottom: 1px solid var(--cx-linha-fraca);
+}
+
+.verbete__brasao {
+  margin: 0 auto var(--sp-3);
+  color: var(--cx-ouro);
+  filter: drop-shadow(0 0 22px rgba(201, 162, 75, 0.28));
+}
+
+.verbete__gaveta {
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+}
+
+.verbete__epiteto {
+  margin-top: var(--sp-3);
+  font-family: var(--cx-display);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cx-ouro);
+}
+
+.verbete__titulo {
+  margin-top: var(--sp-1);
+  font-family: var(--cx-display);
+  font-size: clamp(1.9rem, 1.2rem + 2.4vw, 3.1rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  color: var(--cx-pergaminho);
+}
+
+.verbete__periodo {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.16em;
+  color: var(--cx-apagado);
+}
+
+.verbete__epigrafe {
+  max-width: 40rem;
+  margin: var(--sp-5) auto 0;
+  padding: 0 var(--sp-5);
+  text-align: center;
+  font-size: var(--fs-md);
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--cx-ouro-claro);
+  position: relative;
+}
+
+.verbete__epigrafe::before,
+.verbete__epigrafe::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 26px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cx-ouro));
+}
+
+.verbete__epigrafe::before {
+  left: 0;
+}
+
+.verbete__epigrafe::after {
+  right: 0;
+  background: linear-gradient(270deg, transparent, var(--cx-ouro));
+}
+
+.verbete__corpo {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: var(--sp-6);
+  margin-top: var(--sp-6);
+  align-items: start;
+}
+
+/* --------------------------------------------------------------- ficha */
+
+.verbete__ficha {
+  position: sticky;
+  top: var(--sp-4);
+  padding: var(--sp-4);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-sm);
+  background: var(--cx-painel);
+}
+
+.verbete__fato {
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--cx-linha-fraca);
+}
+
+.verbete__fato:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.verbete__fato:first-child {
+  padding-top: 0;
+}
+
+.verbete__fato dt {
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+  margin-bottom: 2px;
+}
+
+.verbete__fato dd {
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--cx-pergaminho);
+}
+
+.verbete__eras {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--cx-linha);
+}
+
+.verbete__eras ul {
+  list-style: none;
+  display: grid;
+  gap: var(--sp-1);
+  margin-top: var(--sp-2);
+}
+
+.verbete__eras li {
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+}
+
+.verbete__rubrica {
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+}
+
+/* --------------------------------------------------------------- prosa */
+
+.verbete__prosa {
+  font-size: var(--fs-md);
+  line-height: 1.78;
+  color: var(--cx-pergaminho);
+}
+
+.verbete__secao + .verbete__secao {
+  margin-top: var(--sp-5);
+}
+
+.verbete__secao h2 {
+  margin-bottom: var(--sp-3);
+  font-family: var(--cx-display);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--cx-ouro-claro);
+}
+
+.verbete__secao p + p {
+  margin-top: var(--sp-3);
+}
+
+/* A capitular só faz sentido na abertura, e só quando há texto que a sustente. */
+.verbete__secao:first-child > p:first-of-type::first-letter {
+  float: left;
+  margin: 0.08em 0.09em 0 0;
+  font-family: var(--cx-display);
+  font-size: 3.1em;
+  line-height: 0.82;
+  color: var(--cx-ouro);
+}
+
+/* --------------------------------------------------------------- rodapé */
+
+.verbete__rodape {
+  margin-top: var(--sp-7);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--cx-linha-fraca);
+  display: grid;
+  gap: var(--sp-5);
+}
+
+.verbete__fichas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.cartao-verbete {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  text-align: left;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-sm);
+  background: var(--cx-painel);
+  color: var(--cx-pergaminho-2);
+  transition: border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.cartao-verbete svg {
+  flex: 0 0 auto;
+  color: var(--cx-ouro);
+  opacity: 0.75;
+}
+
+.cartao-verbete span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cartao-verbete strong {
+  font-family: var(--cx-display);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--cx-pergaminho);
+}
+
+.cartao-verbete small {
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  color: var(--cx-apagado);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cartao-verbete:hover {
+  border-color: var(--cx-ouro);
+  transform: translateY(-1px);
+}
+
+.cartao-verbete:hover svg {
+  opacity: 1;
+}
+
+.verbete__pastilhas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.pastilha-verbete {
+  padding: 4px var(--sp-3);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho-2);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.pastilha-verbete:hover {
+  border-color: var(--cx-ouro);
+  color: var(--cx-ouro-claro);
+  background: rgba(201, 162, 75, 0.08);
+}
+
+/* ------------------------------------------------------------- abertura */
+
+.abertura {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-5) var(--sp-7);
+}
+
+.abertura__capa {
+  text-align: center;
+  padding: var(--sp-6) 0 var(--sp-7);
+  border-bottom: 1px solid var(--cx-linha-fraca);
+}
+
+.abertura__emblema {
+  width: clamp(120px, 22vw, 168px);
+  height: auto;
+  margin: 0 auto var(--sp-4);
+  color: var(--cx-ouro);
+  filter: drop-shadow(0 0 34px rgba(201, 162, 75, 0.26));
+}
+
+.abertura__eyebrow {
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+}
+
+.abertura__titulo {
+  margin-top: var(--sp-3);
+  font-family: var(--cx-display);
+  font-size: clamp(2.6rem, 1.4rem + 5vw, 4.6rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+  color: var(--cx-pergaminho);
+  text-shadow: 0 0 46px rgba(201, 162, 75, 0.2);
+}
+
+.abertura__sub {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-md);
+  font-style: italic;
+  color: var(--cx-ouro);
+}
+
+.abertura__atribuicao {
+  max-width: 38rem;
+  margin: var(--sp-4) auto 0;
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  color: var(--cx-apagado);
+}
+
+.abertura__anno {
+  margin-top: var(--sp-4);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+}
+
+.abertura__cronica,
+.abertura__gavetas {
+  margin-top: var(--sp-7);
+}
+
+.abertura__secao {
+  margin: var(--sp-2) 0 var(--sp-5);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  color: var(--cx-pergaminho);
+}
+
+/* --------------------------------------------------------- linha do tempo */
+
+.linha-do-tempo {
+  list-style: none;
+  display: grid;
+  gap: var(--sp-2);
+  position: relative;
+  padding-left: var(--sp-5);
+}
+
+/* O fio que atravessa as cinco eras. */
+.linha-do-tempo::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--cx-linha) 12%, var(--cx-linha) 88%, transparent);
+}
+
+.era-item {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--sp-1) var(--sp-3);
+  padding: var(--sp-3);
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--cx-pergaminho-2);
+  transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.era-item__glifo {
+  grid-row: span 2;
+  align-self: center;
+  color: var(--cx-ouro);
+  margin-left: calc(var(--sp-5) * -1 - 4px);
+  background: rgba(12, 10, 8, 0.95);
+  border-radius: 50%;
+  padding: 3px;
+}
+
+.era-item__nome {
+  font-family: var(--cx-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--cx-pergaminho);
+}
+
+.era-item__anos {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.14em;
+  color: var(--cx-ouro-fundo);
+  white-space: nowrap;
+  align-self: center;
+}
+
+.era-item__nota {
+  grid-column: 2 / -1;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--cx-apagado);
+}
+
+.era-item:hover {
+  border-color: var(--cx-linha);
+  background: rgba(201, 162, 75, 0.06);
+}
+
+.era-item:hover .era-item__nome {
+  color: var(--cx-ouro-claro);
+}
+
+/* ------------------------------------------------------------- gavetas */
+
+.gavetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-5);
+  margin-top: var(--sp-4);
+}
+
+.gaveta h3 {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-family: var(--cx-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-claro);
+}
+
+.gaveta__conta {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  color: var(--cx-ouro-fundo);
+}
+
+.gaveta__nota {
+  margin: var(--sp-1) 0 var(--sp-3);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--cx-apagado);
+}
+
+.gaveta__itens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+}
+
+/* ---------------------------------------------------------------- atlas */
+
+.atlas {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-5) var(--sp-6);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  gap: var(--sp-3);
+}
+
+.atlas__topo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.atlas__titulo {
+  font-family: var(--cx-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cx-pergaminho);
+  margin-top: var(--sp-1);
+}
+
+.atlas__anno {
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.28em;
+  color: var(--cx-ouro-fundo);
+}
+
+.atlas__controles {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.atlas__alternar {
+  padding: 6px var(--sp-4);
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-pill);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cx-apagado);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.atlas__alternar:hover {
+  color: var(--cx-ouro-claro);
+}
+
+.atlas__alternar[data-ativo='sim'] {
+  color: var(--cx-ouro-claro);
+  border-color: var(--cx-ouro);
+  background: rgba(201, 162, 75, 0.12);
+}
+
+.atlas__zoom {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+}
+
+.atlas__zoom button {
+  width: 28px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  color: var(--cx-apagado);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.atlas__zoom button:hover {
+  color: var(--cx-ouro-claro);
+  background: rgba(201, 162, 75, 0.1);
+}
+
+.atlas__nivel {
+  min-width: 3.4em;
+  text-align: center;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  color: var(--cx-ouro-fundo);
+}
+
+.atlas__moldura {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+  background: radial-gradient(120% 90% at 50% 0%, rgba(108, 127, 176, 0.08), transparent 60%), #0a0806;
+  cursor: grab;
+  touch-action: none;
+}
+
+.atlas__moldura[data-arrastavel='sim']:active {
+  cursor: grabbing;
+}
+
+.atlas__palco {
+  position: relative;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.atlas__prancha {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.atlas__prancha--regioes {
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+.atlas__pontos {
+  position: absolute;
+  inset: 0;
+}
+
+.atlas__ponto {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--cx-ouro-claro);
+}
+
+.atlas__ponto:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.atlas__marca {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  background: rgba(12, 10, 8, 0.35);
+  box-shadow: 0 0 12px rgba(240, 205, 128, 0.35);
+  transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.atlas__ponto[data-tipo='regiao'] .atlas__marca {
+  width: 9px;
+  height: 9px;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.atlas__ponto[data-tipo='acidente'] .atlas__marca {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+.atlas__ponto:hover:not(:disabled) .atlas__marca,
+.atlas__ponto:focus-visible .atlas__marca {
+  background: var(--cx-ouro-claro);
+  transform: scale(1.25);
+}
+
+.atlas__rotulo {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px var(--sp-2);
+  white-space: nowrap;
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+  background: rgba(12, 10, 8, 0.92);
+  font-family: var(--cx-display);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-claro);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.atlas__rotulo[data-visivel='sim'] {
+  opacity: 1;
+}
+
+.atlas__nota {
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: var(--cx-apagado);
+}
+
+.atlas__nota strong {
+  color: var(--cx-ouro);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------ estreito */
+
+@media (max-width: 900px) {
+  .codice__corpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .codice__indice-alternar {
+    display: grid;
+  }
+
+  .codice__marca-obra {
+    display: none;
+  }
+
+  .codice__indice {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(300px, 84vw);
+    background: rgba(12, 10, 8, 0.98);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-102%);
+    transition: transform var(--dur-mid) var(--ease-out);
+  }
+
+  .codice[data-indice='aberto'] .codice__indice {
+    transform: none;
+  }
+
+  .codice[data-indice='aberto'] .codice__fundo-indice {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: rgba(4, 3, 2, 0.6);
+  }
+
+  .verbete__corpo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-4);
+  }
+
+  .verbete__ficha {
+    position: static;
+  }
+
+  .verbete,
+  .abertura,
+  .atlas {
+    padding-left: var(--sp-4);
+    padding-right: var(--sp-4);
+  }
+}
+
+@media (max-width: 560px) {
+  .codice__historico {
+    display: none;
+  }
+
+  .codice__busca {
+    flex-basis: 100%;
+  }
+
+  .verbete__secao:first-child > p:first-of-type::first-letter {
+    font-size: 2.6em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .codice,
+  .verbete {
+    animation: none;
+  }
+
+  .codice__leitura {
+    scroll-behavior: auto;
+  }
+}
+
+/* ------------------------------------------------- gazeta do atlas */
+/*
+ * A prancha é retrato e a área de leitura é paisagem: sobra uma faixa ao
+ * lado do mapa. Em vez de deixá-la vazia, ela recebe a gazeta — que é
+ * exatamente o que o documento original fazia com o seu próprio atlas.
+ */
+
+.atlas__area {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: var(--sp-4);
+  min-height: 0;
+}
+
+.atlas__gazeta {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: var(--sp-1);
+  display: grid;
+  align-content: start;
+  gap: var(--sp-4);
+}
+
+.gazeta__cartucho {
+  padding: var(--sp-3);
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+  background: var(--cx-painel);
+}
+
+.gazeta__nome {
+  margin: var(--sp-1) 0 var(--sp-2);
+  font-family: var(--cx-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--cx-pergaminho);
+}
+
+.gazeta__resumo {
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--cx-pergaminho-2);
+}
+
+.gazeta__abrir {
+  margin-top: var(--sp-3);
+  padding: 5px var(--sp-3);
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  color: var(--cx-ouro);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.gazeta__abrir:hover {
+  color: var(--cx-ouro-claro);
+  border-color: var(--cx-ouro);
+  background: rgba(201, 162, 75, 0.1);
+}
+
+.gazeta__vazio {
+  padding: var(--sp-3);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  font-style: italic;
+  color: var(--cx-apagado);
+  border: 1px dashed var(--cx-linha-fraca);
+  border-radius: var(--r-sm);
+}
+
+.gazeta__grupo ul {
+  list-style: none;
+  margin-top: var(--sp-2);
+  display: grid;
+  gap: 1px;
+}
+
+.gazeta__item {
+  width: 100%;
+  padding: 3px var(--sp-2);
+  text-align: left;
+  border-radius: var(--r-sm);
+  border-left: 2px solid transparent;
+  font-size: var(--fs-sm);
+  color: var(--cx-pergaminho-2);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.gazeta__item:hover,
+.gazeta__item[data-ativo='sim'] {
+  color: var(--cx-ouro-claro);
+  border-left-color: var(--cx-ouro);
+  background: rgba(201, 162, 75, 0.08);
+}
+
+/* Contorno escuro por fora do anel dourado: garante o marcador legível
+   tanto sobre o pergaminho claro quanto sobre um ícone de castelo escuro. */
+.atlas__marca {
+  box-shadow: 0 0 0 1px rgba(12, 10, 8, 0.55), 0 0 12px rgba(240, 205, 128, 0.35);
+}
+
+@media (max-width: 1100px) {
+  .atlas__area {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .atlas__gazeta {
+    max-height: 240px;
+  }
+}

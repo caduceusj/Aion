@@ -243,3 +243,42 @@ export const IconMesa = (props: IconProps) => (
     <circle cx="19.1" cy="16.1" r="1.7" />
   </Glyph>
 );
+
+export const IconLivro = (props: IconProps) => (
+  <Glyph {...props}>
+    <path d="M4 4.6h5.2a2.8 2.8 0 0 1 2.8 2.8v12a2.2 2.2 0 0 0-2.2-2.2H4z" />
+    <path d="M20 4.6h-5.2a2.8 2.8 0 0 0-2.8 2.8v12a2.2 2.2 0 0 1 2.2-2.2H20z" />
+  </Glyph>
+);
+
+export const IconBusca = (props: IconProps) => (
+  <Glyph {...props}>
+    <circle cx="10.8" cy="10.8" r="6.2" />
+    <path d="M15.4 15.4 20 20" />
+  </Glyph>
+);
+
+export const IconMenos = (props: IconProps) => (
+  <Glyph {...props}>
+    <path d="M5 12h14" />
+  </Glyph>
+);
+
+export const IconAlvo = (props: IconProps) => (
+  <Glyph {...props}>
+    <path d="M4 8.4V5.6A1.6 1.6 0 0 1 5.6 4h2.8M15.6 4h2.8A1.6 1.6 0 0 1 20 5.6v2.8M20 15.6v2.8a1.6 1.6 0 0 1-1.6 1.6h-2.8M8.4 20H5.6A1.6 1.6 0 0 1 4 18.4v-2.8" />
+  </Glyph>
+);
+
+export const IconMapa = (props: IconProps) => (
+  <Glyph {...props}>
+    <path d="M9 4.4 3.8 6.6v13L9 17.4l6 2.2 5.2-2.2v-13L15 6.6z" />
+    <path d="M9 4.4v13M15 6.6v13" />
+  </Glyph>
+);
+
+export const IconIndice = (props: IconProps) => (
+  <Glyph {...props}>
+    <path d="M4 6.4h16M4 12h16M4 17.6h10" />
+  </Glyph>
+);

@@ -143,7 +143,7 @@ export interface StageEvents {
 }
 
 /** Painel lateral aberto. */
-export type PanelId = 'historico' | 'atalhos' | 'ajustes' | 'ficha' | 'mesa' | null;
+export type PanelId = 'historico' | 'atalhos' | 'ajustes' | 'ficha' | 'mesa' | 'codice' | null;
 
 /** Estado da mesa compartilhada entre aparelhos. */
 export interface EstadoDaMesa {
