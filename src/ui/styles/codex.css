@@ -20,6 +20,10 @@
   z-index: var(--z-modal);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
+  /* A coluna precisa ser minmax(0,1fr) e não `auto`: com `auto` ela cresce
+     até o min-content do cabeçalho, e em tela estreita isso estica o códice
+     inteiro para fora da viewport. */
+  grid-template-columns: minmax(0, 1fr);
 
   --cx-ouro: #c9a24b;
   --cx-ouro-claro: #f0cd80;
@@ -1158,8 +1162,22 @@
     display: none;
   }
 
+  /* O cabeçalho quebra em vez de empurrar: a busca cede o que precisar. */
+  .codice__topo {
+    flex-wrap: wrap;
+    row-gap: var(--sp-2);
+  }
+
   .codice__busca {
-    flex-basis: 100%;
+    flex: 1 1 120px;
+    /* Com quebra de linha, o `margin-left:auto` engoliria toda a folga da
+       primeira linha e empurraria o botão de fechar para a segunda. */
+    margin-left: 0;
+  }
+
+  .codice__marca-nome {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .verbete__secao:first-child > p:first-of-type::first-letter {

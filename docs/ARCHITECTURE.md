@@ -69,6 +69,56 @@ só repassar faces e uma expressão que qualquer um confere somando na mão.
 `scripts/verifica-mesa.mjs` sobe o relay de verdade, conecta dois clientes e
 confere exatamente essa propriedade.
 
+## O Códice
+
+A lore do cenário não é uma página HTML importada: é **dado tipado**. Cada
+verbete (`codex/tipos.ts`) tem chave, ficha, seções e relacionados, e a prosa
+entende exatamente três marcações — `[[chave]]`, `[[chave|texto]]` e
+`*ênfase*`. Nada de markdown completo, que convidaria a escrever layout
+dentro do conteúdo; aqui o conteúdo só sabe falar de outros verbetes.
+
+É essa decisão que dá busca, filtro por era e links cruzados. `corpus.ts`
+indexa por chave, faz a busca por relevância (sem acento, sem caixa) e
+calcula os retrolinks — quem cita quem — que a prosa não declara.
+
+```
+codex/tipos.ts      contrato do verbete e as gavetas
+codex/corpus.ts     índice, busca, retrolinks, costura com o mapa
+codex/prosa.tsx     resolve [[..]] em links navegáveis
+codex/valoran/      os dados, um arquivo por categoria
+codex/valoran/heraldica.tsx   brasões e glifos, SVG inline
+```
+
+A interface (`ui/components/Codex*.tsx`) é uma sobreposição de tela cheia, e
+não um painel do trilho: ler uma crônica numa faixa de 320px é castigo. A
+navegação é de navegador — pilha com voltar e avançar, e a chave do verbete
+no hash da URL, para um jogador mandar um link em vez de instruções.
+
+### Fidelidade ao cânone
+
+O material vem de "The Annals of Valoran", documento do usuário. A regra é
+que **nada é inventado**: onde a crônica cala, o verbete diz que ela cala —
+daí as seções "What the Record Does Not Say", que valem mais do que
+preencher o buraco com enredo plausível.
+
+Isso foi auditado, não prometido: uma varredura adversarial comparou cada
+afirmação factual com o documento e achou 26 trechos de enredo acrescentado
+(uma dinastia declarada "quebrada", uma horda dividida em duas, um
+assassinato localizado numa cidade que o texto não nomeia, epígrafes
+fabricadas no lugar de citação). Todos corrigidos.
+
+O mapa de 1575 nomeia lugares que a crônica de 1570 não alcança — Caryn,
+Viridier, Dras, Nova Firen. Eles existem como verbetes honestos: o
+cartógrafo escreveu o nome, o cronista não explicou. São ganchos abertos
+para o Mestre, marcados como tais.
+
+### O guarda-corpo
+
+`codex/integridade.test.ts` barra o que mata um wiki: link para chave
+inexistente, verbete-ilha (que ninguém cita), beco sem saída (que não cita
+ninguém), resumo de duas frases, ponto de mapa órfão, marcação vazando para
+a tela. Roda no mesmo `npm test` que segura o deploy.
+
 ## Contratos
 
 Dois arquivos são a fonte da verdade compartilhada e **não devem ser
@@ -77,6 +127,7 @@ alterados sem atualizar todos os consumidores**:
 - `src/engine/types.ts` — `RollResult`, `DieRoll`, `DiceGroup`, `RollError`
 - `src/state/types.ts` — `Macro`, `Character`, `HistoryEntry`, `Settings`,
   `DiceStage`, `RollRequest`, `PedidoDeExibicao`
+- `src/codex/tipos.ts` — `Verbete`, `CategoriaId`, `BrasaoId`
 
 O sistema de design vive em `src/ui/styles/tokens.css`. Nenhum componente
 deve escrever cor, espaçamento ou duração fora dos tokens.

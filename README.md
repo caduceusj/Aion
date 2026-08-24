@@ -67,6 +67,14 @@ você mesmo roda, para os aparelhos se acharem.
 - Presença de quem está na mesa, contador de Medo do Mestre compartilhado
 - Rolagem oculta do Mestre, revelada para todos quando ele quiser
 
+**O Códice**
+- A lore da campanha por cima da mesa, em uma aba própria (tecla `C`)
+- 70 verbetes navegáveis: eras, personagens, casas, lugares, relíquias, eventos e potências
+- Wiki de verdade: toda menção na prosa é um link, e cada verbete mostra quem cita ele
+- Busca por nome, epíteto ou texto — sem acento e sem caixa
+- Atlas com o mapa em duas pranchas alternáveis, zoom, arraste e pontos clicáveis
+- Onde a crônica cala, o verbete diz que ela cala — nada de lore inventada
+
 **Mesa**
 - Histórico com detalhamento dado a dado: o que foi mantido, descartado, rerrolado, explodido
 - Cada dado diz de onde veio: lido na mesa, ou sorteado (explosões e rerolagens,
@@ -107,7 +115,15 @@ PORT=9000 npm run relay
 npm run verifica:mesa         # confere a mesa de ponta a ponta
 ```
 
-No app, abra **Mesa**, aponte o endereço para o IP dessa máquina
+No app, abra **O Códice**
+- A lore da campanha por cima da mesa, em uma aba própria (tecla `C`)
+- 70 verbetes navegáveis: eras, personagens, casas, lugares, relíquias, eventos e potências
+- Wiki de verdade: toda menção na prosa é um link, e cada verbete mostra quem cita ele
+- Busca por nome, epíteto ou texto — sem acento e sem caixa
+- Atlas com o mapa em duas pranchas alternáveis, zoom, arraste e pontos clicáveis
+- Onde a crônica cala, o verbete diz que ela cala — nada de lore inventada
+
+**Mesa**, aponte o endereço para o IP dessa máquina
 (`ws://192.168.0.10:8787`), escolha um código de sala e mande o link de convite.
 O relay não guarda histórico nem calcula nada: as rolagens viajam como
 expressão + faces lidas, e cada aparelho refaz a soma e mostra os mesmos dados

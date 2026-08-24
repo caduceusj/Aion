@@ -38,6 +38,21 @@ for (const vp of [
   await page.waitForTimeout(900);
   await page.screenshot({ path: `screenshots/codice-${vp.nome}-capa.png` });
 
+  // Estouro horizontal é o defeito de layout que passa despercebido em
+  // desktop e arruína o celular. Medido, não olhado.
+  const estouro = await page.evaluate(() => {
+    const vw = document.documentElement.clientWidth;
+    const fora = [];
+    document.querySelectorAll('.codice, .codice *').forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.width > vw + 1) fora.push(`${el.className.toString().split(' ')[0]} (${Math.round(r.width)}px)`);
+    });
+    return { vw, fora: [...new Set(fora)].slice(0, 6), scrollW: document.documentElement.scrollWidth };
+  });
+  if (estouro.fora.length > 0) {
+    problemas.push(`[${vp.nome}] estoura a viewport (${estouro.vw}px): ${estouro.fora.join(', ')}`);
+  }
+
   const verbetes = await page.locator('.indice__contagem').innerText();
   console.log(`[${vp.nome}] ${verbetes.trim()}`);
 
