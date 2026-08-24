@@ -313,26 +313,6 @@ export const CARTOGRAFIA: Verbete[] = [
     eras: ['era-moderna'],
   },
   {
-    chave: 'andari',
-    titulo: 'Andari',
-    epiteto: 'The Last Harbour',
-    categoria: 'lugar',
-    resumo: 'The southern port, drawn with a ship at the very rim of the world.',
-    brasao: 'porto',
-    ficha: fichaDoMapa('Port', 'The southern rim'),
-    secoes: [
-      {
-        paragrafos: [
-          'At the southern edge of the chart, past [[erbronn]] and the swamps of [[ershen]], the cartographer has drawn a harbour with a vessel at its quay — the only ship on the whole map.',
-          'Below it the lettering reads [[sindaren]]. The realm that a cabal of archmages tore from the world in [[roubo-de-sindaren]] lies off that shore, and its waters still pour into the [[mar-astral]] by way of the [[cascata-eterna]]. What a ship does at the last harbour before a void, the chart does not explain.',
-        ],
-      },
-      { titulo: 'What the Record Does Not Say', paragrafos: [SO_NO_MAPA] },
-    ],
-    relacionados: ['sindaren', 'cascata-eterna', 'ershen', 'naus-oraculo'],
-    eras: ['era-moderna'],
-  },
-  {
     chave: 'descanso-dos-herois',
     titulo: "Heroes' Rest",
     categoria: 'lugar',

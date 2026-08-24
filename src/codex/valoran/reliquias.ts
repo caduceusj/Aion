@@ -197,7 +197,7 @@ export const RELIQUIAS: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['roubo-de-sindaren', 'sindaren', 'casa-deallus', 'yuan-ti', 'casa-sturm', 'mar-astral'],
+    relacionados: ['invasoes-serpentinas', 'vrednost', 'andari', 'roubo-de-sindaren', 'sindaren', 'casa-deallus', 'yuan-ti', 'casa-sturm', 'mar-astral'],
     eras: ['era-segunda-luz', 'era-moderna'],
     alcunhas: ['The Eternal Waterfall', 'The Wound of Sindaren'],
   },

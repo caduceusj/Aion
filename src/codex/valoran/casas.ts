@@ -46,7 +46,7 @@ export const CASAS: Verbete[] = [
         titulo: 'Origin',
         paragrafos: [
           'The house begins with a vision. A great warlord of the northern lands was blessed with the sight of an eternal empire bathed in holy light and swore to make that vision real; as the oath left him he looked down, and the sacred blade [[lamina-firen|Firen]] was in his hand. With it [[arran-herrys|Arran Herrys]] bound the warring clans of the north into one greater kingdom and became the first High King of [[firen|Firen]] — the blade lending its name first to a realm, and at last to [[imperio-aer-firen|an empire]].',
-          'That first kingdom was buried in unholy fire when [[dartharion|Dartharion]], the Calamity, turned his gaze north. It fell to the warlord’s son, [[ayren-herrys-i|Ayren Herrys I]], to seek vengeance for it, and to stand in the grand alliance that [[queda-de-dartharion|felled the dragon]] beside [[darron-alabaster|Darron Alabaster]] of the dwarves, [[sellias-delios|Sellias Moonwhisper Delios]] of [[sindaren|Sindaren]], and [[rhogar|Rhogar]] of the dragon’s blood. He was crowned the second High King, and from that crowning the calendar of Valoran counts its years.',
+          'That first kingdom was buried in unholy fire when [[dartharion|Dartharion]], the Calamity, turned his gaze north. It fell to the warlord’s son, [[ayren-herrys-i|Ayren Herrys I]], to seek vengeance for it, and to stand in the grand alliance that [[queda-de-dartharion|felled the dragon]] beside [[darron-alabaster|Darron Alabaster]] of the dwarves, [[sellias-delios|Sellias “Moonwhisper” Deios]] of [[sindaren|Sindaren]], and [[rhogar|Rhogar]] of the dragon’s blood. He was crowned the second High King, and from that crowning the calendar of Valoran counts its years.',
         ],
       },
       {
@@ -218,7 +218,7 @@ export const CASAS: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['roubo-de-sindaren', 'yuan-ti', 'casa-deallus', 'ershen', 'montanhas-orientais', 'era-segunda-luz'],
+    relacionados: ['invasoes-serpentinas', 'elamyr', 'roubo-de-sindaren', 'yuan-ti', 'casa-deallus', 'ershen', 'montanhas-orientais', 'era-segunda-luz'],
     eras: ['era-segunda-luz', 'era-moderna'],
     alcunhas: ['Sturm', 'The Giants of the East'],
   },
@@ -226,17 +226,18 @@ export const CASAS: Verbete[] = [
   {
     chave: 'casa-deallus',
     titulo: 'House Deallus',
-    epiteto: 'Keepers of the Eternal Waterfall',
+    epiteto: 'The Moonlit House',
     categoria: 'casa',
     resumo:
-      'Once rulers of a vast inland ocean, now keepers of the Eternal Waterfall and a shadow of what they were.',
+      'Founded by Sellias Deios of Andari, once the vanguard of Imperial magic, now fractured into sub-families at war.',
     brasao: 'deallus',
     ficha: [
-      { rotulo: 'Seat', valor: 'Lost Sindaren' },
-      { rotulo: 'Blood', valor: 'Not set down in the record' },
-      { rotulo: 'Ennobled', valor: 'Not recorded — already rulers when the chronicle names them' },
-      { rotulo: 'Sigil', valor: 'Borne still for a realm that is no longer there' },
-      { rotulo: 'Standing', valor: 'Diminished — a shadow of their former selves' },
+      { rotulo: 'Seat', valor: 'Andari, and what is left of Sindaren' },
+      { rotulo: 'Blood', valor: 'Elven — the Moon Peoples of Corvus' },
+      { rotulo: 'Founded by', valor: 'Sellias “Moonwhisper” Deios' },
+      { rotulo: 'Ennobled', valor: 'One of the four original houses of Aer Firen' },
+      { rotulo: 'Known for', valor: 'Arcane vanguard; great magical works' },
+      { rotulo: 'Standing', valor: 'Fractured — sub-families in open conflict' },
     ],
     epigrafe:
       'Once rulers of a vast and thriving land, they remained a shadow of their former selves.',
@@ -244,14 +245,21 @@ export const CASAS: Verbete[] = [
       {
         titulo: 'Origin',
         paragrafos: [
-          'The record does not tell how Deallus came to rule [[sindaren|Sindaren]]. It introduces the house already in possession of a vast and thriving land — an inland ocean set in the body of the continent — and says nothing of how that possession began.',
-          'Of the realm before them the chronicle says only this: that the elves held it, the people of [[sellias-delios|Sellias Moonwhisper Delios]], who still ruled the now-lost lands in [[era-mil-reis|the age of the founding]]. Whether House Deallus descends from them, replaced them, or has no connection to them at all, is nowhere set down.',
+          'The Annals introduce Deallus as already ruling [[sindaren|Sindaren]] and never say how. Andari’s own account answers it plainly: the house *is* the elves. [[povos-lunares|The Moon Peoples]] came out of [[corvus]] after [[a-queda|the Fall]] and built [[valari|Valari]] and [[andari]] on the isles of the lake; when [[sellias-delios|Sellias “Moonwhisper” Deios]] led a company of them north to fell [[dartharion|the Calamity]], the reward was a title.',
+          'So House Deallus is one of the four original noble houses of [[imperio-aer-firen|Aer Firen]] — founded, not inherited, and founded by a named woman rather than by a silence.',
+        ],
+      },
+      {
+        titulo: 'The Height',
+        paragrafos: [
+          'For decades after the elves rejoined their homeland in [[ayren-herrys-ii|the Young King]]’s reign, Deallus stood among the greatest houses of the Empire: the vanguard of magical advance and the architects of great magical constructions. With the builders of [[casa-alabaster|House Alabaster]] they raised [[nyria]], the elevator-city.',
+          'Their people had already left a mark in the north. Those who could not return home after the war founded [[corrente-dourada|the Golden Chain]] in the city of [[firen]], and elven learning entered the crown’s service there and stayed.',
         ],
       },
       {
         titulo: 'Domain',
         paragrafos: [
-          'Then the sea was taken from them. In [[roubo-de-sindaren|an act of magical devastation]], a cabal of archmages tore the inland ocean from Valoran, leaving behind [[cascata-eterna|the Eternal Waterfall]], which spills endlessly into the void of [[mar-astral|the Astral Sea]].',
+          'Then the sea was taken from them. In [[roubo-de-sindaren|an act of magical devastation]], a cabal of archmages tore the inland lake from Valoran, carrying [[valari|Valari]] away entire, wrecking much of [[andari]], and leaving behind [[cascata-eterna|the Eternal Waterfall]], which spills endlessly into the void of [[mar-astral|the Astral Sea]]. What was taken became [[vrednost]], and [[mayan-herrys|the White Queen]] never moved to take it back.',
           'The heraldic roll of this account names the house’s seat *Lost Sindaren*, and the phrase is exact: a broken realm, a wound in the world, and the endless falling of water that used to be theirs. They did not vacate it. By the roll they keep it, and keep watch on the fall.',
         ],
       },
@@ -264,13 +272,20 @@ export const CASAS: Verbete[] = [
       {
         titulo: 'What the Record Does Not Say',
         paragrafos: [
-          'Who the archmages were, what they wanted, whether they were opposed, whether any of them survived what they did — none of it is written. Nor does the chronicle name a single lord of the house: not the one who ruled before [[roubo-de-sindaren|the theft]], not the one who fought after it, not the one who holds the watch now.',
+          'Who the archmages were, what they wanted, whether they were opposed, whether any of them survived what they did — none of it is written. The Annals name no lord of the house at all; every Deallus this codex can name — [[sellias-delios|Sellias]], [[althos-deios|Althos]], [[elamyr]], [[imaren|the Imaren]] — comes from Andari’s account and not from the crown’s.',
+        ],
+      },
+      {
+        titulo: 'The Fracturing',
+        paragrafos: [
+          'The Theft was more than seven centuries ago, and everything since has been subtraction. The Empire and the House drew apart year by year until Deallus broke into sub-families beyond counting, each holding its own ground and guarding its own wants — some inside [[andari]], others scattered through what remained of Sindaren.',
+          'They are today further from the throne than at any point in their existence, and at war among themselves more or less permanently. A house founded by a woman who crossed a continent to help a stranger kill a dragon now cannot agree with itself about a wall — see [[imaren|the Imaren]] and [[elamyr]], and [[invasoes-serpentinas|the invasion they disagreed about]].',
         ],
       },
     ],
-    relacionados: ['sindaren', 'roubo-de-sindaren', 'cascata-eterna', 'yuan-ti', 'casa-sturm', 'mar-astral'],
-    eras: ['era-segunda-luz', 'era-moderna'],
-    alcunhas: ['Deallus', 'The House of the Lost Sea'],
+    relacionados: ['andari', 'sellias-delios', 'casa-alabaster', 'vrednost', 'imaren', 'povos-lunares', 'nyria', 'roubo-de-sindaren'],
+    eras: ['era-mil-reis', 'era-primeira-luz', 'era-segunda-luz', 'era-moderna'],
+    alcunhas: ['Deallus', 'Deios', 'The House of the Lost Sea'],
   },
 
   {

@@ -295,7 +295,7 @@ export const PODERES: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['roubo-de-sindaren', 'casa-deallus', 'casa-sturm', 'sindaren', 'cascata-eterna', 'montanhas-orientais'],
+    relacionados: ['invasoes-serpentinas', 'elamyr', 'andari', 'roubo-de-sindaren', 'casa-deallus', 'casa-sturm', 'sindaren', 'cascata-eterna', 'montanhas-orientais'],
     eras: ['era-segunda-luz'],
     alcunhas: ['Yuan-Ti', 'serpentfolk'],
   },

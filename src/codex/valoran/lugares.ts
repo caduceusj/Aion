@@ -187,7 +187,7 @@ export const LUGARES: Verbete[] = [
       {
         titulo: 'The Inland Ocean',
         paragrafos: [
-          'Sindaren was a vast inland ocean, and the land about it was vast and thriving in turn. [[casa-deallus|House Deallus]] ruled it — and in the far older days of [[era-mil-reis|the founding age]], the chronicle records that the people of [[sellias-delios|Sellias Moonwhisper Delios]], the elven prodigy of the grand alliance, still ruled these same now-lost lands.',
+          'Sindaren was a vast inland lake, islanded and elf-held, and the land about it was vast and thriving in turn. [[casa-deallus|House Deallus]] ruled it — and in the far older days of [[era-mil-reis|the founding age]], the chronicle records that the people of [[sellias-delios|Sellias “Moonwhisper” Deios]], who led a company out of Andari into the grand alliance, still ruled these same now-lost lands.',
         ],
       },
       {
@@ -206,7 +206,7 @@ export const LUGARES: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['casa-deallus', 'roubo-de-sindaren', 'cascata-eterna', 'yuan-ti', 'sellias-delios', 'mar-astral'],
+    relacionados: ['andari', 'valari', 'vrednost', 'povos-lunares', 'casa-deallus', 'roubo-de-sindaren', 'cascata-eterna', 'yuan-ti', 'sellias-delios', 'mar-astral'],
     eras: ['era-mil-reis', 'era-segunda-luz', 'era-moderna'],
     alcunhas: ['Lost Sindaren', 'The Inland Ocean'],
   },

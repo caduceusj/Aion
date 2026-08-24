@@ -73,6 +73,7 @@ export const PERSONAGENS: Verbete[] = [
     brasao: 'coroa',
     ficha: [
       { rotulo: 'Kin', valor: 'Human' },
+      { rotulo: 'Born', valor: 'Aran IV, prince of Firen' },
       { rotulo: 'Title', valor: 'Second High King of Firen' },
       { rotulo: 'House', valor: 'Herrys' },
       { rotulo: 'Era', valor: 'From the Thousand Kings into the First Light' },
@@ -83,7 +84,8 @@ export const PERSONAGENS: Verbete[] = [
         titulo: 'The Grievance',
         paragrafos: [
           'Son of [[arran-herrys|Arran Herrys]], the warlord who first united the northern lands, he enters the chronicle already carrying a grievance: [[dartharion|Dartharion]] had buried his father’s kingdom in unholy fire, and he sought revenge for its destruction.',
-          'He did not seek it alone. Three others rose from the same chaos — [[darron-alabaster|Darron Alabaster]] of the dwarves, [[sellias-delios|Sellias Moonwhisper Delios]] of [[sindaren|Sindaren]], and [[rhogar|Rhogar]] of the dragon’s blood — and together the four led a grand alliance against the Calamity and [[queda-de-dartharion|felled their draconic overlord]].',
+          'He did not seek it alone. Three others rose from the same chaos — [[darron-alabaster|Darron Alabaster]] of the dwarves, [[sellias-delios|Sellias “Moonwhisper” Deios]] at the head of a company out of [[andari]], and [[rhogar|Rhogar]] of the dragon’s blood — and together the four led a grand alliance against the Calamity and [[queda-de-dartharion|felled their draconic overlord]].',
+          'He was the prince Aran IV before he was Ayren I. Andari’s account of the war still calls him by the older name, which is a useful reminder that the man who begins the calendar had a life before it.',
         ],
       },
       {
@@ -170,6 +172,13 @@ export const PERSONAGENS: Verbete[] = [
     ],
     secoes: [
       {
+        titulo: 'What She Did Not Do',
+        paragrafos: [
+          'The Theft happened on her watch, and she never answered it. The severed lands became the independent continent of [[vrednost]] and the crown made no move to reclaim them — not the water, not [[valari|Valari]], not the standing of [[casa-deallus|the house]] that lost both.',
+          'Andari has not forgotten this. Whatever the Empire’s roll says of her, the distance between the throne and the Moonlit City is measured from her reign.',
+        ],
+      },
+      {
         titulo: 'Peace Without Conquest',
         paragrafos: [
           'She emerges from the [[era-sombria|Dark Age]] as its answer. Where [[ayren-herrys-ii|the Young King]] had taken the continent by force and lost it in a night, Mayan Herrys united Valoran once more not through war but through wisdom — forging alliances where others had sought dominion, and bringing peace to the continent for the first time in centuries.',
@@ -191,7 +200,7 @@ export const PERSONAGENS: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['era-segunda-luz', 'roubo-de-sindaren', 'casa-sturm', 'casa-keaton', 'casa-herrys', 'casa-vinco'],
+    relacionados: ['vrednost', 'roubo-de-sindaren', 'era-segunda-luz', 'roubo-de-sindaren', 'casa-sturm', 'casa-keaton', 'casa-herrys', 'casa-vinco'],
     eras: ['era-segunda-luz'],
     alcunhas: ['the White Queen', 'Mayan'],
   },
@@ -269,48 +278,59 @@ export const PERSONAGENS: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['queda-de-dartharion', 'ayren-herrys-i', 'rhogar', 'sellias-delios', 'era-mil-reis', 'dartharion'],
+    relacionados: ['casa-alabaster', 'nyria', 'queda-de-dartharion', 'ayren-herrys-i', 'rhogar', 'sellias-delios', 'era-mil-reis', 'dartharion'],
     eras: ['era-mil-reis'],
     alcunhas: ['Darron', 'the dwarven chief'],
   },
   {
     chave: 'sellias-delios',
-    titulo: 'Sellias Moonwhisper Delios',
-    epiteto: 'The Elven Prodigy',
+    titulo: 'Sellias “Moonwhisper” Deios',
+    epiteto: 'Founder of House Deallus',
     categoria: 'pessoa',
-    resumo: 'The elven prodigy of Sindaren, whose people ruled the inland realm in the age before it was stolen from the world.',
+    resumo: 'The moon elf who led a company out of Andari, helped fell the Calamity, and founded one of the four original houses.',
     brasao: 'folha',
     ficha: [
-      { rotulo: 'Kin', valor: 'Elf' },
-      { rotulo: 'Of', valor: 'Sindaren — the now-lost lands' },
+      { rotulo: 'Kin', valor: 'Elf — of the Moon Peoples' },
+      { rotulo: 'Of', valor: 'Andari, the City of Moonlight' },
+      { rotulo: 'Kin to', valor: 'Althos Deios, her twin' },
       { rotulo: 'Era', valor: 'The Age of a Thousand Kings' },
-      { rotulo: 'Known for', valor: 'The grand alliance against Dartharion' },
+      { rotulo: 'Known for', valor: 'The grand alliance; House Deallus' },
       { rotulo: 'Fate', valor: 'Unrecorded' },
     ],
     secoes: [
       {
-        titulo: 'The Prodigy',
+        titulo: 'The Company Out of Andari',
         paragrafos: [
-          'A prodigy of [[sindaren|Sindaren]], whose people still ruled that realm when the four heroes rose to face [[dartharion|Dartharion]]. He stood in the grand alliance beside [[ayren-herrys-i|Ayren Herrys I]], [[darron-alabaster|Darron Alabaster]] and [[rhogar|Rhogar]], and the [[queda-de-dartharion|Calamity fell]].',
+          'She was one of two: in the last years of the [[era-mil-reis|Age of a Thousand Kings]], the moon elves of [[andari]] were led by the twins Sellias and [[althos-deios|Althos Deios]]. It was Sellias who took a great company of them north to [[caryn]].',
+          'There she helped the prince Aran IV — later crowned [[ayren-herrys-i|Ayren Herrys I]] — put an end to [[dartharion|Dartharion]], the ancient red dragon then terrorising the north. She stood in the grand alliance beside him, [[darron-alabaster|Darron Alabaster]] and [[rhogar|Rhogar]], and the [[queda-de-dartharion|Calamity fell]].',
+          'Out of that company came [[casa-deallus|House Deallus]], one of the four original noble houses of [[imperio-aer-firen|Aer Firen]]. The house has a founder, and this is she.',
+        ],
+      },
+      {
+        titulo: 'The Long Absence',
+        paragrafos: [
+          'Her people did not go home. The elves sent to Caryn could not return for many years, and those who remained in the north formed [[corrente-dourada|the Golden Chain]] in the city of [[firen]] — an arcane sect in the young kingdom’s service.',
+          'Only decades later, in the reign of [[ayren-herrys-ii|the Young King]] who pushed Firen to the southern edge of the continent, did Sellias’s people meet their own land of [[sindaren|Sindaren]] again. From that reunion her line took the greater leadership of the realm.',
         ],
       },
       {
         titulo: 'The Realm That Was Taken',
         paragrafos: [
-          'His verbete cannot be read apart from what happened to his homeland long after him. Sindaren was a vast inland ocean; in [[mayan-herrys|the White Queen]]’s age a cabal of archmages [[roubo-de-sindaren|tore it from Valoran]], leaving the [[cascata-eterna|Eternal Waterfall]] pouring into [[mar-astral|the Astral Sea]] and a planar rift through which the [[yuan-ti|Yuan-Ti]] came.',
-          'The chronicle calls Sindaren "the now-lost lands" in the very sentence that introduces him — writing of a man in one age with the loss of a later one already in its mouth.',
+          'Her entry cannot be read apart from what happened to her homeland long after her. Sindaren was a vast inland lake; in [[mayan-herrys|the White Queen]]’s age a cabal of archmages [[roubo-de-sindaren|tore it from Valoran]], carrying off [[valari|Valari]] entire, leaving the [[cascata-eterna|Eternal Waterfall]] pouring into [[mar-astral|the Astral Sea]], and making of the water the severed continent of [[vrednost]].',
+          'The chronicle calls Sindaren “the now-lost lands” in the very sentence that introduces her — writing of a woman in one age with the loss of a later one already in its mouth.',
         ],
       },
       {
-        titulo: 'What the Record Does Not Say',
+        titulo: 'Where the Annals Are Wrong',
         paragrafos: [
-          'What became of him, whether his line survived into [[casa-deallus|House Deallus]] who later ruled that realm, and where the elves of Sindaren went when the ocean was taken — the Annals answer none of it.',
+          'The Annals give her name as *Sellias Moonwhisper Delios*, call her an elven prodigy, and take her for a man. Andari’s own account gives *Deios*, makes her a woman, and makes her a twin — and it is Andari’s account that this codex follows, the city having better reason to know.',
+          'The chronicle also has her people merely *ruling* the lost lands, which passes over the part that matters: that they came to them from [[corvus]] after [[a-queda|the Fall]], and that she is the reason a company of them ever went north at all.',
         ],
       },
     ],
-    relacionados: ['sindaren', 'roubo-de-sindaren', 'queda-de-dartharion', 'casa-deallus', 'ayren-herrys-i', 'era-mil-reis'],
-    eras: ['era-mil-reis'],
-    alcunhas: ['Sellias', 'Moonwhisper', 'Delios'],
+    relacionados: ['althos-deios', 'andari', 'casa-deallus', 'corrente-dourada', 'queda-de-dartharion', 'povos-lunares'],
+    eras: ['era-mil-reis', 'era-primeira-luz'],
+    alcunhas: ['Sellias', 'Moonwhisper', 'Deios', 'Delios', 'Sellias Moonwhisper Delios'],
   },
   {
     chave: 'rhogar',
@@ -330,7 +350,7 @@ export const PERSONAGENS: Verbete[] = [
       {
         titulo: 'Dragon Against Dragon',
         paragrafos: [
-          'A warrior of unmatched fury who carried the blood of dragons in his veins, and who turned that blood against a dragon: he stood in the grand alliance with [[ayren-herrys-i|Ayren Herrys I]], [[darron-alabaster|Darron Alabaster]] and [[sellias-delios|Sellias Moonwhisper Delios]], and together they [[queda-de-dartharion|felled Dartharion]], the Calamity whose rule had shadowed the continent for centuries.',
+          'A warrior of unmatched fury who carried the blood of dragons in his veins, and who turned that blood against a dragon: he stood in the grand alliance with [[ayren-herrys-i|Ayren Herrys I]], [[darron-alabaster|Darron Alabaster]] and [[sellias-delios|Sellias “Moonwhisper” Deios]], and together they [[queda-de-dartharion|felled Dartharion]], the Calamity whose rule had shadowed the continent for centuries.',
         ],
       },
       {
@@ -361,7 +381,7 @@ export const PERSONAGENS: Verbete[] = [
     resumo: 'The great dragon whose rule shadowed Valoran for centuries, until four heroes ended the Age of a Thousand Kings by felling him.',
     brasao: 'dragao',
     ficha: [
-      { rotulo: 'Kin', valor: 'Dragon' },
+      { rotulo: 'Kin', valor: 'Dragon — ancient, and red' },
       { rotulo: 'Style', valor: 'The Calamity; draconic overlord' },
       { rotulo: 'Reign', valor: 'Centuries, ending at Year 0' },
       { rotulo: 'Era', valor: 'The Age of a Thousand Kings' },
@@ -379,14 +399,14 @@ export const PERSONAGENS: Verbete[] = [
       {
         titulo: 'The Felling',
         paragrafos: [
-          'Four heroes rose from the chaos: [[ayren-herrys-i|Ayren Herrys I]], seeking revenge for a burned kingdom; [[darron-alabaster|Darron Alabaster]], who brought his people down from the mountains; [[sellias-delios|Sellias Moonwhisper Delios]] of [[sindaren|Sindaren]]; and [[rhogar|Rhogar]], who carried dragon’s blood against a dragon. Together they led a grand alliance and [[queda-de-dartharion|felled their draconic overlord]].',
+          'Four heroes rose from the chaos: [[ayren-herrys-i|Ayren Herrys I]], then still the prince Aran IV, seeking revenge for a burned kingdom; [[darron-alabaster|Darron Alabaster]], who brought his people down from the mountains; [[sellias-delios|Sellias “Moonwhisper” Deios]], who brought a company out of [[andari]]; and [[rhogar|Rhogar]], who carried dragon’s blood against a dragon. Together they led a grand alliance and [[queda-de-dartharion|felled their draconic overlord]].',
           'His death is Year 0. Every date in Valoran is measured from the end of him.',
         ],
       },
       {
         titulo: 'What the Record Does Not Say',
         paragrafos: [
-          'Nothing of what he was beyond great, draconic and long-ruling. No lair, no origin, no motive is recorded, and the chronicle never says whether the blood in [[rhogar|Rhogar]]’s veins was his.',
+          'Nothing of what he was beyond great, long-ruling and — by Andari’s reckoning, which names what the Annals leave vague — an *ancient red dragon*, terror of the north. No lair, no origin, no motive is recorded, and the chronicle never says whether the blood in [[rhogar|Rhogar]]’s veins was his.',
         ],
       },
     ],

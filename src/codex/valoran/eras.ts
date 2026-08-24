@@ -59,7 +59,7 @@ export const ERAS: Verbete[] = [
         titulo: 'The Calamity and the Grand Alliance',
         paragrafos: [
           'The young kingdom did not stand unchallenged for long. [[dartharion|Dartharion]], the Calamity, the great dragon whose rule had cast its shadow over the continent for centuries, turned his gaze upon the emerging realm and buried it in unholy fire.',
-          'It was in this age that four heroes rose from the chaos, whose deeds would shape the destiny of Valoran: [[ayren-herrys-i|Ayren Herrys I]], son of the warlord who first united the northern lands, seeking revenge for the destruction of his kingdom; [[darron-alabaster|Darron Alabaster]], the dwarven chief who led his people down from the mountains to join the great cause; [[sellias-delios|Sellias Moonwhisper Delios]], the elven prodigy whose people still ruled the now-lost lands of [[sindaren|Sindaren]]; and [[rhogar|Rhogar]], the half-dragon barbarian, a warrior of unmatched fury who carried the blood of dragons in his veins.',
+          'It was in this age that four heroes rose from the chaos, whose deeds would shape the destiny of Valoran: [[ayren-herrys-i|Ayren Herrys I]], son of the warlord who first united the northern lands, seeking revenge for the destruction of his kingdom; [[darron-alabaster|Darron Alabaster]], the dwarven chief who led his people down from the mountains to join the great cause; [[sellias-delios|Sellias “Moonwhisper” Deios]], who brought a company of moon elves out of [[andari]] on the isles of [[sindaren|Sindaren]]; and [[rhogar|Rhogar]], the half-dragon barbarian, a warrior of unmatched fury who carried the blood of dragons in his veins.',
           'Together they led a grand alliance against their draconic overlord and [[queda-de-dartharion|felled him]]. Their victory marked the dawn of a new era — [[era-primeira-luz|the First Age of Light]], whose first year is counted from the crowning that followed.',
         ],
       },
@@ -251,7 +251,7 @@ export const ERAS: Verbete[] = [
         titulo: 'What the Record Does Not Say',
         paragrafos: [
           'The cabal is not named. Neither its purpose, nor its number, nor whether any of them survived the working. [[roubo-de-sindaren|The Theft]] is set down as a thing that was done, with no hand attached to it.',
-          'Of the elves whose people ruled that inland realm in the age of the founding — the kin of [[sellias-delios|Sellias Moonwhisper Delios]] — and of what became of them when their ocean was taken from the world, this chronicle says nothing whatever.',
+          'Of the elves whose people ruled that inland realm in the age of the founding — the kin of [[sellias-delios|Sellias “Moonwhisper” Deios]] — and of what became of them when their ocean was taken from the world, this chronicle says nothing whatever.',
           'Nor does it explain the length of the reign it praises. [[mayan-herrys|The Queen’s]] rule is given as lasting for centuries, and then, without further comment, as ending: *all things must end*. With her passing, a new age dawned.',
         ],
       },

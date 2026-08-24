@@ -15,6 +15,7 @@ import { RELIQUIAS } from './valoran/reliquias';
 import { EVENTOS } from './valoran/eventos';
 import { PODERES } from './valoran/poderes';
 import { CARTOGRAFIA, COSTURA_DO_MAPA } from './valoran/cartografia';
+import { ANDARI } from './valoran/andari';
 
 const BRUTOS: Verbete[] = [
   ...ERAS,
@@ -27,6 +28,8 @@ const BRUTOS: Verbete[] = [
   // A cartografia entra por último: são os lugares que só o mapa de 1575
   // nomeia, e que a crônica de 1570 não alcançou.
   ...CARTOGRAFIA,
+  // O ciclo de Andari veio depois das Anais e corrige vários pontos delas.
+  ...ANDARI,
 ];
 
 /**

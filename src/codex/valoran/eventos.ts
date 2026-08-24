@@ -44,7 +44,7 @@ export const EVENTOS: Verbete[] = [
         titulo: 'The Account',
         paragrafos: [
           'Before the count of years, Valoran was a land of endless war: countless kingdoms, city-states and wandering clans, each contending for its corner of the land, fighting with steel and with faith alike, calling upon [[os-doze|the Twelve]] for the strength to carve their names into eternity. Over all of it, for centuries, lay the shadow of [[dartharion|Dartharion]], the Calamity. When [[arran-herrys|Arran Herrys]] bound the warring clans of the north into the kingdom of [[firen|Firen]] with the sacred blade [[lamina-firen|Firen]] in his hand, the dragon turned his gaze upon the emerging kingdom and buried it in unholy fire.',
-          'From that chaos rose four whose deeds would shape the destiny of the continent. [[ayren-herrys-i|Ayren Herrys I]], son of the warlord who had first united the north, sought revenge for the destruction of his kingdom; [[darron-alabaster|Darron Alabaster]], chief of the dwarves, led his people down from the mountains to join the great cause; [[sellias-delios|Sellias Moonwhisper Delios]], the elven prodigy, came out of [[sindaren|Sindaren]], which his people still ruled; and [[rhogar|Rhogar]], the half-dragon barbarian, carried the blood of dragons into a war against a dragon. Together they led a grand alliance against their draconic overlord, and felled him.',
+          'From that chaos rose four whose deeds would shape the destiny of the continent. [[ayren-herrys-i|Ayren Herrys I]], son of the warlord who had first united the north, sought revenge for the destruction of his kingdom; [[darron-alabaster|Darron Alabaster]], chief of the dwarves, led his people down from the mountains to join the great cause; [[sellias-delios|Sellias “Moonwhisper” Deios]], came out of [[sindaren|Sindaren]], which his people still ruled; and [[rhogar|Rhogar]], the half-dragon barbarian, carried the blood of dragons into a war against a dragon. Together they led a grand alliance against their draconic overlord, and felled him.',
         ],
       },
       {
@@ -58,7 +58,7 @@ export const EVENTOS: Verbete[] = [
         titulo: 'What the Record Does Not Say',
         paragrafos: [
           'Of the war itself, almost nothing. Where [[dartharion|the Calamity]] was met, how long the alliance campaigned against him, and by whose hand the killing blow was struck are all absent. Nor does the chronicle describe the centuries of his rule: whether he held a court, commanded servants, or exacted tribute, or whether he simply burned what displeased him. He is named an overlord, and that word is the whole of his dominion as this account has it.',
-          'Neither is the alliance explained. How a human claimant, a dwarven chief, an elven prodigy and a half-dragon barbarian were brought into a single host — who sought whom, and what was promised — the record omits, and it does not follow [[darron-alabaster|Darron Alabaster]] or [[sellias-delios|Sellias Delios]] past the day of the victory.',
+          'Neither is the alliance explained. How a human claimant, a dwarven chief, an elven leader and a half-dragon barbarian were brought into a single host — who sought whom, and what was promised — the record omits, and it does not follow [[darron-alabaster|Darron Alabaster]] or [[sellias-delios|Sellias Delios]] past the day of the victory.',
         ],
       },
     ],
@@ -182,7 +182,7 @@ export const EVENTOS: Verbete[] = [
         titulo: 'Consequences',
         paragrafos: [
           'Two houses came out of that defence changed. The mountain warriors were granted a noble title in recognition of their valour, and dominion over the swamplands of [[ershen|Ershen]], becoming [[casa-sturm|House Sturm]]. [[casa-deallus|House Deallus]], once rulers of a vast and thriving land, remained a shadow of their former selves, left to keep the [[cascata-eterna|waterfall]] that pours where their realm used to be.',
-          'The loss reaches back further than the age that suffered it. [[sindaren|Sindaren]] was the realm [[sellias-delios|Sellias Moonwhisper Delios]] came from — the elven prodigy of the alliance that [[queda-de-dartharion|felled the Calamity]] — and his people still ruled it when the world was young. Every map drawn since carries a hole where their ocean was.',
+          'The loss reaches back further than the age that suffered it. [[sindaren|Sindaren]] was the realm [[sellias-delios|Sellias “Moonwhisper” Deios]] came from — she who led the company that helped [[queda-de-dartharion|fell the Calamity]] — and [[povos-lunares|her people]] had held its isles since before the calendar began. Every map drawn since carries a hole where their ocean was.',
         ],
       },
       {
@@ -193,7 +193,7 @@ export const EVENTOS: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['sindaren', 'cascata-eterna', 'yuan-ti', 'casa-deallus', 'casa-sturm', 'mayan-herrys'],
+    relacionados: ['vrednost', 'valari', 'andari', 'escola-arkanheim', 'sindaren', 'cascata-eterna', 'yuan-ti', 'casa-deallus', 'casa-sturm', 'mayan-herrys'],
     eras: ['era-segunda-luz'],
     alcunhas: ['The Theft of the Inland Ocean'],
   },
