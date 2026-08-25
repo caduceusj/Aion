@@ -376,13 +376,15 @@ const JOGADORES: Verbete[] = [
   {
     chave: 'eliezer',
     titulo: 'Eliezer',
+    epiteto: 'Eliezer Coração-de-Leão',
     categoria: 'jogador',
-    resumo: 'Jogador listado na cópia antiga da wiki, ao lado de Beatrix, e ausente da cópia nova.',
+    resumo: 'Guerreiro caçador-de-sangue listado na cópia antiga da wiki, ao lado de Beatrix, e ausente da cópia nova.',
     brasao: 'templo',
     ficha: [
       { rotulo: 'Papel', valor: 'Jogador' },
-      { rotulo: 'Sistema', valor: 'D&D 5e' },
-      { rotulo: 'Ficha', valor: 'Em branco na wiki' },
+      { rotulo: 'Nome completo', valor: 'Eliezer Coração-de-Leão' },
+      { rotulo: 'Raça', valor: 'Humano/Gnomo' },
+      { rotulo: 'Classe', valor: 'Guerreiro / Caçador-de-Sangue' },
       { rotulo: 'Fonte', valor: 'Só na cópia antiga' },
     ],
     secoes: [
