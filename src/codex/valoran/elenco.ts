@@ -12,13 +12,16 @@
  *    Daggerheart. As fichas ficam como estão; nada foi convertido.
  * 2. Onde a wiki tem "x" no lugar do número, o verbete diz que está em
  *    branco em vez de inventar um valor.
- * 3. Os atributos CON 2 / DEX 1 / WIS 4 / INT 0 / STR 0 / CHA 0 aparecem
- *    IDÊNTICOS em Ferdinand, Alvyriel e Mateo — são o padrão do modelo
- *    "Base - Characters", não valores rolados. Ficam registrados como tal.
+ * 3. Os atributos CON 2 / DEX 1 / WIS 4 / INT 0 / STR 0 / CHA 0 são o padrão
+ *    do modelo "Base - Characters", não valores rolados — Alvyriel ainda os
+ *    carrega assim. Ferdinand e Mateo tiveram a ficha preenchida de verdade
+ *    numa página mais completa, e entram aqui com os valores reais.
  *
- * A wiki existe em duas cópias divergentes no Notion; esta importação é a
- * união das duas, e cada verbete diz em qual delas apareceu quando isso
- * distingue alguém.
+ * A wiki existe em duas cópias divergentes no Notion, cada uma com páginas
+ * de profundidade diferente para o mesmo personagem — uma às vezes só com a
+ * ficha em branco, outra com a backstory inteira escrita. Esta importação
+ * junta as duas por personagem, preferindo sempre a versão mais completa, e
+ * cada verbete diz de onde veio o que registra.
  */
 
 import type { Verbete } from '../tipos';
@@ -55,7 +58,8 @@ const JOGADORES: Verbete[] = [
       { rotulo: 'Raça', valor: 'Eladrin' },
       { rotulo: 'Classe', valor: 'Druida / Clérigo — Stars Druid / Life Cleric' },
       { rotulo: 'PV · CA', valor: '78 · 16' },
-      { rotulo: 'CD · Proficiência', valor: '18 · +4' },
+      { rotulo: 'CD · Proficiência · Iniciativa', valor: '18 · +4 · +2' },
+      { rotulo: 'Atributos', valor: 'CON 2 · DEX 1 · WIS 4 · INT 0 · STR 0 · CHA 0' },
       { rotulo: 'Tema', valor: 'Whispers in the Dark — Skillet' },
     ],
     epigrafe: 'Os deuses se mostram alheios aos seus seguidores. Ela discorda disso com a vida inteira.',
@@ -152,6 +156,7 @@ const JOGADORES: Verbete[] = [
         paragrafos: [
           'Beatrix apareceu de repente em Andari, teleportada até a casa de Ferdinand — exausta, desesperada, coberta de poeira mágica. Tinha roubado um pergaminho arcano de Arcanheim, algo poderoso o bastante para colocar os dois na mira das autoridades da própria academia. Estavam sendo caçados. Ferdinand não hesitou: juntou o que pôde e partiu com ela, sabendo que a decisão o arrancaria de tudo — da casa Oumalis, de Reynkraft, de Andari.',
           'Ainda nos arredores da cidade, foram interceptados por um dos tios de Ferdinand, que veio para levar Beatrix de volta. Ferdinand cravou a rapieira no peito dele sem hesitar. Fugiram pelos pântanos além de Andari, onde o nevoeiro os escondeu — e dali em diante não houve mais volta. É o começo da campanha.',
+          'A própria página de [[beatrix]] conta esse dia de outro ângulo — Ferdinand ainda em [[vrednost|Vrednost]] quando ela avisou que ia à academia, a correria até a sala secreta do arkhanmeister, a fuga de Andari atrás de um crocodilo para Myrian. As duas contas divergem em quase todos os detalhes; este Códice guarda as duas, sem escolher uma.',
         ],
       },
       {
@@ -201,6 +206,7 @@ const JOGADORES: Verbete[] = [
       'reincraft',
       'casa-deallus',
       'cadeira',
+      'vrednost',
     ],
     eras: ['era-moderna'],
     alcunhas: ['von Oumalis', 'Franz', 'Lorde da Noite'],
@@ -212,15 +218,17 @@ const JOGADORES: Verbete[] = [
     epiteto: 'Beatrix von Oumalis',
     categoria: 'jogador',
     resumo:
-      'Meia-elfa maga da Escola de Syrromancia, irmã de Ferdinand, que esconde uma segunda identidade sob o nome Catheryn Von Oumalis.',
+      'Meia-elfa maga da Escola de Syrromancia, irmã mais nova de Ferdinand, que estudou divinação em Arcanheim antes de roubar um pergaminho de lá.',
     brasao: 'vazio',
     ficha: [
       { rotulo: 'Nível', valor: '10' },
       { rotulo: 'Raça', valor: 'Meia-elfa' },
+      { rotulo: 'Idade', valor: '20 anos' },
       { rotulo: 'Classe', valor: 'Wizard / School of Syrromancy' },
-      { rotulo: 'PV · CA', valor: 'Em branco na wiki' },
+      { rotulo: 'PV · CA', valor: '71 · 16' },
+      { rotulo: 'CD · Proficiência · Iniciativa', valor: '18 · +4 · +1+(1d4)' },
+      { rotulo: 'Atributos', valor: 'CON 15 · DEX 13 · WIS 8 · INT 20 · STR 8 · CHA 12' },
       { rotulo: 'Conquista', valor: 'Rats — morrer para ratos' },
-      { rotulo: 'Tema', valor: 'Nenhum ainda' },
     ],
     secoes: [
       {
@@ -230,58 +238,69 @@ const JOGADORES: Verbete[] = [
         ],
       },
       {
-        titulo: 'Von Oumalis',
+        titulo: 'Filha de dois mundos',
         paragrafos: [
-          'Divide o sobrenome com [[ferdinand]] por serem irmãos, filhos de [[nornan|Nornan]] e [[anneliese-oumalis|Anneliese Von Oumalis]]. O casamento que [[alvyriel]] oficiou na campanha foi o dele, com [[mia|Mia Eroth Deallus]].',
+          'A mãe, [[anneliese-oumalis|Anneliese]], vinha do sangue da Casa Oumalis e era o rosto da família em reuniões e negociações. O pai, [[nornan|Nornan]], começou como um funcionário comum — um "contador" responsável por boa parte da papelada da casa — até que a relação com Anneliese virou oficial, e ele foi trazido para dentro da família. O casamento teve o apoio total do irmão dela, [[reincraft|Reynkraft]], líder estratégico da casa.',
+          'Beatrix nasceu cerca de seis anos depois do primeiro filho do casal, [[ferdinand|Franz]]. Na infância, entre os 2 e os 8 anos, os pais passavam boa parte do ano separados — a mãe fazendo negócios com os Sturm, o pai cuidando dos negócios locais em Andari — e Beatrix se dividia entre os dois. Foi o período em que mais ficou perto do irmão.',
         ],
       },
       {
-        titulo: 'Rouxinol e Catheryn Von Oumalis',
+        titulo: 'Arcanheim',
         paragrafos: [
-          'Na mesa, Beatrix é chamada de Rouxinol — codinome que a própria [[mia|Mia]] pediu ao grupo para usar. Fora dele ela tem um segundo nome: Catheryn Von Oumalis, uma identidade que veste para se disfarçar, inclusive da própria família.',
+          'Dos 9 aos 12 anos, o pai percebeu a inteligência dela e passou a envolvê-la no próprio trabalho, incentivando a leitura — Beatrix tem dificuldade para aprender, mas retém profundamente o que consegue entender. Foi ele quem lhe mostrou a ideia de magia pela primeira vez.',
+          'Entre os 13 e os 19 anos, por acordos do tio e do irmão, ela foi aceita em Arcanheim, na academia focada em divinação. Fez amizade com colegas e, principalmente, com professores — porque na maior parte do tempo ficava para trás no ritmo das aulas e precisava de reforço.',
         ],
       },
       {
-        titulo: 'O que a wiki não diz',
+        titulo: 'O roubo',
         paragrafos: [
-          'Ficha em branco: PV, CA, deslocamento, CD, proficiência e todos os seis atributos ainda estão com o “x” do modelo. A única linha preenchida na página inteira é a conquista, e ela é uma piada: *morrer para ratos*. Nem Rouxinol nem Catheryn Von Oumalis vêm da wiki — são das notas pessoais do mestre.',
+          'No dia do roubo, Beatrix conversou com [[ferdinand]], que estava em [[vrednost|Vrednost]] numa missão diplomática, e disse a ele que ia estudar na academia de dunamancia. Algo deu errado lá: ela entrou na sala errada, a do arkhanmeister. Ferdinand correu para checar a irmã assim que soube, e a encontrou na sala secreta logo depois de ela pegar o pergaminho. Dali, ela usou um item anti-divinação e um pergaminho de teleporte para escapar.',
+          'Chegando a Andari, os dois decidiram fugir e foram atrás de um crocodilo para Myrian — só no caminho descobriram exatamente o que tinham roubado.',
+        ],
+      },
+      {
+        titulo: 'Rouxinol e Katherine',
+        paragrafos: [
+          'Na mesa, Beatrix é chamada de Rouxinol — codinome que a própria [[mia|Mia]] pediu ao grupo para usar. Fora dele ela tem uma segunda identidade completa: [[katherine|Katherine]], fundadora de uma escola de magia em Rhydash, com a mesma ficha dela número por número. A própria wiki brinca com o disfarce: "Certamente não é a Beatrix".',
         ],
       },
     ],
-    relacionados: ['a-mesa-de-aion', 'ferdinand', 'alvyriel', 'mateo', 'klen', 'mia', 'nornan'],
+    relacionados: ['a-mesa-de-aion', 'ferdinand', 'alvyriel', 'mateo', 'klen', 'mia', 'nornan', 'katherine', 'vrednost', 'anneliese-oumalis', 'reincraft'],
     eras: ['era-moderna'],
-    alcunhas: ['von Oumalis', 'Rouxinol', 'Catheryn Von Oumalis'],
+    alcunhas: ['von Oumalis', 'Rouxinol', 'Katherine', 'Catheryn Von Oumalis'],
   },
 
   {
     chave: 'mateo',
     titulo: 'Mateo',
-    epiteto: 'Juramento da Rebelião',
+    epiteto: 'O Monge da Misericórdia',
     categoria: 'jogador',
     resumo:
-      'Elfo da floresta, guerreiro psiônico e paladino do Juramento da Rebelião — o oposto exato de um paladino obediente.',
+      'Elfo da floresta que começou como guerreiro psiônico juramentado à Rebelião e se retreinou como monge do Caminho da Misericórdia.',
     brasao: 'lamina',
     ficha: [
       { rotulo: 'Nível', valor: '10' },
       { rotulo: 'Raça', valor: 'Elfo da floresta' },
-      { rotulo: 'Classe', valor: 'Fighter / Paladin — Psi Warrior / Oath of Rebellion' },
-      { rotulo: 'PV · CA', valor: '73 · 16' },
-      { rotulo: 'CD · Proficiência', valor: '18 · +4' },
+      { rotulo: 'Classe', valor: 'Monge / Way of Mercy' },
+      { rotulo: 'PV · CA', valor: '82 · 21' },
+      { rotulo: 'Deslocamento', valor: '65 (55) pés' },
+      { rotulo: 'CD · Proficiência · Iniciativa', valor: '16/15 · +4 · +5' },
+      { rotulo: 'Atributos', valor: 'CON 12 · DEX 20 · WIS 18 · INT 11 · STR 10 · CHA 10' },
       { rotulo: 'Tema', valor: 'REMEMBER — Jujutsu Kaisen' },
     ],
     epigrafe: 'Vida e morte, dois lados da mesma moeda.',
     secoes: [
       {
-        titulo: 'Guerreiro e juramentado',
+        titulo: 'Guerreiro e depois monge',
         paragrafos: [
-          'Combina Psi Warrior com o Juramento da Rebelião — força da mente e um juramento que existe para desobedecer. Num continente governado por [[ayren-herrys-iv|um tirano]], é uma escolha de ficha que já é uma declaração.',
-          '[[klen]] leva exatamente a mesma combinação de classes, o que faz dos dois um par de espelhos na party.',
+          'Mateo começou como [[klen|Klen]] continua até hoje: Psi Warrior com o Juramento da Rebelião, força da mente e um juramento que existe para desobedecer. Num continente governado por [[ayren-herrys-iv|um tirano]], já era uma escolha de ficha que era uma declaração.',
+          'Em algum ponto da campanha ele se retreinou como monge do Caminho da Misericórdia — a classe que a wiki registra hoje, com ficha completa: 82 PV, CA 21, deslocamento de 65 pés. O par de espelhos com Klen ficou no passado dele.',
         ],
       },
       {
         titulo: 'Epístola',
         paragrafos: [
-          'A página dele tem uma página irmã chamada [[epistola|Epístola]], ligada logo abaixo do nome na wiki nova. Não é só uma página: é o poder de Mateo lendo mentes — foi assim que o grupo descobriu o que [[lince|Lince]] realmente é.',
+          'A página dele tem uma página irmã, [[epistola|Epístola]] — uma pequena fada bárdica que o acompanha e sabe ler mentes. Foi assim que o grupo descobriu o que [[lince|Lince]] realmente é.',
         ],
       },
       {
@@ -292,9 +311,15 @@ const JOGADORES: Verbete[] = [
         ],
       },
       {
+        titulo: 'Na mesa',
+        paragrafos: [
+          'Sabe entalhar madeira — a wiki registra a habilidade de carpintaria e as pequenas figuras que ele faz, um hábito que vem do tempo dele em Yōso. A conquista mais comentada, "Primeiro Pai do RPG", é atribuída ao próprio mestre da campanha, sem mais explicação. [[ferdinand]] deixou um recado direto na página dele: “Eu gostaria de ter mais conversas sobre a vida com você.”',
+        ],
+      },
+      {
         titulo: 'O que a wiki não diz',
         paragrafos: [
-          'Backstory em branco. O único registro pessoal é um pedido de desculpas de [[alvyriel]]: “Desculpa por te empurrar pro [[imykus|Imykus]].”',
+          'Backstory em branco. O outro registro pessoal é um pedido de desculpas de [[alvyriel]]: “Desculpa por te empurrar pro [[imykus|Imykus]].”',
         ],
       },
     ],
@@ -323,13 +348,13 @@ const JOGADORES: Verbete[] = [
       {
         titulo: 'O par de Mateo',
         paragrafos: [
-          'Mesma combinação de [[mateo]] — Psi Warrior com o juramento da Rebelião —, em um corpo de genasi do ar em vez de elfo da floresta.',
+          'Carrega a combinação que [[mateo]] tinha originalmente — Psi Warrior com o juramento da Rebelião —, num corpo de genasi do ar em vez de elfo da floresta. Desde que Mateo se retreinou como monge, Klen é quem sozinho ainda carrega essa ficha.',
         ],
       },
       {
         titulo: 'Na mesa',
         paragrafos: [
-          'O único recado que a wiki guarda sobre ele é de [[alvyriel]], e é uma repreensão: “Pare de lootear templos.” Vindo de alguém criada dentro de um, faz sentido.',
+          'O recado mais citado sobre ele é de [[alvyriel]], e é uma repreensão: “Pare de lootear templos.” Vindo de alguém criada dentro de um, faz sentido. [[ferdinand]] deixou outro, mais afetuoso: “Mal educado o suficiente pra ser um ótimo cavaleiro, o brilhante Sir Klen.”',
         ],
       },
       {
@@ -376,20 +401,24 @@ const JOGADORES: Verbete[] = [
   {
     chave: 'epistola',
     titulo: 'Epístola',
-    epiteto: 'O poder de Mateo de ler mentes',
+    epiteto: 'A fada bárdica de Mateo',
     categoria: 'jogador',
-    resumo: 'O poder de Mateo de ler mentes, listado como página irmã dele na wiki nova.',
+    resumo: 'Fada bárdica da linhagem Wordsmith que acompanha Mateo e consegue ler mentes — a página irmã dele na wiki.',
     brasao: 'templo',
     ficha: [
-      { rotulo: 'Papel', valor: 'Poder de [[mateo]] — leitura de mentes' },
-      { rotulo: 'Ficha', valor: 'Em branco na wiki' },
-      { rotulo: 'Fonte', valor: 'Só na cópia nova' },
+      { rotulo: 'Nível', valor: '6' },
+      { rotulo: 'Raça', valor: 'Faery' },
+      { rotulo: 'Classe', valor: 'Bard / College of Wordsmiths' },
+      { rotulo: 'PV · CA', valor: '6 · 11' },
+      { rotulo: 'Proficiência', valor: '+3' },
+      { rotulo: 'Tema', valor: 'Red Maiden' },
+      { rotulo: 'Papel', valor: 'Companheira de [[mateo]]' },
     ],
     secoes: [
       {
         titulo: 'O que Epístola viu em Lince',
         paragrafos: [
-          'Na cópia nova da wiki, logo abaixo de [[mateo]], há uma segunda página chamada Epístola — não uma pessoa à parte, e sim o próprio poder dele de aprofundar a mente de alguém. Foi assim que o grupo descobriu o que [[lince|Lince]] realmente é: quando [[klen]] mencionou já tê-lo matado duas vezes, Epístola sentiu a raiva por trás disso e, olhando mais fundo, viu uma figura com a cara do mago à frente do grupo — a mesma de Lince, e a mesma do mestre dele.',
+          'Epístola é uma pequena fada da linhagem Wordsmith, ligada a [[mateo]] na wiki — nível 6, 6 pontos de vida, e o poder de aprofundar a mente de alguém. Foi assim que o grupo descobriu o que [[lince|Lince]] realmente é: quando [[klen]] mencionou já tê-lo matado duas vezes, Epístola sentiu a raiva por trás disso e, olhando mais fundo, viu uma figura com a cara do mago à frente do grupo — a mesma de Lince, e a mesma do mestre dele.',
           'A leitura separou corpo de alma: a alma seriam os pensamentos indo e vindo entre os dois, uma parte mais fantasmagórica formaria o corpo de Lince, e a forma física é o que o grupo vê hoje.',
         ],
       },
@@ -700,7 +729,40 @@ const NEUTROS: Verbete[] = [
   }),
   neutro({ chave: 'hadrik', titulo: 'Hadrik', brasao: 'martelo' }),
   neutro({ chave: 'lysandra', titulo: 'Lysandra', brasao: 'estrela' }),
-  neutro({ chave: 'katherine', titulo: 'Katherine', brasao: 'folha', fonte: 'Só na cópia antiga' }),
+  {
+    chave: 'katherine',
+    titulo: 'Katherine',
+    epiteto: '"Certamente não é a Beatrix"',
+    categoria: 'npc',
+    resumo: 'Figura proeminente de Rhydash que ajudou a reconstruir Andari — e o alter ego de Beatrix, com as mesmas fichas idênticas.',
+    brasao: 'folha',
+    ficha: [
+      { rotulo: 'Nível', valor: '10' },
+      { rotulo: 'Raça', valor: 'Humana (declarada)' },
+      { rotulo: 'Classe', valor: 'Wizard / ?????' },
+      { rotulo: 'PV · CA', valor: '71 · 16' },
+      { rotulo: 'CD · Proficiência · Iniciativa', valor: '18 · +4 · +1+(1d4)' },
+      { rotulo: 'Atributos', valor: 'Idênticos aos de Beatrix — CON 15 · DEX 13 · WIS 8 · INT 20 · STR 8 · CHA 12' },
+      { rotulo: 'Fonte', valor: 'Só na cópia antiga da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'Fundadora de uma escola sem nome',
+        paragrafos: [
+          'Katherine é uma figura proeminente da cidade de Rhydash. Pouco se sabe de sua origem, mas ela ganhou notoriedade ajudando quem migrou para Andari a se reconstruir. É creditada como fundadora de uma escola de magia cujo nome a própria wiki censura — "@#$%$#@%", a ser revelado.',
+        ],
+      },
+      {
+        titulo: 'Certamente não é a Beatrix',
+        paragrafos: [
+          'A ficha de Katherine é, número por número, a de [[beatrix]]: mesmo PV, mesma CA, mesma iniciativa, os mesmos seis atributos. A wiki chama isso de curiosidade — "Certamente não é a Beatrix" — e lista a página como o Alter Ego dela. É o disfarce que Beatrix veste fora da mesa, o mesmo que este Códice já registrava sob o nome Catheryn Von Oumalis.',
+        ],
+      },
+    ],
+    relacionados: ['beatrix'],
+    eras: ['era-moderna'],
+    alcunhas: ['Catheryn Von Oumalis'],
+  },
   neutro({
     chave: 'zeria',
     titulo: 'Zeria',
@@ -782,20 +844,22 @@ const FAMILIA: Verbete[] = [
   {
     chave: 'nornan',
     titulo: 'Nornan Von Oumalis',
-    epiteto: 'O pai distante',
+    epiteto: 'O contador que casou para dentro da família',
     categoria: 'npc',
-    resumo: 'Pai de Ferdinand e Beatrix, cuja relação com os dois filhos sempre foi distante.',
+    resumo: 'Pai de Ferdinand e Beatrix — um plebeu que trabalhava como contador da Casa Oumalis antes de se casar com Anneliese.',
     brasao: 'estrela',
     ficha: [
       { rotulo: 'Filhos', valor: 'Ferdinand e Beatrix' },
       { rotulo: 'Esposa', valor: '[[anneliese-oumalis|Anneliese Von Oumalis]]' },
-      { rotulo: 'Fonte', valor: 'Wiki (só na cópia antiga) e notas pessoais do mestre' },
+      { rotulo: 'Origem', valor: 'Plebeu — contador da Casa Oumalis' },
+      { rotulo: 'Fonte', valor: 'Wiki (backstory de Beatrix) e notas pessoais do mestre' },
     ],
     secoes: [
       {
-        titulo: 'A ausência',
+        titulo: 'De fora para dentro da casa',
         paragrafos: [
-          'Nornan é o pai de [[ferdinand]] e [[beatrix]], mas a figura paterna que os dois realmente reconheciam era o tio deles, [[reincraft|Reynkraft]]. A relação com Nornan sempre foi distante — a wiki não registra mais do que o nome.',
+          'Nornan não nasceu Von Oumalis. Começou como um funcionário comum da casa — um contador responsável por boa parte da papelada dela — até a relação com [[anneliese-oumalis|Anneliese]] virar oficial, e ele foi trazido para dentro da família. O casamento teve apoio total do irmão dela, [[reincraft|Reynkraft]], que decidia as questões estratégicas da casa.',
+          'Mesmo assim, a figura paterna que [[ferdinand]] e [[beatrix]] realmente reconheciam era o tio, não ele — a relação de Nornan com os dois filhos sempre foi distante.',
         ],
       },
     ],
@@ -804,7 +868,7 @@ const FAMILIA: Verbete[] = [
   },
   {
     chave: 'mia',
-    titulo: 'Mia Eroth Deallus',
+    titulo: 'Millora Eroth Deallus',
     epiteto: 'Lady de Andari',
     categoria: 'npc',
     resumo: 'Da Casa Deallus, esposa de casamento arranjado de Ferdinand, e a primeira a chamar Beatrix de Rouxinol.',
@@ -813,25 +877,26 @@ const FAMILIA: Verbete[] = [
       { rotulo: 'Casa', valor: 'Deallus' },
       { rotulo: 'Papel', valor: 'Esposa de Ferdinand — casamento arranjado' },
       { rotulo: 'Marca', valor: 'Um anel que guarda informação' },
-      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+      { rotulo: 'Fonte', valor: 'Wiki (ficha em branco) e notas pessoais do mestre' },
     ],
     secoes: [
       {
         titulo: 'Casamento arranjado',
         paragrafos: [
-          'Mia Eroth Deallus é esposa de [[ferdinand]] por um casamento arranjado entre a Casa Oumalis e a sua fração da fraturada [[casa-deallus|Casa Deallus]] — a mesma aliança por trás do título de [[ferdinand|Lorde da Noite de Andari]].',
+          'Chamada de Mia pelo grupo, Millora Eroth Deallus é esposa de [[ferdinand]] por um casamento arranjado entre a Casa Oumalis e a sua fração da fraturada [[casa-deallus|Casa Deallus]] — a mesma aliança por trás do título de [[ferdinand|Lorde da Noite de Andari]].',
           'Guarda informação num anel, e foi ela quem primeiro pediu ao grupo para chamar [[beatrix]] de Rouxinol.',
         ],
       },
       {
         titulo: 'O que ainda não se sabe',
         paragrafos: [
-          'A wiki do Notion não chegou a abrir uma página própria para ela — o que existe aqui vem das notas pessoais do mestre da campanha, fora da wiki.',
+          'A página dela na wiki do Notion existe, mas a ficha inteira está em branco — só o nome, Millora Eroth Deallus, está preenchido. O resto vem das notas pessoais do mestre da campanha, fora da wiki.',
         ],
       },
     ],
     relacionados: ['ferdinand', 'beatrix', 'casa-deallus', 'anneliese-deallus'],
     eras: ['era-moderna'],
+    alcunhas: ['Mia'],
   },
   {
     chave: 'anneliese-deallus',
