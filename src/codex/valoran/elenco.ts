@@ -128,7 +128,7 @@ const JOGADORES: Verbete[] = [
         titulo: 'A morte de Anneliese',
         paragrafos: [
           'A mãe de Ferdinand, [[anneliese-oumalis|Anneliese von Oumalis]], morreu num assassinato premeditado por [[reincraft|Reynkraft]] — enviada sob pretexto de missão diplomática com a [[casa-orhys|Casa Orhys]] para o deserto de Luctos, onde foi silenciada antes que pudesse revelar que a linhagem de Reynkraft não vinha da avó de Ferdinand, e sim só do avô, Anton, o que teria tirado dele qualquer direito ao trono.',
-          'Ferdinand deu à filha dele com Mia o nome [[anneliese-deallus|Anneliese Deallus]], em homenagem à avó que a menina nunca vai conhecer.',
+          'Ferdinand deu à filha dele com Mia o nome [[anneliese-deallus|Anneliese Deallus]], em homenagem à avó que a menina nunca vai conhecer. Numa das viagens dele, também encontrou outra criança — [[rogar-crianca|Rogar]], de escamas douradas — sem qualquer parentesco confirmado.',
         ],
       },
       {
@@ -575,7 +575,15 @@ const ALIADOS: Verbete[] = [
     relacionados: ['monges-de-virion', 'alvyriel', 'mateo'],
     alcunhas: ['Imykos'],
   }),
-  aliado({ chave: 'symon', titulo: 'Symon', brasao: 'martelo' }),
+  aliado({
+    chave: 'symon',
+    titulo: 'Symon',
+    brasao: 'martelo',
+    epiteto: 'Amigo de infância de Beatrix',
+    nota:
+      'Amigo de infância de [[beatrix]], mais velho que ela, com uma marca circular no corpo — a mesma que [[vrednost|a lore de Vrednost]] liga ao controle dos ciclos de licantropia.',
+    relacionados: ['beatrix', 'vrednost'],
+  }),
   aliado({
     chave: 'fake-ferdinand',
     titulo: 'Fake Ferdinand',

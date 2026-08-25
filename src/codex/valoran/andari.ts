@@ -47,7 +47,7 @@ export const ANDARI: Verbete[] = [
         titulo: 'Older Than the Empire',
         paragrafos: [
           'Andari is older than [[nova-firen|Nova Firen]], which is the seat of the Empire. It is older, so far as this archive can determine, than any other city standing on Valoran — older than the crown, older than the calendar, older than the [[lamina-firen|blade]] that named the realm.',
-          'It was not founded by anyone from this world. The [[povos-lunares|Moon Peoples]] came to Valoran out of [[corvus]], fleeing [[a-queda|a catastrophe]] whose account is kept in the sealed chamber of the [[tear-prateado|Silver Loom]] and read by almost no one. What they built when they arrived, they built on the islands of the lake of [[sindaren|Sindaren]]: two cities, [[valari|Valari]] the City of Secrets and Andari the City of Moonlight.',
+          'It was not founded by anyone from this world. The [[povos-lunares|Moon Peoples]] came to Valoran out of [[corvus]], fleeing [[a-queda|a catastrophe]] whose account is kept in the sealed chamber of the [[tear-prateado|Silver Loom]] and read by almost no one. What they built when they arrived, they built on the islands of the lake of [[sindaren|Sindaren]]: two cities, [[valari|Valari]] the City of Secrets and Andari the City of Moonlight. A popular cult unrecognized by the Empire still honors the migrants’ own protector on that road, [[sao-chevalier|São Chevalier]] — a saint the crown calls a pagan figure, and the city calls its own.',
         ],
       },
       {
@@ -227,8 +227,15 @@ export const ANDARI: Verbete[] = [
           'It is worth stating plainly what that inaction meant to [[casa-deallus|House Deallus]]. A house lost its sea, one of its two ancestral capitals, and the greater part of its political weight in a single act — and the sovereign it had served since the founding did not move to recover any of it. The distance between Andari and the throne begins here.',
         ],
       },
+      {
+        titulo: 'Nine Islands, and a Cult of Transmutation',
+        paragrafos: [
+          'What Vrednost became, once severed, is nine islands ruled by profane magics — home to [[escola-arkanheim|the transmutation sect]] that grew there once the sea was its own continent. Among that sect’s works, campaign-era notes record rituals meant to control the cycles of lycanthropy through circular marks carved into the flesh — a rival account to the one kept at [[templo-anciao|the Ancient Temple]], which blames the same curse on failed attempts to commune with the Weaver.',
+          'One such mark is carried by [[symon|Symon]], a friend from [[beatrix|Beatrix]]’s childhood, on the mesa side of this codex — a small proof that Vrednost’s magic still reaches Valoran, seven centuries after the sea was taken.',
+        ],
+      },
     ],
-    relacionados: ['roubo-de-sindaren', 'valari', 'sindaren', 'casa-deallus', 'mayan-herrys', 'escola-arkanheim'],
+    relacionados: ['roubo-de-sindaren', 'valari', 'sindaren', 'casa-deallus', 'mayan-herrys', 'escola-arkanheim', 'symon'],
     eras: ['era-segunda-luz', 'era-moderna'],
   },
 

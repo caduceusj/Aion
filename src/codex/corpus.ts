@@ -20,6 +20,7 @@ import { ELENCO } from './valoran/elenco';
 import { COSMOLOGIA } from './valoran/cosmologia';
 import { GEOGRAFIA_E_TECNOLOGIA } from './valoran/geografia-e-tecnologia';
 import { LUA_VERMELHA } from './valoran/lua-vermelha';
+import { FRAGMENTOS } from './valoran/fragmentos';
 
 const BRUTOS: Verbete[] = [
   ...ERAS,
@@ -42,6 +43,8 @@ const BRUTOS: Verbete[] = [
   ...GEOGRAFIA_E_TECNOLOGIA,
   // A Lua Vermelha, os Vernatto, e a crise política moderna de Aer Firen.
   ...LUA_VERMELHA,
+  // Fragmentos soltos: lugares e nomes pequenos demais para gaveta própria.
+  ...FRAGMENTOS,
 ];
 
 /**
