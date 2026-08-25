@@ -9,6 +9,36 @@ import type { Verbete } from '../tipos';
 
 export const FRAGMENTOS: Verbete[] = [
   {
+    chave: 'sangue-de-gigante',
+    titulo: 'O sangue de gigante e a ordem das casas',
+    epiteto: 'O que as Anais confessam não saber',
+    categoria: 'evento',
+    resumo: 'Notas da mesa respondem duas perguntas que as próprias Anais deixam em aberto: a ordem das casas, e o parentesco entre Bellias e Sturm.',
+    brasao: 'montanha',
+    ficha: [
+      { rotulo: 'Ordem das casas', valor: '1º Herrys, 2º Draco/Deallus/Alabaster, 3º Rimors, 4º Bellias' },
+      { rotulo: 'Resolve', valor: 'A pergunta aberta em [[casa-bellias]] sobre o parentesco com [[casa-sturm]]' },
+    ],
+    secoes: [
+      {
+        titulo: 'A ordem',
+        paragrafos: [
+          'As notas da mesa dão uma ordem de antiguidade às casas nobres que este Códice ainda não tinha: primeiro [[casa-herrys|Herrys]], a mais velha, cuja linhagem remonta à própria Era dos Mil Reis, quando nasceu o reino de Firen que mais tarde viraria [[imperio-aer-firen|o império de Aer Firen]]. Depois, juntas, [[casa-draco|Draco]], [[casa-deallus|Deallus]] e [[casa-alabaster|Alabaster]] — enobrecidas depois do conflito contra [[dartharion|Dartharion]]. Em terceiro, a Casa Rimors, título dado a exploradores da expansão do império pelo continente. Por último, [[casa-bellias|Bellias]], título dado postumamente aos irmãos do guerreiro que terminou a [[guerra-verdejante|Guerra Verdejante]].',
+        ],
+      },
+      {
+        titulo: 'A pergunta que as Anais recusam responder',
+        paragrafos: [
+          'O verbete de [[casa-bellias|House Bellias]] nas próprias Anais confessa não saber se a linhagem do fundador toca a de [[casa-sturm|House Sturm]], a outra casa de sangue de gigante do rol — "o registro põe as duas lado a lado e não traça nenhuma linha entre elas", escreve o cronista, "e eu não vou traçar uma por ele".',
+          'As notas da mesa traçam essa linha: os Sturm já foram uma sub-família dos Bellias, do mesmo jeito que os Oumalis já foram uma sub-família dos Deallus. Ambas as casas descendem de gigantes — é a mesma descendência dividida em duas coroas.',
+        ],
+      },
+    ],
+    relacionados: ['casa-bellias', 'casa-sturm', 'casa-herrys', 'casa-draco', 'casa-deallus', 'casa-alabaster'],
+    eras: ['era-primeira-luz', 'era-segunda-luz', 'era-moderna'],
+  },
+
+  {
     chave: 'templo-anciao',
     titulo: 'O Templo Ancião',
     epiteto: 'Perto da lua, arco dos lobisomens',

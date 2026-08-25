@@ -174,7 +174,7 @@ export const CASAS: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['primeiro-bellias', 'guerra-verdejante', 'aranti', 'corte-seelie', 'casa-sturm', 'era-sombria'],
+    relacionados: ['primeiro-bellias', 'guerra-verdejante', 'aranti', 'corte-seelie', 'casa-sturm', 'era-sombria', 'sangue-de-gigante'],
     eras: ['era-primeira-luz', 'era-sombria', 'era-moderna'],
     alcunhas: ['Bellias', 'The Giant-Blooded of Aranti'],
   },
