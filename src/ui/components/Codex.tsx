@@ -90,6 +90,22 @@ export function Codex() {
     window.history.replaceState(null, '', url);
   }, [atual]);
 
+  /**
+   * Um link colado com o Códice já aberto leva ao verbete.
+   *
+   * `replaceState` não dispara `hashchange`, então escutar aqui não briga
+   * com o efeito acima que escreve o endereço — só responde a quem mudou a
+   * barra na mão, ou clicou num link de fora.
+   */
+  useEffect(() => {
+    const aoTrocarHash = (): void => {
+      const chave = chaveDaUrl();
+      if (chave !== null) navegar(chave);
+    };
+    window.addEventListener('hashchange', aoTrocarHash);
+    return () => window.removeEventListener('hashchange', aoTrocarHash);
+  }, [navegar]);
+
   // Limpa o hash ao fechar, senão recarregar a página reabriria o códice.
   useEffect(() => {
     return () => {
