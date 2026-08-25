@@ -587,54 +587,87 @@ const neutro = npc('Neutro', 'coroa');
 const inimigo = npc('Inimigo', 'serpente');
 
 const ALIADOS: Verbete[] = [
-  aliado({
+  {
     chave: 'sarmon',
-    titulo: 'Sarmon',
+    titulo: 'Sarmon Orhys',
+    epiteto: 'O irmão preterido, depois Lorde de Ouro',
+    categoria: 'npc',
+    resumo: 'Filho bastardo de um Lorde de Ouro com uma Rakshasa, preterido na sucessão — até tomar o título de qualquer forma.',
     brasao: 'coroa',
-    epiteto: 'O irmão preterido',
-    nota:
-      'Irmão mais velho ignorado na sucessão para Lorde de Ouro: o título foi para o mais novo, e a ele coube um troféu de consolação.',
-    relacionados: ['lince', 'cats-paw', 'andari'],
-  }),
+    ficha: [
+      { rotulo: 'Papel', valor: 'Fundador e líder da Pata do Gato — hoje Lorde de Ouro' },
+      { rotulo: 'Origem', valor: 'Filho bastardo do antepenúltimo Lorde de Ouro com uma Rakshasa, em Al-Hara' },
+      { rotulo: 'Título', valor: 'Lorde de Ouro e titular das terras de Ashara' },
+      { rotulo: 'Fonte', valor: 'Wiki (backstory) e notas pessoais do mestre' },
+    ],
+    secoes: [
+      {
+        titulo: 'Escravo e fundador',
+        paragrafos: [
+          'Sarmon é filho bastardo do antepenúltimo Lorde de Ouro com uma Rakshasa — um tipo de devil — em Al-Hara. Viveu como escravo no mesmo continente, até se aliar a [[lince]] e outros órfãos para escapar do mago que os mantinha presos.',
+        ],
+      },
+      {
+        titulo: 'O irmão preterido',
+        paragrafos: [
+          'Chegando a Valoran, apesar de ser o irmão mais velho, foi ignorado na sucessão para Lorde de Ouro — título dado ao irmão mais novo. Como troféu de consolo, foi colocado na administração da guilda [[cats-paw|Cat’s Paw]].',
+        ],
+      },
+      {
+        titulo: 'A tomada do título',
+        paragrafos: [
+          'O irmão mais novo foi assassinado por assassinos Yuan-Ti, graças a uma dica do próprio [[ferdinand]]. Sarmon usou a popularidade que já tinha para tomar o título de Lorde de Ouro e titular das terras de Ashara — e, já no poder, adotou [[lince|Lince]] oficialmente como irmão.',
+        ],
+      },
+    ],
+    relacionados: ['lince', 'cats-paw', 'andari', 'ferdinand', 'casa-orhys'],
+    eras: ['era-moderna'],
+  },
   {
     chave: 'lince',
     titulo: 'Lince',
     epiteto: 'Um receptáculo vazio',
     categoria: 'npc',
-    resumo: 'Genasi do ar por baixo de um corpo que na verdade é o de um arquimago descartado, mantido vivo por consumir almas alheias.',
+    resumo: 'Fundador da Cat’s Paw e braço direito de Sarmon, amaldiçoado a usar o rosto e a memória do mago que os escravizava.',
     brasao: 'mao',
     ficha: [
-      { rotulo: 'Papel', valor: 'Aliado — um dos dois nomes da Pata do Gato' },
-      { rotulo: 'Espécie real', valor: 'Genasi do ar' },
-      { rotulo: 'Corpo que usa', valor: 'De um arquimago antigo, descartado por Ilvissar' },
-      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+      { rotulo: 'Papel', valor: 'Aliado — fundador da Pata do Gato, braço direito de [[sarmon]]' },
+      { rotulo: 'Origem', valor: 'Escravo em Al-Hara, junto de Sarmon e outros órfãos' },
+      { rotulo: 'Maldição', valor: 'Um amuleto que o transformou na aparência do mago Ohrash' },
+      { rotulo: 'Fonte', valor: 'Wiki (backstory) e notas pessoais do mestre' },
     ],
     secoes: [
       {
-        titulo: 'A Pata do Gato',
+        titulo: 'A fuga de Al-Hara',
         paragrafos: [
-          'Lince é um dos NPCs em destaque na wiki, e um dos dois nomes de [[cats-paw|Cat’s Paw]] ao lado de [[sarmon]]. Usa um amuleto de um antigo dono escravista para se transformar naqueles que esse dono escravizava.',
+          'Lince viveu toda a infância como escravo em Al-Hara. Com [[sarmon]] e outros órfãos escravizados, matou o mago Ohrash, que os mantinha presos — e fugiu, com algumas mortes pelo caminho. Ohrash, já morto, o amaldiçoou: um amuleto preso ao pescoço de Lince passou a exibir a aparência do próprio mago, e ainda guarda a consciência e as memórias dele e de quem morreu na presença dele.',
+          'Para quebrar a maldição e remover o amuleto, Sarmon trouxe Lince para Valoran, prometendo usar a riqueza do título de Lorde de Ouro para curá-lo. Depois de assumir a liderança da [[casa-orhys|Casa Orhys]], Sarmon o adotou oficialmente como irmão.',
         ],
       },
       {
-        titulo: 'O corpo que não é dele',
+        titulo: 'O que Epístola viu',
         paragrafos: [
           '[[epistola|Epístola]] aprofundou a mente dele e viu duas coisas de uma vez: quando [[klen]] mencionou já tê-lo matado duas vezes, a sensação era de raiva; e, olhando mais fundo, uma figura com a aparência do mago à frente do grupo — o mesmo rosto de Lince, e o mesmo do mestre dele — surgindo como se corpo e alma fossem coisas separadas. A alma seria os pensamentos indo e vindo; a parte mais fantasmagórica formaria o corpo de Lince; e a forma física é o que se vê agora.',
-          'A leitura chegou a uma peça final: o mago que se vê na frente de Lince existiu por muitos e muitos anos, e em algum ponto houve uma separação. Corpo e alma estão intimamente ligados — a ponto de [[mateo]] carregar parte do corpo da Raven Mother —, então mesmo um corpo sem alma pode se estabilizar consumindo outras almas e colocando-as no lugar da própria.',
+          'A leitura chegou a uma peça final: o mago que se vê na frente de Lince existiu por muitos e muitos anos, e em algum ponto houve uma separação. Corpo e alma estão intimamente ligados — a ponto de [[mateo]] carregar parte do corpo da Raven Mother —, então mesmo um corpo sem alma pode se estabilizar consumindo outras almas e colocando-as no lugar da própria. É a mesma maldição de Ohrash, vista de outro ângulo: o objetivo da wiki é a mecânica; o que Epístola viu é a textura de como ela realmente funciona por dentro.',
         ],
       },
       {
         titulo: 'Abandonado por Ilvissar',
         paragrafos: [
-          'Numa reunião, Lince ficou subitamente possuído por raiva e tentou atacar a si mesmo; a voz que falou por ele se chamou de "receptáculo vazio" desse mesmo mago. O que se vê hoje é um corpo descartado que continuou vivo à base de consumir almas de outras pessoas — descartado, especificamente, por [[ilvissar]].',
-          '“Seu desgraçado, você me abandonou”, foi o que Lince disse a Ilvissar quando os dois se encontraram de novo.',
+          'Numa reunião, Lince ficou subitamente possuído por raiva e tentou atacar a si mesmo; a voz que falou por ele se chamou de "receptáculo vazio" desse mesmo mago. “Seu desgraçado, você me abandonou”, foi o que Lince disse a [[ilvissar|Ilvissar]] quando os dois se encontraram de novo — sugerindo que o próprio Avis Lorean já teve alguma parte nessa história, antes de descartá-lo.',
         ],
       },
     ],
-    relacionados: ['cats-paw', 'sarmon', 'epistola', 'ilvissar', 'klen', 'mateo'],
+    relacionados: ['cats-paw', 'sarmon', 'epistola', 'ilvissar', 'klen', 'mateo', 'casa-orhys'],
     eras: ['era-moderna'],
   },
-  aliado({ chave: 'lena', titulo: 'Lena', brasao: 'estrela', relacionados: ['morda', 'lince'] }),
+  aliado({
+    chave: 'lena',
+    titulo: 'Lena',
+    brasao: 'estrela',
+    nota: 'Os destaques que a wiki guarda dela são só dois: perguntou "Por que o céu é azul?" e derrubou um barco em cima da própria party.',
+    relacionados: ['morda', 'lince'],
+  }),
   aliado({ chave: 'morda', titulo: 'Morda', brasao: 'martelo', relacionados: ['lena', 'lince'] }),
   aliado({
     chave: 'cadeira',
@@ -803,10 +836,12 @@ const INIMIGOS: Verbete[] = [
   inimigo({
     chave: 'ilvissar',
     titulo: 'Ilvissar Deallus',
+    epiteto: 'Avis Lorean, para os que o conheceram antes',
     brasao: 'eclipse',
     nota:
-      'Braço direito do atual rei de Valoran há gerações, formado em Clarividência e Previsão em Arcanheim. É um Deallus, e o mais próximo parente vivo do duque de Lavel dentro da própria [[casa-deallus|Casa Deallus]] — e o único nome que a wiki lista ao mesmo tempo entre os NPCs em destaque e entre os inimigos, o antagonista corrente da campanha.',
-    relacionados: ['carmilla', 'raven-mother', 'casa-deallus', 'kagura'],
+      'Braço direito do atual rei de Valoran há gerações, formado em Clarividência e Previsão em Arcanheim. É um Deallus, e o mais próximo parente vivo do duque de Lavel dentro da própria [[casa-deallus|Casa Deallus]] — e o único nome que a wiki lista ao mesmo tempo entre os NPCs em destaque e entre os inimigos, o antagonista corrente da campanha. A própria wiki registra o nome de nascimento dele: Avis Lorean, meio elfo, meio humano.',
+    relacionados: ['carmilla', 'raven-mother', 'casa-deallus', 'kagura', 'lince'],
+    alcunhas: ['Avis Lorean', 'Avis'],
   }),
   inimigo({
     chave: 'a-balanca',
