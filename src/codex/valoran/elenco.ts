@@ -93,17 +93,19 @@ const JOGADORES: Verbete[] = [
     epiteto: 'Lorde da Noite de Andari',
     categoria: 'jogador',
     resumo:
-      'Meio-elfo artífice armorer que se tornou Lorde da Noite de Andari ao unificar as famílias fraturadas dos Deallus.',
+      'Meio-elfo artífice armorer, criado por Reynkraft em Andari, que se tornou Lorde da Noite ao unificar as famílias fraturadas dos Deallus.',
     brasao: 'martelo',
     ficha: [
       { rotulo: 'Nível', valor: '10' },
       { rotulo: 'Raça', valor: 'Meio-elfo' },
+      { rotulo: 'Idade', valor: '27 anos' },
+      { rotulo: 'Nome completo', valor: 'Ferdinand Franz Von Oumalis Deallus' },
       { rotulo: 'Classe', valor: 'Artificer / Armorer' },
-      { rotulo: 'PV · CA', valor: '73 · 16' },
-      { rotulo: 'CD · Proficiência', valor: '18 · +4' },
-      { rotulo: 'Tema', valor: 'Stricken — Disturbed; Lost — Linkin Park' },
+      { rotulo: 'PV · CA', valor: '73 · 23' },
+      { rotulo: 'CD · Proficiência · Iniciativa', valor: '18 · +4 · +2' },
+      { rotulo: 'Atributos', valor: 'CON 14 · DEX 16 · WIS 10 · INT 20 · STR 8 · CHA 10' },
     ],
-    epigrafe: 'Você pode ser um herói, ou você pode ser aquele que salvará seu povo.',
+    epigrafe: 'Lembre-se, Ferdinand: existe um herói, e existe aquele que salva seu povo.',
     secoes: [
       {
         titulo: 'A armadura',
@@ -112,23 +114,64 @@ const JOGADORES: Verbete[] = [
         ],
       },
       {
+        titulo: 'Infância em Andari',
+        paragrafos: [
+          'Nascido e criado em Andari, Ferdinand foi criado principalmente pelo tio, [[reincraft|Reynkraft Von Oumalis]] — a relação com o pai, [[nornan|Nornan Von Oumalis]], sempre foi distante. O vínculo mais forte da infância era com a mãe, [[anneliese-oumalis|Anneliese Von Oumalis]], e com a irmã, [[beatrix|Beatrix Von Oumalis]].',
+          'Passava os dias escapando das paredes rígidas da casa Oumalis para visitar bairros vizinhos e brincar com outras crianças nobres — conhecendo partes da cidade em teoria inacessíveis a alguém da posição dele. Foi nessas fugas, e junto da mãe, que nasceram o amor pela harpa e pela escrita: Anneliese ajudava voluntariamente quem não sabia escrever, e ele aprendeu com ela.',
+        ],
+      },
+      {
+        titulo: 'O mantra de Reynkraft',
+        paragrafos: [
+          'Reynkraft via potencial em Ferdinand para carregar o nome da família, e começou o treinamento dele ainda jovem: reuniões políticas quase todo dia, anotações, e depois a cobrança — o tio pedindo a opinião dele sobre cada assunto, corrigindo com firmeza quando discordava. "Lembre-se, Ferdinand: existe um herói, e existe aquele que salva seu povo" virou mantra, e foi o que o forjou como líder. Com o tempo, sobrou cada vez menos tempo para a mãe.',
+        ],
+      },
+      {
+        titulo: 'A traição',
+        paragrafos: [
+          'Anneliese foi enviada a Luctos numa missão diplomática incomum para ela, e Ferdinand não teve chance de se despedir. Ela desapareceu sem deixar sinal. Com o tempo, era como se nunca tivesse existido — Reynkraft raramente dizia o nome da irmã, e sempre com frieza.',
+          'Anos depois, quando a morte dela foi "confirmada", Reynkraft — que Ferdinand percebeu enlutado, ou algo perto disso — o enviou com uma brigada maior do que a que acompanhara Anneliese, para investigar. Ferdinand encontrou um território devastado. Nenhuma mensagem dela jamais tinha chegado. Reynkraft insistia que ela fora mandada para outro lugar; Ferdinand entendeu a verdade: ela tinha sido enviada para morrer.',
+        ],
+      },
+      {
+        titulo: 'O culto do Sofredor',
+        paragrafos: [
+          'A confirmação da traição o quebrou — a dor, a raiva, a impotência de saber que a figura que mais admirava era responsável, ainda que indiretamente, pela morte da própria mãe. Vagando pelas áreas mais pobres de Luctos nesse estado, viu um homem sendo chicoteado sem demonstrar dor — só paz, e uma espécie de sabedoria.',
+          'O homem o apresentou ao culto do Sofredor, um dos deuses menores de Alhara e Luctos, e lhe deu um chicote: a autoflagelação como conforto nos tempos difíceis, e caminho para clareza e paz. Ferdinand aceita a bênção desde então.',
+        ],
+      },
+      {
+        titulo: 'Beatrix',
+        paragrafos: [
+          '[[beatrix|Beatrix]], mais nova, mais fechada e reservada, sempre teve uma boa relação com Ferdinand — que se sentia responsável por protegê-la do peso da casa Oumalis desde pequeno. Nas fases em que ficavam mais próximos, eram inseparáveis: ele a levava à praia de Andari, de onde viam as cachoeiras infinitas despencando no horizonte, cozinhava para ela e preparava o milkshake favorito dela desde criança.',
+          'Quando outros garotos faziam brincadeiras de mau gosto com a irmã, Ferdinand se fantasiava de Ranz — uma figura folclórica — e os assombrava à noite, como vingança silenciosa. Também se posicionou sempre contra envolver Beatrix em qualquer viagem ou reunião política, apesar de Reynkraft insistir que seria inevitável, e fez de tudo para que ela pudesse estudar em Arcanheim, longe do alcance do tio.',
+        ],
+      },
+      {
+        titulo: 'O dia em que tudo mudou',
+        paragrafos: [
+          'Beatrix apareceu de repente em Andari, teleportada até a casa de Ferdinand — exausta, desesperada, coberta de poeira mágica. Tinha roubado um pergaminho arcano de Arcanheim, algo poderoso o bastante para colocar os dois na mira das autoridades da própria academia. Estavam sendo caçados. Ferdinand não hesitou: juntou o que pôde e partiu com ela, sabendo que a decisão o arrancaria de tudo — da casa Oumalis, de Reynkraft, de Andari.',
+          'Ainda nos arredores da cidade, foram interceptados por um dos tios de Ferdinand, que veio para levar Beatrix de volta. Ferdinand cravou a rapieira no peito dele sem hesitar. Fugiram pelos pântanos além de Andari, onde o nevoeiro os escondeu — e dali em diante não houve mais volta. É o começo da campanha.',
+        ],
+      },
+      {
         titulo: 'Von Oumalis',
         paragrafos: [
-          'Ferdinand e [[beatrix|Beatrix von Oumalis]] dividem o sobrenome porque são irmãos — não marido e mulher, como uma leitura apressada deste Códice chegou a registrar antes. O primeiro casamento que [[alvyriel]] oficiou na campanha foi o dele, com [[mia|Mia Eroth Deallus]]: um casamento arranjado entre a Casa Oumalis e a Casa Deallus.',
+          'Ferdinand e Beatrix dividem o sobrenome por serem irmãos, filhos de Nornan e Anneliese Von Oumalis. O primeiro casamento que [[alvyriel]] oficiou na campanha foi o dele: com [[mia|Mia Eroth Deallus]], um casamento arranjado entre a Casa Oumalis e a Casa Deallus.',
         ],
       },
       {
         titulo: 'O Lorde da Noite de Andari',
         paragrafos: [
-          'Depois de unificar as sub-famílias em que a [[casa-deallus|Casa Deallus]] se fraturou — a mesma fratura que as Anais registram como permanente e sem fim à vista — Ferdinand assumiu o título de Lorde da Noite de Andari. É um posto antigo: o último a portá-lo morreu na Espiral da Família Deallus, o ponto do continente onde a Shadowfell nasceu.',
-          'Nada disso está nas Anais, que fecham em 1570. É um título que a cidade deu a um homem vivo, na mesa, depois da última página que Maedrin Rimors escreveu.',
+          'Depois de unificar as sub-famílias em que a [[casa-deallus|Casa Deallus]] se fraturou — a mesma fratura que as Anais registram como permanente e sem fim à vista —, Ferdinand assumiu o título de Lorde da Noite de Andari. É um posto antigo: o último a portá-lo morreu na Espiral da Família Deallus, o ponto do continente onde a Shadowfell nasceu.',
+          'Nada disso está nas Anais, que fecham em 1570. É um título que a cidade deu a um homem vivo, na mesa, depois da última página que Maedrin Rimors escreveu. A wiki registra o resultado sem contar o caminho: entre os destaques da campanha, "a unificação de Andari, discurso de mil quilômetros" e "o casamento fofo conduzido por Alvyriel".',
         ],
       },
       {
-        titulo: 'A morte de Anneliese',
+        titulo: 'A confissão de Reynkraft',
         paragrafos: [
-          'A mãe de Ferdinand, [[anneliese-oumalis|Anneliese von Oumalis]], morreu num assassinato premeditado por [[reincraft|Reynkraft]] — enviada sob pretexto de missão diplomática com a [[casa-orhys|Casa Orhys]] para o deserto de Luctos, onde foi silenciada antes que pudesse revelar que a linhagem de Reynkraft não vinha da avó de Ferdinand, e sim só do avô, Anton, o que teria tirado dele qualquer direito ao trono.',
-          'Ferdinand deu à filha dele com Mia o nome [[anneliese-deallus|Anneliese Deallus]], em homenagem à avó que a menina nunca vai conhecer. Numa das viagens dele, também encontrou outra criança — [[rogar-crianca|Rogar]], de escamas douradas — sem qualquer parentesco confirmado.',
+          'O que Ferdinand descobriu sozinho em Luctos tem um capítulo a mais, revelado só depois da morte de Reynkraft: ele sabia, desde antes de mandá-la, que Anneliese não voltaria. Escolheu o deserto para apagar qualquer vestígio — e o fez porque ela ameaçava revelar que a linhagem dele não vinha da avó de Ferdinand, e sim só do avô, Anton, o que tiraria de Reynkraft qualquer direito ao trono.',
+          'Ferdinand deu à filha dele com Mia o nome [[anneliese-deallus|Anneliese Deallus]], em homenagem à avó que a menina nunca vai conhecer. Entre os destaques que a própria wiki guarda está a compra de [[cadeira|A Cadeira]] por 2000 peças de cobre — "meu bem mais precioso depois de minha filha e esposa", escreveu ele. Numa das viagens, também encontrou outra criança, [[rogar-crianca|Rogar]], de escamas douradas — sem parentesco confirmado com ele.',
         ],
       },
       {
@@ -141,7 +184,7 @@ const JOGADORES: Verbete[] = [
       {
         titulo: 'O que a wiki não diz',
         paragrafos: [
-          'Nada disto vem da wiki do Notion — vem das notas pessoais do mestre da campanha, fora dela. A página da wiki continua com a ficha completa e nenhuma linha de backstory própria.',
+          'A própria wiki reserva um espaço para a jornada de Ferdinand a Unkanten e ainda não o preencheu. O diário pessoal registra só fragmentos soltos: uma criatura morta por Eliezer e ligada ao Sofredor, Alvyriel abençoando uma criança, a vista de Andari reconstruída, Beatrix estudando — "é engraçado perceber como ela cresceu tão rápido" — e um cavalo desenhado num momento de ócio na Biblioteca do Tear Prateado.',
         ],
       },
     ],
@@ -154,8 +197,10 @@ const JOGADORES: Verbete[] = [
       'mia',
       'anneliese-deallus',
       'anneliese-oumalis',
+      'nornan',
       'reincraft',
       'casa-deallus',
+      'cadeira',
     ],
     eras: ['era-moderna'],
     alcunhas: ['von Oumalis', 'Franz', 'Lorde da Noite'],
@@ -187,7 +232,7 @@ const JOGADORES: Verbete[] = [
       {
         titulo: 'Von Oumalis',
         paragrafos: [
-          'Divide o sobrenome com [[ferdinand]] por serem irmãos, não marido e mulher — o casamento que [[alvyriel]] oficiou na campanha foi o dele, com [[mia|Mia Eroth Deallus]]. O Códice corrige aqui um erro da própria primeira importação da wiki, que leu a conquista *primeiro casamento do RPG* na direção errada.',
+          'Divide o sobrenome com [[ferdinand]] por serem irmãos, filhos de [[nornan|Nornan]] e [[anneliese-oumalis|Anneliese Von Oumalis]]. O casamento que [[alvyriel]] oficiou na campanha foi o dele, com [[mia|Mia Eroth Deallus]].',
         ],
       },
       {
@@ -203,7 +248,7 @@ const JOGADORES: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['a-mesa-de-aion', 'ferdinand', 'alvyriel', 'mateo', 'klen', 'mia'],
+    relacionados: ['a-mesa-de-aion', 'ferdinand', 'alvyriel', 'mateo', 'klen', 'mia', 'nornan'],
     eras: ['era-moderna'],
     alcunhas: ['von Oumalis', 'Rouxinol', 'Catheryn Von Oumalis'],
   },
@@ -562,7 +607,14 @@ const ALIADOS: Verbete[] = [
   },
   aliado({ chave: 'lena', titulo: 'Lena', brasao: 'estrela', relacionados: ['morda', 'lince'] }),
   aliado({ chave: 'morda', titulo: 'Morda', brasao: 'martelo', relacionados: ['lena', 'lince'] }),
-  aliado({ chave: 'cadeira', titulo: 'Cadeira', brasao: 'templo' }),
+  aliado({
+    chave: 'cadeira',
+    titulo: 'A Cadeira',
+    brasao: 'templo',
+    nota:
+      'Um souvenir lendário comprado por [[ferdinand]] por 2000 peças de cobre — herança de tempos antigos, "o vintage em um novo mundo", e o bem mais precioso dele depois da filha e da esposa.',
+    relacionados: ['ferdinand'],
+  }),
   aliado({ chave: 'carian', titulo: 'Carian', brasao: 'folha' }),
   aliado({ chave: 'iblis', titulo: 'Iblis', brasao: 'eclipse' }),
   aliado({ chave: 'ikki', titulo: 'Ikki', brasao: 'lamina' }),
@@ -593,7 +645,6 @@ const ALIADOS: Verbete[] = [
     relacionados: ['ferdinand'],
     fonte: 'Só na cópia antiga',
   }),
-  aliado({ chave: 'nornan', titulo: 'Nornan', brasao: 'estrela', fonte: 'Só na cópia antiga' }),
 ];
 
 /** Os doze do templo. Todos saem da backstory de Alvyriel. */
@@ -728,6 +779,29 @@ const INIMIGOS: Verbete[] = [
 // =====================================================================
 
 const FAMILIA: Verbete[] = [
+  {
+    chave: 'nornan',
+    titulo: 'Nornan Von Oumalis',
+    epiteto: 'O pai distante',
+    categoria: 'npc',
+    resumo: 'Pai de Ferdinand e Beatrix, cuja relação com os dois filhos sempre foi distante.',
+    brasao: 'estrela',
+    ficha: [
+      { rotulo: 'Filhos', valor: 'Ferdinand e Beatrix' },
+      { rotulo: 'Esposa', valor: '[[anneliese-oumalis|Anneliese Von Oumalis]]' },
+      { rotulo: 'Fonte', valor: 'Wiki (só na cópia antiga) e notas pessoais do mestre' },
+    ],
+    secoes: [
+      {
+        titulo: 'A ausência',
+        paragrafos: [
+          'Nornan é o pai de [[ferdinand]] e [[beatrix]], mas a figura paterna que os dois realmente reconheciam era o tio deles, [[reincraft|Reynkraft]]. A relação com Nornan sempre foi distante — a wiki não registra mais do que o nome.',
+        ],
+      },
+    ],
+    relacionados: ['ferdinand', 'beatrix', 'anneliese-oumalis', 'reincraft'],
+    eras: ['era-moderna'],
+  },
   {
     chave: 'mia',
     titulo: 'Mia Eroth Deallus',
@@ -1111,7 +1185,7 @@ const A_MESA: Verbete = {
     {
       titulo: 'Quem a campanha cruzou',
       paragrafos: [
-        'Do lado dos aliados: [[sarmon]], [[lince]], [[lena]], [[morda]], [[cadeira]], [[carian]], [[iblis]], [[ikki]], [[imykus]], [[symon]], [[nornan]] e o improvável [[fake-ferdinand]] — além de [[elamyr]], que já tinha verbete nestas Anais antes de a wiki chegar. E do lado de dentro da própria família Von Oumalis: [[mia|Mia Eroth Deallus]], esposa de Ferdinand, a filha [[anneliese-deallus]] e a avó assassinada [[anneliese-oumalis]].',
+        'Do lado dos aliados: [[sarmon]], [[lince]], [[lena]], [[morda]], [[cadeira]], [[carian]], [[iblis]], [[ikki]], [[imykus]], [[symon]] e o improvável [[fake-ferdinand]] — além de [[elamyr]], que já tinha verbete nestas Anais antes de a wiki chegar. E do lado de dentro da própria família Von Oumalis: o pai [[nornan]], a mãe assassinada [[anneliese-oumalis]], a esposa [[mia|Mia Eroth Deallus]] e a filha [[anneliese-deallus]].',
         'Neutros, quase todos de casas que a crônica conhece: [[lady-cyraxes-draco]], [[lorde-thoren-bellias]], [[lady-elias-rimors]], [[hadrik]], [[lysandra]], [[katherine]], [[zeria]], [[vovo-iara]], [[aidwin]] e [[duncan-bellias]]. O imperador [[ayren-herrys-iv|Ayren IV]] também está na lista — do lado neutro, o que é uma leitura e tanto sobre o Tirano Dourado.',
         'Inimigos: [[ilvissar]], [[carmilla]], [[a-balanca]], [[raven-mother]], [[pet-demonio]] e [[reincraft]].',
       ],
