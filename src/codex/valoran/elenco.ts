@@ -236,7 +236,14 @@ const JOGADORES: Verbete[] = [
       {
         titulo: 'Epístola',
         paragrafos: [
-          'A página dele tem uma página irmã chamada [[epistola|Epístola]], ligada logo abaixo do nome na wiki nova. O que ela é — carta, entidade, segunda ficha — não está escrito.',
+          'A página dele tem uma página irmã chamada [[epistola|Epístola]], ligada logo abaixo do nome na wiki nova. Não é só uma página: é o poder de Mateo lendo mentes — foi assim que o grupo descobriu o que [[lince|Lince]] realmente é.',
+        ],
+      },
+      {
+        titulo: 'O braço',
+        paragrafos: [
+          'O braço de Mateo é um domínio de terror por conta própria, onde a [[shadowfell|Shadowfell]] se mistura à realidade — e carrega, dentro dele, parte do corpo da própria [[raven-mother|Raven Mother]]. A Tecelã indicou que, para se curar, ele precisa de alguém que controle "o outro lado da moeda".',
+          'Uma figura tatuada e musculosa, que se apresentou como Escritos, chamou-o de Helltheon — nome que Mateo diz não usar há muito tempo.',
         ],
       },
       {
@@ -246,8 +253,9 @@ const JOGADORES: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['a-mesa-de-aion', 'epistola', 'klen', 'alvyriel', 'imykus', 'ayren-herrys-iv'],
+    relacionados: ['a-mesa-de-aion', 'epistola', 'klen', 'alvyriel', 'imykus', 'ayren-herrys-iv', 'lince', 'raven-mother', 'shadowfell'],
     eras: ['era-moderna'],
+    alcunhas: ['Helltheon'],
   },
 
   {
@@ -277,6 +285,12 @@ const JOGADORES: Verbete[] = [
         titulo: 'Na mesa',
         paragrafos: [
           'O único recado que a wiki guarda sobre ele é de [[alvyriel]], e é uma repreensão: “Pare de lootear templos.” Vindo de alguém criada dentro de um, faz sentido.',
+        ],
+      },
+      {
+        titulo: 'O sol negro',
+        paragrafos: [
+          'Klen já esteve relacionado ao sol negro, e deve algo a alguém — muito. O que exatamente, e a quem, não está escrito em lugar nenhum do material.',
         ],
       },
       {
@@ -317,24 +331,25 @@ const JOGADORES: Verbete[] = [
   {
     chave: 'epistola',
     titulo: 'Epístola',
+    epiteto: 'O poder de Mateo de ler mentes',
     categoria: 'jogador',
-    resumo: 'Página irmã de Mateo na wiki nova, ligada ao nome dele e sem nada escrito.',
+    resumo: 'O poder de Mateo de ler mentes, listado como página irmã dele na wiki nova.',
     brasao: 'templo',
     ficha: [
-      { rotulo: 'Papel', valor: 'Ligada a Mateo' },
+      { rotulo: 'Papel', valor: 'Poder de [[mateo]] — leitura de mentes' },
       { rotulo: 'Ficha', valor: 'Em branco na wiki' },
       { rotulo: 'Fonte', valor: 'Só na cópia nova' },
     ],
     secoes: [
       {
-        titulo: 'O que se sabe',
+        titulo: 'O que Epístola viu em Lince',
         paragrafos: [
-          'Na cópia nova da wiki, logo abaixo de [[mateo]], há uma segunda página chamada Epístola. Nenhuma outra menção a ela existe em lugar nenhum do material.',
-          'Uma carta, uma entidade, uma segunda ficha, um pacto — o Códice não vai adivinhar.',
+          'Na cópia nova da wiki, logo abaixo de [[mateo]], há uma segunda página chamada Epístola — não uma pessoa à parte, e sim o próprio poder dele de aprofundar a mente de alguém. Foi assim que o grupo descobriu o que [[lince|Lince]] realmente é: quando [[klen]] mencionou já tê-lo matado duas vezes, Epístola sentiu a raiva por trás disso e, olhando mais fundo, viu uma figura com a cara do mago à frente do grupo — a mesma de Lince, e a mesma do mestre dele.',
+          'A leitura separou corpo de alma: a alma seriam os pensamentos indo e vindo entre os dois, uma parte mais fantasmagórica formaria o corpo de Lince, e a forma física é o que o grupo vê hoje.',
         ],
       },
     ],
-    relacionados: ['mateo'],
+    relacionados: ['mateo', 'lince', 'klen'],
     eras: ['era-moderna'],
   },
 ];
@@ -372,8 +387,66 @@ const antigo = (chave: string, titulo: string, brasao: Verbete['brasao']): Verbe
 
 const EX_JOGADORES: Verbete[] = [
   antigo('ayraas', 'Ayraas', 'estrela'),
-  antigo('daigo', 'Daigo', 'lamina'),
-  antigo('lews', 'Lews', 'vazio'),
+  {
+    chave: 'daigo',
+    titulo: 'Daigo',
+    epiteto: 'Ex-jogador — nome verdadeiro Yoshimitsu Miyamoto',
+    categoria: 'jogador',
+    resumo: 'Ex-jogador cujo nome verdadeiro é Yoshimitsu Miyamoto; os pais foram assassinados por um grupo de quatro.',
+    brasao: 'lamina',
+    ficha: [
+      { rotulo: 'Papel', valor: 'Ex-jogador' },
+      { rotulo: 'Nome verdadeiro', valor: 'Yoshimitsu Miyamoto' },
+      { rotulo: 'Sistema', valor: 'D&D 5e' },
+      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'Yoshimitsu Miyamoto',
+        paragrafos: [
+          '"Daigo" não é o nome dele: o verdadeiro é Yoshimitsu Miyamoto. Os pais dele foram assassinados por um grupo de quatro — uma mulher guerreira, um homem em vestes de sacerdote, um par de gêmeos e um owlin. Kagurabachi, irmão de [[kagura]], fez mal a ele em algum ponto dessa história, embora o que exatamente não esteja escrito em lugar nenhum.',
+        ],
+      },
+      {
+        titulo: 'Quem passou por aqui',
+        paragrafos: [
+          'A wiki mantém uma lista de *Former Players*, e Daigo está nela — junto de [[ayraas]], [[lews]] e [[nims]].',
+        ],
+      },
+      { titulo: 'O que a wiki não diz', paragrafos: [EM_BRANCO] },
+    ],
+    relacionados: ['alvyriel', 'ayraas', 'lews', 'nims', 'kagura'],
+    eras: ['era-moderna'],
+  },
+  {
+    chave: 'lews',
+    titulo: 'Lews',
+    epiteto: 'Ex-jogador — o possível messias de Ridash',
+    categoria: 'jogador',
+    resumo: 'Ex-jogador que uma facção do conselho de Nova Minerva acredita ser o herói destinado a livrar o povo de Ridash de uma escuridão.',
+    brasao: 'vazio',
+    ficha: [
+      { rotulo: 'Papel', valor: 'Ex-jogador' },
+      { rotulo: 'Sistema', valor: 'D&D 5e' },
+      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'O messias de Ridash?',
+        paragrafos: [
+          'Parte do conselho de Nova Minerva acredita que Lews pode ser um herói — quase um messias — para o povo de [[ridash|Ridash]]. Uma facção mais cética do mesmo conselho discorda. O compromisso entre as duas: se ele realmente expelisse uma grande escuridão de sob a terra desse povo, a crença estaria confirmada.',
+        ],
+      },
+      {
+        titulo: 'Quem passou por aqui',
+        paragrafos: [
+          'A wiki mantém uma lista de *Former Players*, e Lews está nela — junto de [[ayraas]], [[daigo]] e [[nims]].',
+        ],
+      },
+    ],
+    relacionados: ['alvyriel', 'ayraas', 'daigo', 'nims', 'ridash'],
+    eras: ['era-moderna'],
+  },
   antigo('nims', 'Nims', 'folha'),
 ];
 
@@ -449,14 +522,44 @@ const ALIADOS: Verbete[] = [
       'Irmão mais velho ignorado na sucessão para Lorde de Ouro: o título foi para o mais novo, e a ele coube um troféu de consolação.',
     relacionados: ['lince', 'cats-paw', 'andari'],
   }),
-  aliado({
+  {
     chave: 'lince',
     titulo: 'Lince',
+    epiteto: 'Um receptáculo vazio',
+    categoria: 'npc',
+    resumo: 'Genasi do ar por baixo de um corpo que na verdade é o de um arquimago descartado, mantido vivo por consumir almas alheias.',
     brasao: 'mao',
-    nota:
-      'Um dos NPCs em destaque na wiki, e um dos dois nomes da Pata do Gato ao lado de [[sarmon]].',
-    relacionados: ['cats-paw', 'sarmon'],
-  }),
+    ficha: [
+      { rotulo: 'Papel', valor: 'Aliado — um dos dois nomes da Pata do Gato' },
+      { rotulo: 'Espécie real', valor: 'Genasi do ar' },
+      { rotulo: 'Corpo que usa', valor: 'De um arquimago antigo, descartado por Ilvissar' },
+      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'A Pata do Gato',
+        paragrafos: [
+          'Lince é um dos NPCs em destaque na wiki, e um dos dois nomes de [[cats-paw|Cat’s Paw]] ao lado de [[sarmon]]. Usa um amuleto de um antigo dono escravista para se transformar naqueles que esse dono escravizava.',
+        ],
+      },
+      {
+        titulo: 'O corpo que não é dele',
+        paragrafos: [
+          '[[epistola|Epístola]] aprofundou a mente dele e viu duas coisas de uma vez: quando [[klen]] mencionou já tê-lo matado duas vezes, a sensação era de raiva; e, olhando mais fundo, uma figura com a aparência do mago à frente do grupo — o mesmo rosto de Lince, e o mesmo do mestre dele — surgindo como se corpo e alma fossem coisas separadas. A alma seria os pensamentos indo e vindo; a parte mais fantasmagórica formaria o corpo de Lince; e a forma física é o que se vê agora.',
+          'A leitura chegou a uma peça final: o mago que se vê na frente de Lince existiu por muitos e muitos anos, e em algum ponto houve uma separação. Corpo e alma estão intimamente ligados — a ponto de [[mateo]] carregar parte do corpo da Raven Mother —, então mesmo um corpo sem alma pode se estabilizar consumindo outras almas e colocando-as no lugar da própria.',
+        ],
+      },
+      {
+        titulo: 'Abandonado por Ilvissar',
+        paragrafos: [
+          'Numa reunião, Lince ficou subitamente possuído por raiva e tentou atacar a si mesmo; a voz que falou por ele se chamou de "receptáculo vazio" desse mesmo mago. O que se vê hoje é um corpo descartado que continuou vivo à base de consumir almas de outras pessoas — descartado, especificamente, por [[ilvissar]].',
+          '“Seu desgraçado, você me abandonou”, foi o que Lince disse a Ilvissar quando os dois se encontraram de novo.',
+        ],
+      },
+    ],
+    relacionados: ['cats-paw', 'sarmon', 'epistola', 'ilvissar', 'klen', 'mateo'],
+    eras: ['era-moderna'],
+  },
   aliado({ chave: 'lena', titulo: 'Lena', brasao: 'estrela', relacionados: ['morda', 'lince'] }),
   aliado({ chave: 'morda', titulo: 'Morda', brasao: 'martelo', relacionados: ['lena', 'lince'] }),
   aliado({ chave: 'cadeira', titulo: 'Cadeira', brasao: 'templo' }),
@@ -533,25 +636,74 @@ const NEUTROS: Verbete[] = [
     titulo: 'Lady Elias Rimors',
     brasao: 'templo',
     nota:
-      'Rimors é o sobrenome de Maedrin Rimors, o erudito dos Arquivos Imperiais que escreveu as próprias Anais que este Códice guarda. A wiki não diz se há parentesco — mas o nome é o mesmo.',
-    relacionados: ['era-moderna', 'igreja-dos-doze'],
+      'Rimors é o sobrenome de Maedrin Rimors, o erudito dos Arquivos Imperiais que escreveu as próprias Anais que este Códice guarda. Antiga Lorde das Florestas, desapareceu — e as notas do mestre sugerem que ela seja, na verdade, [[sariel]], atravessando os séculos sob o mesmo título.',
+    relacionados: ['era-moderna', 'igreja-dos-doze', 'sariel', 'crise-de-aer-firen'],
   }),
   neutro({ chave: 'hadrik', titulo: 'Hadrik', brasao: 'martelo' }),
   neutro({ chave: 'lysandra', titulo: 'Lysandra', brasao: 'estrela' }),
   neutro({ chave: 'katherine', titulo: 'Katherine', brasao: 'folha', fonte: 'Só na cópia antiga' }),
+  neutro({
+    chave: 'zeria',
+    titulo: 'Zeria',
+    brasao: 'martelo',
+    epiteto: 'Chefe do Departamento Médico',
+    nota:
+      'Chefe do departamento médico de Andari. Deu a [[ferdinand]] vantagem em testes de resistência contra magias por dois dias, depois de tratá-lo.',
+    relacionados: ['ferdinand'],
+  }),
+  neutro({
+    chave: 'vovo-iara',
+    titulo: 'Vovó Iara',
+    brasao: 'folha',
+    epiteto: 'Do Clube de Tricô',
+    nota:
+      'Não é uma vovozinha comum. Viaja entre pontos de Andari consertando roupas, negócio de família — mas também é um nome grande na cidade, mencionada em livros de história como infiltradora e espalhadora de informações desde a luta contra a incursão dos Yuan-Ti.',
+    relacionados: ['andari', 'invasoes-serpentinas'],
+  }),
+  neutro({
+    chave: 'aidwin',
+    titulo: 'Aidwin',
+    brasao: 'folha',
+    nota: 'Meio-elfo identificado por Morda em Crocfall (hoje Marshton), com grande interesse por [[beatrix]].',
+    relacionados: ['beatrix', 'morda'],
+  }),
+  neutro({
+    chave: 'duncan-bellias',
+    titulo: 'Duncan Bellias',
+    brasao: 'bellias',
+    epiteto: 'A Tempestade Silenciosa',
+    nota:
+      'General fireniano, não nascido de sangue nobre e elevado a Lorde do povo Bellias — o Lorde da Guerra, a Tempestade Silenciosa, antes de desaparecer misteriosamente.',
+    relacionados: ['casa-bellias', 'klen'],
+  }),
 ];
 
 const INIMIGOS: Verbete[] = [
   inimigo({
     chave: 'ilvissar',
-    titulo: 'Ilvissar',
+    titulo: 'Ilvissar Deallus',
     brasao: 'eclipse',
     nota:
-      'O único nome que a wiki lista ao mesmo tempo entre os NPCs em destaque e entre os inimigos — o antagonista corrente da campanha, portanto.',
-    relacionados: ['carmilla', 'raven-mother'],
+      'Braço direito do atual rei de Valoran há gerações, formado em Clarividência e Previsão em Arcanheim. É um Deallus, e o mais próximo parente vivo do duque de Lavel dentro da própria [[casa-deallus|Casa Deallus]] — e o único nome que a wiki lista ao mesmo tempo entre os NPCs em destaque e entre os inimigos, o antagonista corrente da campanha.',
+    relacionados: ['carmilla', 'raven-mother', 'casa-deallus', 'kagura'],
   }),
-  inimigo({ chave: 'a-balanca', titulo: 'A Balança', brasao: 'estrela', epiteto: 'Inimigo' }),
-  inimigo({ chave: 'carmilla', titulo: 'Carmilla', brasao: 'serpente' }),
+  inimigo({
+    chave: 'a-balanca',
+    titulo: 'A Balança',
+    brasao: 'estrela',
+    epiteto: 'Inimigo',
+    nota: 'Um dia foi uma das que mais viu potencial nos mortais — os habitantes de [[ridash|Ridash]] ainda se dizem seus filhos, os Aegeon.',
+    relacionados: ['ridash'],
+  }),
+  inimigo({
+    chave: 'carmilla',
+    titulo: 'Carmilla',
+    brasao: 'serpente',
+    epiteto: 'A Cavaleira do Coral Vermelho',
+    nota:
+      'Filha, ou campeã, da Rainha dos Marid, enviada para salvar os [[vernatto|Vernatto]] — surgiu nas águas do porto com armadura vermelha abençoada por corais e ajudou a derrotar os monstros de lá.',
+    relacionados: ['vernatto', 'raven-mother'],
+  }),
   inimigo({ chave: 'pet-demonio', titulo: 'Pet Demônio', brasao: 'mao' }),
   inimigo({
     chave: 'raven-mother',
@@ -952,7 +1104,7 @@ const A_MESA: Verbete = {
       titulo: 'Quem a campanha cruzou',
       paragrafos: [
         'Do lado dos aliados: [[sarmon]], [[lince]], [[lena]], [[morda]], [[cadeira]], [[carian]], [[iblis]], [[ikki]], [[imykus]], [[symon]], [[nornan]] e o improvável [[fake-ferdinand]] — além de [[elamyr]], que já tinha verbete nestas Anais antes de a wiki chegar. E do lado de dentro da própria família Von Oumalis: [[mia|Mia Eroth Deallus]], esposa de Ferdinand, a filha [[anneliese-deallus]] e a avó assassinada [[anneliese-oumalis]].',
-        'Neutros, quase todos de casas que a crônica conhece: [[lady-cyraxes-draco]], [[lorde-thoren-bellias]], [[lady-elias-rimors]], [[hadrik]], [[lysandra]] e [[katherine]]. O imperador [[ayren-herrys-iv|Ayren IV]] também está na lista — do lado neutro, o que é uma leitura e tanto sobre o Tirano Dourado.',
+        'Neutros, quase todos de casas que a crônica conhece: [[lady-cyraxes-draco]], [[lorde-thoren-bellias]], [[lady-elias-rimors]], [[hadrik]], [[lysandra]], [[katherine]], [[zeria]], [[vovo-iara]], [[aidwin]] e [[duncan-bellias]]. O imperador [[ayren-herrys-iv|Ayren IV]] também está na lista — do lado neutro, o que é uma leitura e tanto sobre o Tirano Dourado.',
         'Inimigos: [[ilvissar]], [[carmilla]], [[a-balanca]], [[raven-mother]], [[pet-demonio]] e [[reincraft]].',
       ],
     },

@@ -18,6 +18,8 @@ import { CARTOGRAFIA, COSTURA_DO_MAPA } from './valoran/cartografia';
 import { ANDARI } from './valoran/andari';
 import { ELENCO } from './valoran/elenco';
 import { COSMOLOGIA } from './valoran/cosmologia';
+import { GEOGRAFIA_E_TECNOLOGIA } from './valoran/geografia-e-tecnologia';
+import { LUA_VERMELHA } from './valoran/lua-vermelha';
 
 const BRUTOS: Verbete[] = [
   ...ERAS,
@@ -36,6 +38,10 @@ const BRUTOS: Verbete[] = [
   ...ELENCO,
   // Cosmologia: a Shadowfell, o Grande Pilar, e os ritos que as Anais calam.
   ...COSMOLOGIA,
+  // Geografia perdida: Ridash, a Aquila, Ilidaren, os Gigantes de Unkanten.
+  ...GEOGRAFIA_E_TECNOLOGIA,
+  // A Lua Vermelha, os Vernatto, e a crise política moderna de Aer Firen.
+  ...LUA_VERMELHA,
 ];
 
 /**
