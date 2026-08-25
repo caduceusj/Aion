@@ -9,6 +9,154 @@ import type { Verbete } from '../tipos';
 
 export const FRAGMENTOS: Verbete[] = [
   {
+    chave: 'anton',
+    titulo: 'Anton Von Oumalis',
+    epiteto: 'O avô corrompido',
+    categoria: 'npc',
+    resumo: 'Avô de Ferdinand, corrompido pela Shadowfell após a morte da esposa, e pai verdadeiro de Reynkraft com outra mulher.',
+    brasao: 'eclipse',
+    ficha: [
+      { rotulo: 'Neto', valor: '[[ferdinand]]' },
+      { rotulo: 'Filho', valor: '[[reincraft|Reynkraft]] — de outra mulher, não da avó de Ferdinand' },
+      { rotulo: 'Assombra', valor: '[[teatro-de-anton|O Teatro de Anton]], em Andari' },
+      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'Uma homenagem inacabada',
+        paragrafos: [
+          'Anton tentou se purificar através da música: compôs, para a esposa, uma homenagem que nunca terminou em vida. O que restou dela é um fragmento de partitura, encontrado apodrecendo no chão do camarim do teatro que hoje carrega o nome dele.',
+        ],
+      },
+      {
+        titulo: 'O segredo por trás da árvore genealógica',
+        paragrafos: [
+          'A câmara secreta da Torre da Lua Cheia guarda a versão não editada da árvore genealógica da Casa Oumalis: nela, a linha de [[reincraft|Reynkraft]] não se conecta à avó de Ferdinand. Reynkraft era filho só de Anton — com outra mulher, que morava escondida no backstage do teatro com um bebê. Foi esse segredo que deu a Reynkraft um motivo para matar a própria irmã antes que ela o revelasse.',
+        ],
+      },
+      {
+        titulo: 'Corrompido',
+        paragrafos: [
+          'Corrompido pela Shadowfell depois da morte da esposa, o espírito de Anton ainda ronda o teatro, usando uma máscara e cantando *Absolution* — a música que atacou [[ferdinand]] quando ele foi investigar o lugar.',
+        ],
+      },
+    ],
+    relacionados: ['ferdinand', 'reincraft', 'anneliese-oumalis', 'teatro-de-anton'],
+    eras: ['era-moderna'],
+  },
+
+  {
+    chave: 'teatro-de-anton',
+    titulo: 'O Teatro de Anton',
+    epiteto: 'Pequeno, apertado, e assombrado',
+    categoria: 'lugar',
+    resumo: 'Um teatro pequeno em Andari, mantido em pé por Reynkraft, onde o espírito corrompido de Anton ainda canta.',
+    brasao: 'eclipse',
+    ficha: [
+      { rotulo: 'Onde', valor: 'Andari' },
+      { rotulo: 'Mantido por', valor: '[[reincraft|Reynkraft]] — por sentimentalismo, ou por outro motivo' },
+      { rotulo: 'Assombrado por', valor: '[[anton|Anton]]' },
+      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'Um segredo escondido em plena vista',
+        paragrafos: [
+          'Pequeno e apertado, com algumas mesas e um palco principal com um piano visível, o teatro tem sinais de restauração parcial — madeira nova remendando o velho. [[ferdinand]] o visitou seguindo um som de canto que ninguém mais deveria estar ali para cantar.',
+          'No backstage, um berço e brinquedos de bebê apodrecendo ao lado de partituras de piano espalhadas pelo chão contam a história que a árvore genealógica oficial da família escondeu: alguém morou escondido ali, com uma criança.',
+        ],
+      },
+      {
+        titulo: 'Por que ainda está de pé',
+        paragrafos: [
+          'Reynkraft manteve o teatro em pé mesmo depois de tudo — talvez sentimentalismo, talvez porque um lugar perfeitamente escondido sempre vale a pena preservar. Sabendo como ele era prático, a segunda explicação não seria surpreendente.',
+        ],
+      },
+    ],
+    relacionados: ['anton', 'ferdinand', 'andari'],
+    eras: ['era-moderna'],
+  },
+
+  {
+    chave: 'o-sofredor',
+    titulo: 'O Sofredor',
+    epiteto: 'Deus menor de Alhara e Luctos',
+    categoria: 'poder',
+    resumo: 'Deus menor venerado em Alhara e Luctos, fora dos Doze, cujo culto vê na dor autoinfligida um caminho para a clareza.',
+    brasao: 'vazio',
+    ficha: [
+      { rotulo: 'Domínio', valor: 'Sofrimento e clareza através da dor' },
+      { rotulo: 'Culto em', valor: '[[alhara|Alhara]] e [[luctos|Luctos]]' },
+      { rotulo: 'Relíquia', valor: '[[chicote|O Chicote]]' },
+      { rotulo: 'Fora do panteão', valor: 'Não é um d[[os-doze|os Doze]]' },
+    ],
+    secoes: [
+      {
+        titulo: 'Um deus fora dos Doze',
+        paragrafos: [
+          'A fé oficial de Aer Firen conta [[os-doze|os Doze]] e mais nenhum deus — mas Alhara e Luctos, terras que a coroa nunca terminou de digerir, cultuam o Sofredor à parte. É um deus de quem a fé dodecista não fala, e que a wiki da campanha só menciona porque [[ferdinand]] o encontrou.',
+        ],
+      },
+      {
+        titulo: 'A bênção da autoflagelação',
+        paragrafos: [
+          'O credo do Sofredor é simples: a dor que se escolhe sofrer clareia a que a vida impõe sem escolha. Um homem que Ferdinand viu sendo chicoteado, sem demonstrar nada além de paz, o apresentou ao culto — e lhe deu [[chicote|um chicote]] próprio.',
+        ],
+      },
+    ],
+    relacionados: ['ferdinand', 'chicote', 'alhara', 'luctos', 'os-doze'],
+    eras: ['era-moderna'],
+  },
+
+  {
+    chave: 'chicote',
+    titulo: 'O Chicote do Sofredor',
+    epiteto: 'Autoflagelação como conforto',
+    categoria: 'reliquia',
+    resumo: 'O instrumento que um devoto do Sofredor deu a Ferdinand, para transformar dor escolhida em clareza e paz.',
+    brasao: 'lanca',
+    ficha: [
+      { rotulo: 'Dado a', valor: '[[ferdinand]], nas ruas pobres de Luctos' },
+      { rotulo: 'Culto', valor: '[[o-sofredor|O Sofredor]]' },
+      { rotulo: 'Uso', valor: 'Autoflagelação — conforto e clareza nos tempos difíceis' },
+    ],
+    secoes: [
+      {
+        titulo: 'Um instrumento contra a impotência',
+        paragrafos: [
+          'Ferdinand recebeu o chicote de um homem que encontrou vagando pelas ruas mais pobres de [[luctos|Luctos]], logo depois de entender que a própria mãe tinha sido enviada para morrer. "Receba este instrumento", disse o homem. "A autoflagelação será conforto nos tempos difíceis. E te ajudará a enxergar novos horizontes." Ferdinand aceita a bênção desde então.',
+        ],
+      },
+    ],
+    relacionados: ['ferdinand', 'o-sofredor', 'luctos'],
+    eras: ['era-moderna'],
+  },
+
+  {
+    chave: 'alhara',
+    titulo: 'Alhara',
+    epiteto: 'Onde o Luminífero é odiado',
+    categoria: 'lugar',
+    resumo: 'Região onde o povo odeia o Luminífero e cultua o Sofredor — um dos dois lares do culto, ao lado de Luctos.',
+    brasao: 'vazio',
+    ficha: [
+      { rotulo: 'Culto', valor: '[[o-sofredor|O Sofredor]]' },
+      { rotulo: 'Postura religiosa', valor: 'Odeia [[os-doze|o Luminífero]]' },
+      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'Um povo que virou as costas para o sol',
+        paragrafos: [
+          'As pessoas de Alhara odeiam o Luminífero — o deus do sol, líder d[[os-doze|os Doze]] segundo a fé oficial de Aer Firen. É em Alhara, ao lado de [[luctos|Luctos]], que o culto d[[o-sofredor|o Sofredor]] tem raízes, um deus menor que a coroa não reconhece.',
+        ],
+      },
+    ],
+    relacionados: ['o-sofredor', 'luctos', 'os-doze'],
+    eras: ['era-moderna'],
+  },
+
+  {
     chave: 'sangue-de-gigante',
     titulo: 'O sangue de gigante e a ordem das casas',
     epiteto: 'O que as Anais confessam não saber',

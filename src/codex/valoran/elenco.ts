@@ -140,8 +140,8 @@ const JOGADORES: Verbete[] = [
       {
         titulo: 'O culto do Sofredor',
         paragrafos: [
-          'A confirmação da traição o quebrou — a dor, a raiva, a impotência de saber que a figura que mais admirava era responsável, ainda que indiretamente, pela morte da própria mãe. Vagando pelas áreas mais pobres de Luctos nesse estado, viu um homem sendo chicoteado sem demonstrar dor — só paz, e uma espécie de sabedoria.',
-          'O homem o apresentou ao culto do Sofredor, um dos deuses menores de Alhara e Luctos, e lhe deu um chicote: a autoflagelação como conforto nos tempos difíceis, e caminho para clareza e paz. Ferdinand aceita a bênção desde então.',
+          'A confirmação da traição o quebrou — a dor, a raiva, a impotência de saber que a figura que mais admirava era responsável, ainda que indiretamente, pela morte da própria mãe. Vagando pelas áreas mais pobres de [[luctos|Luctos]] nesse estado, viu um homem sendo chicoteado sem demonstrar dor — só paz, e uma espécie de sabedoria.',
+          'O homem o apresentou ao culto [[o-sofredor|do Sofredor]], um dos deuses menores de [[alhara|Alhara]] e Luctos, e lhe deu [[chicote|um chicote]]: a autoflagelação como conforto nos tempos difíceis, e caminho para clareza e paz. Ferdinand aceita a bênção desde então.',
         ],
       },
       {
@@ -175,14 +175,14 @@ const JOGADORES: Verbete[] = [
       {
         titulo: 'A confissão de Reynkraft',
         paragrafos: [
-          'O que Ferdinand descobriu sozinho em Luctos tem um capítulo a mais, revelado só depois da morte de Reynkraft: ele sabia, desde antes de mandá-la, que Anneliese não voltaria. Escolheu o deserto para apagar qualquer vestígio — e o fez porque ela ameaçava revelar que a linhagem dele não vinha da avó de Ferdinand, e sim só do avô, Anton, o que tiraria de Reynkraft qualquer direito ao trono.',
+          'O que Ferdinand descobriu sozinho em Luctos tem um capítulo a mais, revelado só depois da morte de Reynkraft: ele sabia, desde antes de mandá-la, que Anneliese não voltaria. Escolheu o deserto para apagar qualquer vestígio — e o fez porque ela ameaçava revelar que a linhagem dele não vinha da avó de Ferdinand, e sim só do avô, [[anton|Anton]], o que tiraria de Reynkraft qualquer direito ao trono.',
           'Ferdinand deu à filha dele com Mia o nome [[anneliese-deallus|Anneliese Deallus]], em homenagem à avó que a menina nunca vai conhecer. Entre os destaques que a própria wiki guarda está a compra de [[cadeira|A Cadeira]] por 2000 peças de cobre — "meu bem mais precioso depois de minha filha e esposa", escreveu ele. Numa das viagens, também encontrou outra criança, [[rogar-crianca|Rogar]], de escamas douradas — sem parentesco confirmado com ele.',
         ],
       },
       {
         titulo: 'O avô Anton',
         paragrafos: [
-          'Anton tentou se purificar através da música: uma homenagem à esposa que nunca terminou de compor em vida. Corrompido pela Shadowfell, o espírito dele ainda ronda o teatro de Andari que carrega o nome dele, cantando. Entre as partituras apodrecendo no chão do camarim, um fragmento sobreviveu:',
+          '[[anton|Anton]] tentou se purificar através da música: uma homenagem à esposa que nunca terminou de compor em vida. Corrompido pela Shadowfell, o espírito dele ainda ronda o [[teatro-de-anton|teatro de Andari]] que carrega o nome dele, cantando. Entre as partituras apodrecendo no chão do camarim, um fragmento sobreviveu:',
           '*Nas linhas que traçava, sua alma vivia, / versos que o vento em cantos trazia. / E ao tocar sua harpa, doce e sutil, / curava os silêncios num som de abril.*',
         ],
       },
@@ -207,6 +207,11 @@ const JOGADORES: Verbete[] = [
       'casa-deallus',
       'cadeira',
       'vrednost',
+      'anton',
+      'o-sofredor',
+      'chicote',
+      'teatro-de-anton',
+      'alhara',
     ],
     eras: ['era-moderna'],
     alcunhas: ['von Oumalis', 'Franz', 'Lorde da Noite'],
