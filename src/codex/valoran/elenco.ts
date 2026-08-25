@@ -90,10 +90,10 @@ const JOGADORES: Verbete[] = [
   {
     chave: 'ferdinand',
     titulo: 'Ferdinand',
-    epiteto: 'Ferdinand Franz von Oumalis',
+    epiteto: 'Lorde da Noite de Andari',
     categoria: 'jogador',
     resumo:
-      'Meio-elfo artífice armorer, e metade do primeiro casamento que a campanha registrou.',
+      'Meio-elfo artífice armorer que se tornou Lorde da Noite de Andari ao unificar as famílias fraturadas dos Deallus.',
     brasao: 'martelo',
     ficha: [
       { rotulo: 'Nível', valor: '10' },
@@ -114,19 +114,51 @@ const JOGADORES: Verbete[] = [
       {
         titulo: 'Von Oumalis',
         paragrafos: [
-          'Ferdinand e [[beatrix|Beatrix von Oumalis]] carregam o mesmo nome de família, e a wiki registra o porquê no lugar mais seco possível — na linha de conquistas: *primeiro casamento do RPG*. [[alvyriel]] oficiou, e deixou o recado na página dele: “Honrada em oficializar seu casamento, me chame mais vezes.”',
+          'Ferdinand e [[beatrix|Beatrix von Oumalis]] dividem o sobrenome porque são irmãos — não marido e mulher, como uma leitura apressada deste Códice chegou a registrar antes. O primeiro casamento que [[alvyriel]] oficiou na campanha foi o dele, com [[mia|Mia Eroth Deallus]]: um casamento arranjado entre a Casa Oumalis e a Casa Deallus.',
+        ],
+      },
+      {
+        titulo: 'O Lorde da Noite de Andari',
+        paragrafos: [
+          'Depois de unificar as sub-famílias em que a [[casa-deallus|Casa Deallus]] se fraturou — a mesma fratura que as Anais registram como permanente e sem fim à vista — Ferdinand assumiu o título de Lorde da Noite de Andari. É um posto antigo: o último a portá-lo morreu na Espiral da Família Deallus, o ponto do continente onde a Shadowfell nasceu.',
+          'Nada disso está nas Anais, que fecham em 1570. É um título que a cidade deu a um homem vivo, na mesa, depois da última página que Maedrin Rimors escreveu.',
+        ],
+      },
+      {
+        titulo: 'A morte de Anneliese',
+        paragrafos: [
+          'A mãe de Ferdinand, [[anneliese-oumalis|Anneliese von Oumalis]], morreu num assassinato premeditado por [[reincraft|Reynkraft]] — enviada sob pretexto de missão diplomática com a [[casa-orhys|Casa Orhys]] para o deserto de Luctos, onde foi silenciada antes que pudesse revelar que a linhagem de Reynkraft não vinha da avó de Ferdinand, e sim só do avô, Anton, o que teria tirado dele qualquer direito ao trono.',
+          'Ferdinand deu à filha dele com Mia o nome [[anneliese-deallus|Anneliese Deallus]], em homenagem à avó que a menina nunca vai conhecer.',
+        ],
+      },
+      {
+        titulo: 'O avô Anton',
+        paragrafos: [
+          'Anton tentou se purificar através da música: uma homenagem à esposa que nunca terminou de compor em vida. Corrompido pela Shadowfell, o espírito dele ainda ronda o teatro de Andari que carrega o nome dele, cantando. Entre as partituras apodrecendo no chão do camarim, um fragmento sobreviveu:',
+          '*Nas linhas que traçava, sua alma vivia, / versos que o vento em cantos trazia. / E ao tocar sua harpa, doce e sutil, / curava os silêncios num som de abril.*',
         ],
       },
       {
         titulo: 'O que a wiki não diz',
         paragrafos: [
-          'A backstory dele está em branco. A página tem arte, tema musical, ficha completa e um casamento — e nenhuma linha sobre de onde ele veio.',
+          'Nada disto vem da wiki do Notion — vem das notas pessoais do mestre da campanha, fora dela. A página da wiki continua com a ficha completa e nenhuma linha de backstory própria.',
         ],
       },
     ],
-    relacionados: ['a-mesa-de-aion', 'beatrix', 'alvyriel', 'klen', 'mateo'],
+    relacionados: [
+      'a-mesa-de-aion',
+      'beatrix',
+      'alvyriel',
+      'klen',
+      'mateo',
+      'mia',
+      'anneliese-deallus',
+      'anneliese-oumalis',
+      'reincraft',
+      'casa-deallus',
+    ],
     eras: ['era-moderna'],
-    alcunhas: ['von Oumalis', 'Franz'],
+    alcunhas: ['von Oumalis', 'Franz', 'Lorde da Noite'],
   },
 
   {
@@ -135,7 +167,7 @@ const JOGADORES: Verbete[] = [
     epiteto: 'Beatrix von Oumalis',
     categoria: 'jogador',
     resumo:
-      'Meia-elfa maga da Escola de Syrromancia — uma escola de magia que só existe nesta campanha.',
+      'Meia-elfa maga da Escola de Syrromancia, irmã de Ferdinand, que esconde uma segunda identidade sob o nome Catheryn Von Oumalis.',
     brasao: 'vazio',
     ficha: [
       { rotulo: 'Nível', valor: '10' },
@@ -155,19 +187,25 @@ const JOGADORES: Verbete[] = [
       {
         titulo: 'Von Oumalis',
         paragrafos: [
-          'Divide o sobrenome com [[ferdinand]], pelo casamento que [[alvyriel]] oficiou — o primeiro da campanha.',
+          'Divide o sobrenome com [[ferdinand]] por serem irmãos, não marido e mulher — o casamento que [[alvyriel]] oficiou na campanha foi o dele, com [[mia|Mia Eroth Deallus]]. O Códice corrige aqui um erro da própria primeira importação da wiki, que leu a conquista *primeiro casamento do RPG* na direção errada.',
+        ],
+      },
+      {
+        titulo: 'Rouxinol e Catheryn Von Oumalis',
+        paragrafos: [
+          'Na mesa, Beatrix é chamada de Rouxinol — codinome que a própria [[mia|Mia]] pediu ao grupo para usar. Fora dele ela tem um segundo nome: Catheryn Von Oumalis, uma identidade que veste para se disfarçar, inclusive da própria família.',
         ],
       },
       {
         titulo: 'O que a wiki não diz',
         paragrafos: [
-          'Ficha em branco: PV, CA, deslocamento, CD, proficiência e todos os seis atributos ainda estão com o “x” do modelo. A única linha preenchida na página inteira é a conquista, e ela é uma piada: *morrer para ratos*.',
+          'Ficha em branco: PV, CA, deslocamento, CD, proficiência e todos os seis atributos ainda estão com o “x” do modelo. A única linha preenchida na página inteira é a conquista, e ela é uma piada: *morrer para ratos*. Nem Rouxinol nem Catheryn Von Oumalis vêm da wiki — são das notas pessoais do mestre.',
         ],
       },
     ],
-    relacionados: ['a-mesa-de-aion', 'ferdinand', 'alvyriel', 'mateo', 'klen'],
+    relacionados: ['a-mesa-de-aion', 'ferdinand', 'alvyriel', 'mateo', 'klen', 'mia'],
     eras: ['era-moderna'],
-    alcunhas: ['von Oumalis'],
+    alcunhas: ['von Oumalis', 'Rouxinol', 'Catheryn Von Oumalis'],
   },
 
   {
@@ -434,7 +472,6 @@ const ALIADOS: Verbete[] = [
     relacionados: ['monges-de-virion', 'alvyriel', 'mateo'],
     alcunhas: ['Imykos'],
   }),
-  aliado({ chave: 'mia', titulo: 'Mia', brasao: 'folha' }),
   aliado({ chave: 'symon', titulo: 'Symon', brasao: 'martelo' }),
   aliado({
     chave: 'fake-ferdinand',
@@ -516,14 +553,149 @@ const INIMIGOS: Verbete[] = [
   inimigo({ chave: 'a-balanca', titulo: 'A Balança', brasao: 'estrela', epiteto: 'Inimigo' }),
   inimigo({ chave: 'carmilla', titulo: 'Carmilla', brasao: 'serpente' }),
   inimigo({ chave: 'pet-demonio', titulo: 'Pet Demônio', brasao: 'mao' }),
-  inimigo({ chave: 'raven-mother', titulo: 'Raven Mother', brasao: 'eclipse', relacionados: ['corvus', 'ilvissar'] }),
   inimigo({
-    chave: 'reincraft',
-    titulo: 'Reincraft',
-    brasao: 'lanca',
-    nota: 'Grafado *Reincraft* na cópia nova da wiki e *Reynkraft* na antiga.',
-    alcunhas: ['Reynkraft'],
+    chave: 'raven-mother',
+    titulo: 'Raven Mother',
+    brasao: 'eclipse',
+    nota:
+      'Nome de nascimento Leas: tomou à força o poder das sombras dos sábios de [[corvus]], vendeu a alma pela escuridão, e agora se intitula Raven Mother, emulando e profanando [[alvyriel|a Tecelã]].',
+    relacionados: ['corvus', 'ilvissar', 'shadowfell'],
   }),
+];
+
+// =====================================================================
+// FAMÍLIA VON OUMALIS
+// =====================================================================
+
+const FAMILIA: Verbete[] = [
+  {
+    chave: 'mia',
+    titulo: 'Mia Eroth Deallus',
+    epiteto: 'Lady de Andari',
+    categoria: 'npc',
+    resumo: 'Da Casa Deallus, esposa de casamento arranjado de Ferdinand, e a primeira a chamar Beatrix de Rouxinol.',
+    brasao: 'deallus',
+    ficha: [
+      { rotulo: 'Casa', valor: 'Deallus' },
+      { rotulo: 'Papel', valor: 'Esposa de Ferdinand — casamento arranjado' },
+      { rotulo: 'Marca', valor: 'Um anel que guarda informação' },
+      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'Casamento arranjado',
+        paragrafos: [
+          'Mia Eroth Deallus é esposa de [[ferdinand]] por um casamento arranjado entre a Casa Oumalis e a sua fração da fraturada [[casa-deallus|Casa Deallus]] — a mesma aliança por trás do título de [[ferdinand|Lorde da Noite de Andari]].',
+          'Guarda informação num anel, e foi ela quem primeiro pediu ao grupo para chamar [[beatrix]] de Rouxinol.',
+        ],
+      },
+      {
+        titulo: 'O que ainda não se sabe',
+        paragrafos: [
+          'A wiki do Notion não chegou a abrir uma página própria para ela — o que existe aqui vem das notas pessoais do mestre da campanha, fora da wiki.',
+        ],
+      },
+    ],
+    relacionados: ['ferdinand', 'beatrix', 'casa-deallus', 'anneliese-deallus'],
+    eras: ['era-moderna'],
+  },
+  {
+    chave: 'anneliese-deallus',
+    titulo: 'Anneliese Deallus',
+    epiteto: 'Filha de Ferdinand e Mia',
+    categoria: 'npc',
+    resumo: 'Filha de Ferdinand e Mia Eroth Deallus, batizada em homenagem à avó paterna que nunca conheceu.',
+    brasao: 'estrela',
+    ficha: [
+      { rotulo: 'Pais', valor: 'Ferdinand e Mia Eroth Deallus' },
+      { rotulo: 'Homenageia', valor: 'Anneliese von Oumalis, avó paterna' },
+      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'Um nome contra o esquecimento',
+        paragrafos: [
+          '[[ferdinand]] e [[mia|Mia Eroth Deallus]] deram à filha o nome da avó dele, [[anneliese-oumalis|Anneliese von Oumalis]] — morta antes que Ferdinand tivesse idade de se lembrar dela direito. É o tipo de homenagem que também é uma recusa: a família não deixa Reynkraft apagar aquele nome.',
+        ],
+      },
+    ],
+    relacionados: ['ferdinand', 'mia', 'anneliese-oumalis'],
+    eras: ['era-moderna'],
+  },
+  {
+    chave: 'anneliese-oumalis',
+    titulo: 'Anneliese von Oumalis',
+    epiteto: 'Assassinada em Luctos',
+    categoria: 'npc',
+    resumo: 'Mãe de Ferdinand, morta num assassinato premeditado por Reynkraft antes que revelasse a origem ilegítima dele.',
+    brasao: 'eclipse',
+    ficha: [
+      { rotulo: 'Filho', valor: 'Ferdinand' },
+      { rotulo: 'Morte', valor: 'Assassinada no deserto de Luctos' },
+      { rotulo: 'Responsável', valor: 'Reynkraft — ver Reincraft' },
+      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'Uma missão que não era o que parecia',
+        paragrafos: [
+          'Anneliese foi enviada às Terras Desoladas de Luctos sob o pretexto de uma missão diplomática com a [[casa-orhys|Casa Orhys]]. [[reincraft|Reynkraft]] sabia, desde antes de ela partir, que não voltaria: mandou matá-la lá para que o deserto apagasse qualquer vestígio.',
+          'O motivo foi um impasse sobre o futuro de Andari e da família — e uma ameaça: Anneliese ia revelar que a linhagem de Reynkraft não vinha da avó de Ferdinand, só de Anton, o que o deixaria sem direito algum ao trono.',
+        ],
+      },
+      {
+        titulo: 'O que ficou',
+        paragrafos: [
+          'O nome dela virou o de [[anneliese-deallus|uma neta que ela não chegou a conhecer]]. Uma carta do próprio Reynkraft, escrita para ser lida só depois de sua morte, confirma cada detalhe do crime, sem arrependimento.',
+        ],
+      },
+    ],
+    relacionados: ['ferdinand', 'reincraft', 'anneliese-deallus', 'casa-orhys'],
+    eras: ['era-moderna'],
+  },
+  {
+    chave: 'reincraft',
+    titulo: 'Reynkraft',
+    epiteto: 'O usurpador da Casa Oumalis',
+    categoria: 'npc',
+    resumo: 'Usurpador da Casa Oumalis, pactuado com Mephisto, que mandou assassinar a própria sobrinha para esconder que não tinha direito ao trono.',
+    brasao: 'lanca',
+    ficha: [
+      { rotulo: 'Casa', valor: 'Oumalis (usurpador)' },
+      { rotulo: 'Pacto', valor: 'Mephisto, Arquiduque dos Nove Infernos' },
+      { rotulo: 'Trono', valor: 'Tecnologia Serafim/Oráculo sustentando um corpo em decomposição' },
+      { rotulo: 'Fonte', valor: 'Wiki nova grafa *Reincraft*; wiki antiga e notas do mestre grafam *Reynkraft*' },
+    ],
+    secoes: [
+      {
+        titulo: 'O segredo da árvore genealógica',
+        paragrafos: [
+          'A árvore genealógica oficial da Casa Oumalis, guardada na Torre da Lua Cheia, foi retificada pela avó de [[ferdinand]] — mas uma versão mais antiga, escondida numa câmara secreta, não tinha esse conserto: nela, a linha de Reynkraft não se conecta a ela. Reynkraft era filho só de Anton, o avô. Sem aquele parentesco, ele nunca teve direito nenhum ao trono que ocupou.',
+        ],
+      },
+      {
+        titulo: 'O assassinato de Anneliese',
+        paragrafos: [
+          'Quando [[anneliese-oumalis|Anneliese]] ameaçou revelar o segredo, Reynkraft a mandou para o deserto de Luctos sob pretexto de uma missão diplomática com a [[casa-orhys|Casa Orhys]] — sabendo, desde antes de ela partir, que não voltaria. Ele mesmo escreveu, numa carta selada para ser lida só depois de sua morte, que escolheu as areias do deserto para apagar qualquer vestígio.',
+        ],
+      },
+      {
+        titulo: 'O pacto e o trono',
+        paragrafos: [
+          'Um corpo em decomposição sustentado por fios de tecnologia Serafim/Oráculo cravados na armadura, ligados a um trono de pedra polida — e, por baixo disso, um pacto com Mephisto, Arquiduque dos Nove Infernos. É a explicação de como um usurpador sem direito legítimo nenhum se manteve firme no poder por 21 anos.',
+        ],
+      },
+      {
+        titulo: 'A morte',
+        paragrafos: [
+          'Morreu diante de [[beatrix]], acusado por ela de ter roubado 21 anos de infância dela e de Ferdinand. As últimas palavras dele foram só um nome cortado ao meio: “Anne... eu não...”',
+        ],
+      },
+    ],
+    relacionados: ['ferdinand', 'beatrix', 'anneliese-oumalis', 'casa-orhys'],
+    eras: ['era-moderna'],
+    alcunhas: ['Reincraft'],
+  },
 ];
 
 // =====================================================================
@@ -779,7 +951,7 @@ const A_MESA: Verbete = {
     {
       titulo: 'Quem a campanha cruzou',
       paragrafos: [
-        'Do lado dos aliados: [[sarmon]], [[lince]], [[lena]], [[morda]], [[cadeira]], [[carian]], [[iblis]], [[ikki]], [[imykus]], [[mia]], [[symon]], [[nornan]] e o improvável [[fake-ferdinand]] — além de [[elamyr]], que já tinha verbete nestas Anais antes de a wiki chegar.',
+        'Do lado dos aliados: [[sarmon]], [[lince]], [[lena]], [[morda]], [[cadeira]], [[carian]], [[iblis]], [[ikki]], [[imykus]], [[symon]], [[nornan]] e o improvável [[fake-ferdinand]] — além de [[elamyr]], que já tinha verbete nestas Anais antes de a wiki chegar. E do lado de dentro da própria família Von Oumalis: [[mia|Mia Eroth Deallus]], esposa de Ferdinand, a filha [[anneliese-deallus]] e a avó assassinada [[anneliese-oumalis]].',
         'Neutros, quase todos de casas que a crônica conhece: [[lady-cyraxes-draco]], [[lorde-thoren-bellias]], [[lady-elias-rimors]], [[hadrik]], [[lysandra]] e [[katherine]]. O imperador [[ayren-herrys-iv|Ayren IV]] também está na lista — do lado neutro, o que é uma leitura e tanto sobre o Tirano Dourado.',
         'Inimigos: [[ilvissar]], [[carmilla]], [[a-balanca]], [[raven-mother]], [[pet-demonio]] e [[reincraft]].',
       ],
@@ -812,6 +984,7 @@ export const ELENCO: Verbete[] = [
   ...MONGES,
   ...NEUTROS,
   ...INIMIGOS,
+  ...FAMILIA,
   ...GRUPOS,
   ...ARCOS,
 ];

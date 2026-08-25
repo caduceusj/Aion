@@ -17,6 +17,7 @@ import { PODERES } from './valoran/poderes';
 import { CARTOGRAFIA, COSTURA_DO_MAPA } from './valoran/cartografia';
 import { ANDARI } from './valoran/andari';
 import { ELENCO } from './valoran/elenco';
+import { COSMOLOGIA } from './valoran/cosmologia';
 
 const BRUTOS: Verbete[] = [
   ...ERAS,
@@ -33,6 +34,8 @@ const BRUTOS: Verbete[] = [
   ...ANDARI,
   // A mesa de verdade: jogadores, NPCs, grupos e arcos, vindos do Notion.
   ...ELENCO,
+  // Cosmologia: a Shadowfell, o Grande Pilar, e os ritos que as Anais calam.
+  ...COSMOLOGIA,
 ];
 
 /**

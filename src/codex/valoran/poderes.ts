@@ -60,7 +60,7 @@ export const PODERES: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['igreja-dos-doze', 'arran-herrys', 'lamina-firen', 'era-mil-reis', 'imperio-aer-firen'],
+    relacionados: ['igreja-dos-doze', 'arran-herrys', 'lamina-firen', 'era-mil-reis', 'imperio-aer-firen', 'os-ritos-dos-doze'],
     eras: ['era-mil-reis', 'era-primeira-luz', 'era-sombria', 'era-segunda-luz', 'era-moderna'],
     alcunhas: ['The Twelve', 'Ever Watchful', 'the gods'],
   },
