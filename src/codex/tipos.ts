@@ -23,7 +23,12 @@ export type CategoriaId =
   | 'lugar'
   | 'reliquia'
   | 'evento'
-  | 'poder';
+  | 'poder'
+  // As duas gavetas da mesa de verdade, importadas da wiki do Notion.
+  // Separadas das de cima de propósito: as Anais são um documento do mundo,
+  // fechado em 1570; o elenco é gente viva, jogando agora.
+  | 'jogador'
+  | 'npc';
 
 /** Brasões e glifos disponíveis em `heraldica.tsx`. */
 export type BrasaoId =
@@ -154,6 +159,18 @@ export const CATEGORIAS: Categoria[] = [
     rotulo: 'Eventos',
     singular: 'Evento',
     nota: 'As guerras, pragas e catástrofes que viraram as eras.',
+  },
+  {
+    id: 'jogador',
+    rotulo: 'Jogadores',
+    singular: 'Jogador',
+    nota: 'A party de Aion — quem senta à mesa, e quem já sentou.',
+  },
+  {
+    id: 'npc',
+    rotulo: 'NPCs',
+    singular: 'NPC',
+    nota: 'Aliados, neutros e inimigos que a campanha cruzou.',
   },
   {
     id: 'poder',

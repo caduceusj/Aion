@@ -16,6 +16,7 @@ import { EVENTOS } from './valoran/eventos';
 import { PODERES } from './valoran/poderes';
 import { CARTOGRAFIA, COSTURA_DO_MAPA } from './valoran/cartografia';
 import { ANDARI } from './valoran/andari';
+import { ELENCO } from './valoran/elenco';
 
 const BRUTOS: Verbete[] = [
   ...ERAS,
@@ -30,6 +31,8 @@ const BRUTOS: Verbete[] = [
   ...CARTOGRAFIA,
   // O ciclo de Andari veio depois das Anais e corrige vários pontos delas.
   ...ANDARI,
+  // A mesa de verdade: jogadores, NPCs, grupos e arcos, vindos do Notion.
+  ...ELENCO,
 ];
 
 /**
