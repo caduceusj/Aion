@@ -11,24 +11,34 @@ import {
   IconIndice,
   IconLivro,
   IconMapa,
+  IconOrbita,
 } from '@/ui/components/Icons';
 import { CodexAbertura } from '@/ui/components/CodexAbertura';
 import { CodexVerbete } from '@/ui/components/CodexVerbete';
 import { CodexAtlas } from '@/ui/components/CodexAtlas';
+import { CodexCalendario } from '@/ui/components/CodexCalendario';
 import '@/ui/styles/codex.css';
 
 /** Endereço de um verbete na barra do navegador: #codice/casa-keaton. */
 const PREFIXO_HASH = '#codice/';
 
-/** O Atlas não é um verbete: é uma vista própria, com endereço próprio. */
+/**
+ * Duas vistas que não são verbetes, e por isso têm endereço próprio.
+ *
+ * O Atlas é o mapa; o Almanaque é o calendário. Nenhum dos dois cabe em
+ * parágrafos — são instrumentos, não leitura — mas os dois precisam de link
+ * que se possa colar no grupo, como qualquer verbete.
+ */
 const ATLAS = '@atlas';
+const CALENDARIO = '@calendario';
+const VISTAS: string[] = [ATLAS, CALENDARIO];
 
 function chaveDaUrl(): string | null {
   if (typeof window === 'undefined') return null;
   const hash = window.location.hash;
   if (!hash.startsWith(PREFIXO_HASH)) return null;
   const chave = decodeURIComponent(hash.slice(PREFIXO_HASH.length));
-  if (chave === ATLAS) return ATLAS;
+  if (VISTAS.includes(chave)) return chave;
   return verbete(chave) ? chave : null;
 }
 
@@ -62,7 +72,7 @@ export function Codex() {
   const buscaRef = useRef<HTMLInputElement | null>(null);
 
   const atual = pilha[posicao] ?? null;
-  const entrada = atual && atual !== ATLAS ? verbete(atual) : undefined;
+  const entrada = atual && !VISTAS.includes(atual) ? verbete(atual) : undefined;
 
   const navegar = useCallback((chave: string | null) => {
     setNav((anterior) => {
@@ -255,6 +265,19 @@ export function Codex() {
             </span>
           </button>
 
+          <button
+            type="button"
+            className="indice__atlas"
+            data-ativo={atual === CALENDARIO ? 'sim' : undefined}
+            onClick={() => navegar(CALENDARIO)}
+          >
+            <IconOrbita size={17} />
+            <span>
+              <strong>O Almanaque</strong>
+              <small>As órbitas, os doze meses e a rota de Corvus</small>
+            </span>
+          </button>
+
           {buscando ? (
             <div className="indice__grupo">
               <p className="indice__rotulo">
@@ -319,6 +342,8 @@ export function Codex() {
         <div className="codice__leitura" ref={leituraRef}>
           {atual === ATLAS ? (
             <CodexAtlas aoNavegar={navegar} />
+          ) : atual === CALENDARIO ? (
+            <CodexCalendario aoNavegar={navegar} />
           ) : entrada ? (
             <CodexVerbete entrada={entrada} aoNavegar={navegar} />
           ) : (

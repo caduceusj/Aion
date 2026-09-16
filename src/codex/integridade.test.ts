@@ -15,15 +15,19 @@ import { PONTOS_DO_MAPA } from './mundo/cartografia';
 
 const CHAVES = new Set(VERBETES.map((v) => v.chave));
 
-/** Todo [[alvo]] de um verbete, com o parágrafo em que apareceu. */
+/** Todo [[alvo]] de um verbete — da prosa e da ficha —, com o trecho em que apareceu. */
 function elos(entrada: Verbete): Array<{ chave: string; onde: string }> {
   const saida: Array<{ chave: string; onde: string }> = [];
-  for (const secao of entrada.secoes) {
-    for (const paragrafo of secao.paragrafos) {
-      for (const casamento of paragrafo.matchAll(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g)) {
-        saida.push({ chave: (casamento[1] ?? '').trim(), onde: paragrafo.slice(0, 70) });
-      }
+  const colher = (texto: string) => {
+    for (const casamento of texto.matchAll(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g)) {
+      saida.push({ chave: (casamento[1] ?? '').trim(), onde: texto.slice(0, 70) });
     }
+  };
+  // A ficha também passa pelo <Prosa>, então um erro de digitação ali quebra
+  // do mesmo jeito que quebraria no meio de um parágrafo.
+  for (const fato of entrada.ficha) colher(fato.valor);
+  for (const secao of entrada.secoes) {
+    for (const paragrafo of secao.paragrafos) colher(paragrafo);
   }
   return saida;
 }

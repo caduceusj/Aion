@@ -121,6 +121,7 @@ export function referenciam(chave: string): VerbeteNoAcervo[] {
     (v) =>
       v.chave !== chave &&
       (v.relacionados.includes(chave) ||
+        v.ficha.some((f) => f.valor.includes(`[[${chave}`)) ||
         v.secoes.some((s) => s.paragrafos.some((p) => p.includes(`[[${chave}`)))),
   );
 }

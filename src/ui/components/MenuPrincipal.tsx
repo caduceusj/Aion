@@ -59,10 +59,12 @@ export function MenuPrincipal() {
           </span>
           <span className="porta__nome">O Códice</span>
           <span className="porta__nota">
-            As Anais de Valoran: as cinco eras, as casas, os personagens e o
-            atlas de 1575 — tudo cruzado por links.
+            As Anais de Valoran e a mesa de hoje: as eras, as casas, o elenco, o
+            atlas de 1575 e o almanaque do céu — tudo cruzado por links.
           </span>
-          <span className="porta__rodape">{VERBETES.length} verbetes · atlas em duas pranchas</span>
+          <span className="porta__rodape">
+            {VERBETES.length} verbetes · atlas em duas pranchas · calendário de Aion
+          </span>
           <span className="porta__eco">
             <em>“Recovered from the Imperial Archives”</em>
           </span>

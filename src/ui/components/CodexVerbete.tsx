@@ -1,5 +1,5 @@
-import type { Verbete } from '@/codex/tipos';
-import { CATEGORIAS } from '@/codex/tipos';
+import type { VerbeteNoAcervo } from '@/codex/tipos';
+import { CATEGORIAS, FONTES } from '@/codex/tipos';
 import { referenciam, verbete as buscarVerbete } from '@/codex/corpus';
 import { Prosa } from '@/codex/prosa';
 import { Brasao } from '@/codex/heraldica';
@@ -15,10 +15,11 @@ export function CodexVerbete({
   entrada,
   aoNavegar,
 }: {
-  entrada: Verbete;
+  entrada: VerbeteNoAcervo;
   aoNavegar: (chave: string) => void;
 }) {
   const categoria = CATEGORIAS.find((c) => c.id === entrada.categoria);
+  const fonte = FONTES[entrada.fonte];
   const citam = referenciam(entrada.chave);
 
   return (
@@ -27,7 +28,12 @@ export function CodexVerbete({
         {entrada.brasao ? (
           <Brasao id={entrada.brasao} size={78} className="verbete__brasao" />
         ) : null}
-        <p className="verbete__gaveta">{categoria?.singular ?? ''}</p>
+        <p className="verbete__gaveta">
+          {categoria?.singular ?? ''}
+          <span className="verbete__fonte" data-camada={fonte.camada} title={fonte.nota}>
+            {fonte.rotulo}
+          </span>
+        </p>
         {entrada.epiteto ? <p className="verbete__epiteto">{entrada.epiteto}</p> : null}
         <h1 className="verbete__titulo">{entrada.titulo}</h1>
         {entrada.periodo ? <p className="verbete__periodo">{entrada.periodo}</p> : null}
@@ -43,7 +49,9 @@ export function CodexVerbete({
             {entrada.ficha.map((fato) => (
               <div className="verbete__fato" key={fato.rotulo}>
                 <dt>{fato.rotulo}</dt>
-                <dd>{fato.valor}</dd>
+                <dd>
+                  <Prosa texto={fato.valor} aoNavegar={aoNavegar} />
+                </dd>
               </div>
             ))}
           </dl>

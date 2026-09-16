@@ -1,6 +1,7 @@
 import { CATEGORIAS } from '@/codex/tipos';
 import { LINHA_DO_TEMPO, porCategoria } from '@/codex/corpus';
 import { Brasao } from '@/codex/heraldica';
+import { IconMapa, IconOrbita } from '@/ui/components/Icons';
 
 /**
  * A capa do códice.
@@ -68,6 +69,28 @@ export function CodexAbertura({ aoNavegar }: { aoNavegar: (chave: string) => voi
             </li>
           ))}
         </ol>
+      </section>
+
+      <section className="abertura__instrumentos" aria-label="Os instrumentos">
+        <p className="verbete__rubrica">Os Instrumentos</p>
+        <div className="instrumentos">
+          <button type="button" className="instrumento" onClick={() => aoNavegar('@atlas')}>
+            <IconMapa size={26} />
+            <strong>O Atlas</strong>
+            <small>
+              O mapa de 1575 em duas pranchas — a limpa e a das regiões —, com os domínios
+              clicáveis.
+            </small>
+          </button>
+          <button type="button" className="instrumento" onClick={() => aoNavegar('@calendario')}>
+            <IconOrbita size={26} />
+            <strong>O Almanaque</strong>
+            <small>
+              As três órbitas de Aion, os doze meses valorianos e a rota de Corvus pelos seis
+              continentes.
+            </small>
+          </button>
+        </div>
       </section>
 
       <section className="abertura__gavetas" aria-label="Gavetas do códice">

@@ -283,6 +283,15 @@ export const IconIndice = (props: IconProps) => (
   </Glyph>
 );
 
+/** Órbita com a lua fora dela: o calendário de Aion em um glifo. */
+export const IconOrbita = (props: IconProps) => (
+  <Glyph {...props}>
+    <ellipse cx="12" cy="12" rx="9.2" ry="5.2" />
+    <circle cx="12" cy="12" r="2.6" />
+    <circle cx="20.4" cy="8" r="1.5" />
+  </Glyph>
+);
+
 export const IconCasa = (props: IconProps) => (
   <Glyph {...props}>
     <path d="M4 10.4 12 4l8 6.4V19a1.4 1.4 0 0 1-1.4 1.4H5.4A1.4 1.4 0 0 1 4 19z" />

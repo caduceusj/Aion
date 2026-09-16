@@ -1341,3 +1341,748 @@
     justify-content: center;
   }
 }
+
+/* ------------------------------------------------------------ almanaque */
+
+/**
+ * O Almanaque.
+ *
+ * Duas texturas de propósito: o diagrama e as tabelas são do códice — ouro
+ * sobre negro —, e a folha do mês é papel. O calendário existe impresso no
+ * mundo, e mostrar a prancha como papel pousado na mesa do arquivo diz isso
+ * sem precisar de uma linha de texto.
+ */
+
+.almanaque {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-5) var(--sp-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.almanaque__topo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.almanaque__eyebrow {
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+}
+
+.almanaque__titulo {
+  font-family: var(--cx-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cx-pergaminho);
+  margin-top: var(--sp-1);
+}
+
+.almanaque__abas {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+}
+
+.almanaque__abas button {
+  padding: 6px var(--sp-4);
+  border-radius: var(--r-pill);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cx-apagado);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.almanaque__abas button:hover {
+  color: var(--cx-ouro-claro);
+}
+
+.almanaque__abas button[data-ativo='sim'] {
+  color: var(--cx-ouro-claro);
+  background: rgba(201, 162, 75, 0.14);
+}
+
+.almanaque__rotulo {
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+  margin-bottom: var(--sp-2);
+}
+
+.almanaque__nota {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--cx-apagado);
+  margin-top: var(--sp-3);
+}
+
+/* --- a fita dos doze meses --- */
+
+.almanaque__meses {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.pastilha-mes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) 6px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-top: 3px solid var(--estacao-cor, var(--cx-linha));
+  border-radius: var(--r-sm);
+  text-align: left;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.pastilha-mes[data-estacao='verao'] {
+  --estacao-cor: #b8453f;
+}
+.pastilha-mes[data-estacao='outono'] {
+  --estacao-cor: #b8712a;
+}
+.pastilha-mes[data-estacao='inverno'] {
+  --estacao-cor: #63799f;
+}
+.pastilha-mes[data-estacao='primavera'] {
+  --estacao-cor: #2f8f43;
+}
+
+.pastilha-mes span {
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--cx-pergaminho-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pastilha-mes small {
+  font-size: var(--fs-micro);
+  color: var(--cx-apagado);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pastilha-mes:hover {
+  border-color: var(--cx-linha);
+  background: rgba(201, 162, 75, 0.06);
+}
+
+.pastilha-mes[data-ativo='sim'] {
+  background: rgba(201, 162, 75, 0.14);
+  border-color: var(--cx-ouro);
+}
+
+.pastilha-mes[data-ativo='sim'] span {
+  color: var(--cx-ouro-claro);
+}
+
+/* --- o corpo: diagrama + folha --- */
+
+.almanaque__corpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: var(--sp-5);
+  align-items: start;
+}
+
+.almanaque__diagrama {
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  background: radial-gradient(70% 60% at 50% 40%, rgba(108, 127, 176, 0.08), transparent 70%);
+}
+
+.almanaque__diagrama svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.almanaque__diagrama figcaption {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--cx-apagado);
+}
+
+.almanaque__diagrama figcaption strong {
+  color: var(--cx-pergaminho-2);
+}
+
+.orbita__anel {
+  fill: none;
+  stroke: var(--cx-linha-fraca);
+  stroke-width: 1;
+}
+
+.orbita__anel[data-ciclo='medio'] {
+  stroke: rgba(201, 162, 75, 0.2);
+}
+
+.orbita__salto {
+  stroke: var(--cx-ouro);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 4;
+  opacity: 0.75;
+}
+
+.orbita__estrela {
+  fill: var(--cx-ouro-claro);
+  filter: drop-shadow(0 0 10px rgba(240, 205, 128, 0.6));
+}
+
+.orbita__estrela-nome,
+.orbita__nome {
+  font-family: var(--cx-display);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--cx-apagado);
+}
+
+.orbita__corpo {
+  cursor: pointer;
+}
+
+.orbita__disco {
+  fill: var(--cx-pergaminho-2);
+  transition: fill var(--dur-fast) var(--ease-out);
+}
+
+.orbita__corpo:hover .orbita__disco {
+  fill: var(--cx-ouro-claro);
+}
+
+.orbita__corpo:hover .orbita__nome {
+  fill: var(--cx-ouro-claro);
+}
+
+.orbita__corpo[data-lua='sim'] .orbita__disco {
+  fill: #e9e4d7;
+}
+
+.orbita__corpo[data-lua='sim'] .orbita__nome,
+.orbita__corpo[data-destino='sim'] .orbita__nome {
+  fill: var(--cx-pergaminho);
+}
+
+.orbita__halo {
+  fill: none;
+  stroke: rgba(233, 228, 215, 0.55);
+  stroke-width: 1;
+}
+
+/* --- a folha impressa --- */
+
+.folha {
+  background: #efe6d2;
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  color: #2a2620;
+  box-shadow: var(--shadow-lg);
+  border-top: 6px solid var(--estacao, #b8453f);
+}
+
+.folha__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-3);
+}
+
+.folha__mes {
+  font-family: var(--cx-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: #241f18;
+}
+
+.folha__linha {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: #6a6155;
+}
+
+.folha__lua {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  flex: none;
+  border-radius: 50%;
+  background: #4a4a4a;
+  color: #efe6d2;
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  text-align: center;
+  padding: 4px;
+}
+
+.folha__lua[data-aqui='sim'] {
+  background: #e4e1d8;
+  color: #2a2620;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7);
+}
+
+.folha__semana,
+.folha__grade {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.folha__semana {
+  margin-bottom: 3px;
+}
+
+.folha__semana span {
+  background: #f7f2e6;
+  border-radius: 3px;
+  padding: 4px 2px;
+  text-align: center;
+  font-size: var(--fs-micro);
+  color: #5f574a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folha__dia {
+  position: relative;
+  min-height: 46px;
+  border-radius: 3px 3px 0 0;
+  padding: 4px 5px 8px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: #3a342a;
+}
+
+.folha__dia[data-fase='ascensao'] {
+  background: #fbf0ba;
+}
+.folha__dia[data-fase='dominio'] {
+  background: #fcd94f;
+}
+.folha__dia[data-fase='virada'] {
+  background: #f7d3ae;
+}
+
+/* A faixa da lua corre por baixo de cada dia, como na prancha impressa. */
+.folha__lua-faixa {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  /* Sem esta linha, a faixa clara some dentro do amarelo do papel. */
+  border-top: 1px solid rgba(28, 28, 28, 0.55);
+}
+
+.folha__lua-faixa[data-fase='escura'] {
+  background: #1c1c1c;
+}
+.folha__lua-faixa[data-fase='luz'] {
+  background: #fdfdfb;
+}
+.folha__lua-faixa[data-fase='ecos'] {
+  background: #4d4d4d;
+}
+
+.folha__nota {
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid rgba(42, 38, 32, 0.18);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: #6a6155;
+}
+
+/* --- ponto de vista e legendas --- */
+
+.almanaque__continentes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.almanaque__continentes button {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px var(--sp-3);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho-2);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.almanaque__continentes button small {
+  font-size: var(--fs-micro);
+  color: var(--cx-apagado);
+}
+
+.almanaque__continentes button:hover {
+  border-color: var(--cx-linha);
+  color: var(--cx-ouro-claro);
+}
+
+.almanaque__continentes button[data-ativo='sim'] {
+  border-color: var(--cx-ouro);
+  background: rgba(201, 162, 75, 0.14);
+  color: var(--cx-ouro-claro);
+}
+
+.almanaque__legendas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--sp-5);
+  padding: var(--sp-4);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-md);
+}
+
+.legenda__item {
+  display: grid;
+  grid-template-columns: 14px auto;
+  gap: 2px var(--sp-3);
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--cx-pergaminho-2);
+}
+
+.legenda__item strong {
+  font-weight: 600;
+}
+
+.legenda__item small {
+  grid-column: 2;
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--cx-apagado);
+}
+
+.legenda__cor {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  margin-top: 3px;
+}
+
+.legenda__cor[data-fase='ascensao'] {
+  background: #fbf0ba;
+}
+.legenda__cor[data-fase='dominio'] {
+  background: #fcd94f;
+}
+.legenda__cor[data-fase='virada'] {
+  background: #f7d3ae;
+}
+.legenda__cor--lua {
+  border: 1px solid rgba(28, 28, 28, 0.55);
+}
+.legenda__cor--lua[data-fase='escura'] {
+  background: #1c1c1c;
+  border-color: rgba(201, 162, 75, 0.3);
+}
+.legenda__cor--lua[data-fase='luz'] {
+  background: #fdfdfb;
+}
+.legenda__cor--lua[data-fase='ecos'] {
+  background: #4d4d4d;
+}
+
+/* --- as três órbitas --- */
+
+.ciclos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--sp-4);
+}
+
+.ciclo {
+  padding: var(--sp-4);
+  border: 1px solid var(--cx-linha-fraca);
+  border-left: 3px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+}
+
+.ciclo[data-ciclo='medio'] {
+  border-left-color: var(--cx-ouro);
+}
+
+.ciclo h4 {
+  font-family: var(--cx-display);
+  font-size: var(--fs-base);
+  letter-spacing: 0.08em;
+  color: var(--cx-pergaminho);
+}
+
+.ciclo__numeros {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--cx-ouro-fundo);
+  margin: var(--sp-1) 0 var(--sp-2);
+}
+
+.ciclo__moradores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+
+.ciclo__moradores button {
+  padding: 3px var(--sp-3);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho-2);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.ciclo__moradores button:hover {
+  border-color: var(--cx-ouro);
+  color: var(--cx-ouro-claro);
+}
+
+.ciclo__nota {
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: var(--cx-apagado);
+}
+
+/* --- a corvisseia --- */
+
+.corvisseia__intro {
+  max-width: 54rem;
+  font-size: var(--fs-base);
+  line-height: 1.75;
+  color: var(--cx-pergaminho-2);
+  margin-bottom: var(--sp-5);
+}
+
+.corvisseia__volta {
+  margin-bottom: var(--sp-5);
+}
+
+.corvisseia__volta h4 {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  font-family: var(--cx-display);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+  margin-bottom: var(--sp-2);
+}
+
+.corvisseia__volta h4 small {
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: var(--cx-apagado);
+}
+
+.corvisseia__tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.corvisseia__tabela th {
+  text-align: left;
+  padding: 6px var(--sp-3);
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cx-apagado);
+  border-bottom: 1px solid var(--cx-linha-fraca);
+}
+
+.corvisseia__tabela td {
+  padding: 7px var(--sp-3);
+  border-bottom: 1px solid rgba(201, 162, 75, 0.07);
+  color: var(--cx-pergaminho-2);
+}
+
+.corvisseia__tabela tbody tr {
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.corvisseia__tabela tbody tr:hover {
+  background: rgba(201, 162, 75, 0.06);
+}
+
+.corvisseia__tabela tbody tr[data-ativo='sim'] {
+  background: rgba(201, 162, 75, 0.12);
+}
+
+.corvisseia__tabela td small {
+  display: block;
+  font-size: var(--fs-micro);
+  color: var(--cx-apagado);
+}
+
+.corvisseia__numero {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+
+.corvisseia__pulo {
+  display: inline-block;
+  padding: 2px var(--sp-3);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--cx-linha-fraca);
+  color: var(--cx-apagado);
+}
+
+.corvisseia__pulo[data-pulo='normal'] {
+  border-color: rgba(201, 162, 75, 0.4);
+  color: var(--cx-pergaminho-2);
+}
+
+.corvisseia__pulo[data-pulo='intenso'] {
+  border-color: rgba(203, 74, 76, 0.55);
+  background: rgba(203, 74, 76, 0.12);
+  color: #e79a99;
+}
+
+@media (max-width: 900px) {
+  .almanaque__corpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .almanaque__meses {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .almanaque {
+    padding: var(--sp-4) var(--sp-3) var(--sp-6);
+  }
+
+  .almanaque__meses {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .folha__semana span {
+    font-size: 0.55rem;
+    letter-spacing: -0.02em;
+  }
+
+  .folha__dia {
+    min-height: 38px;
+    padding: 3px 3px 8px;
+  }
+
+  .corvisseia__tabela {
+    font-size: var(--fs-xs);
+  }
+
+  .corvisseia__tabela th:nth-child(4),
+  .corvisseia__tabela td:nth-child(4) {
+    display: none;
+  }
+}
+
+/* A procedência, ao lado da gaveta: de qual documento este verbete saiu. */
+.verbete__fonte {
+  margin-left: var(--sp-3);
+  padding: 2px var(--sp-3);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  color: var(--cx-apagado);
+  cursor: help;
+}
+
+.verbete__fonte[data-camada='mesa'] {
+  border-color: rgba(203, 74, 76, 0.35);
+  color: #c98a89;
+}
+
+/* Os instrumentos na capa: o mapa e o almanaque, lado a lado. */
+.abertura__instrumentos {
+  margin-top: var(--sp-6);
+}
+
+.instrumentos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--sp-4);
+  margin-top: var(--sp-3);
+}
+
+.instrumento {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 2px var(--sp-4);
+  padding: var(--sp-4);
+  text-align: left;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-md);
+  color: var(--cx-apagado);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.instrumento svg {
+  grid-row: span 2;
+  align-self: center;
+  color: var(--cx-ouro-fundo);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.instrumento strong {
+  font-family: var(--cx-display);
+  font-size: var(--fs-md);
+  letter-spacing: 0.06em;
+  color: var(--cx-pergaminho);
+}
+
+.instrumento small {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+.instrumento:hover {
+  border-color: var(--cx-ouro);
+  background: rgba(201, 162, 75, 0.07);
+}
+
+.instrumento:hover svg {
+  color: var(--cx-ouro-claro);
+}

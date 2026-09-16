@@ -82,12 +82,23 @@ indexa por chave, faz a busca por relevância (sem acento, sem caixa) e
 calcula os retrolinks — quem cita quem — que a prosa não declara.
 
 ```
-codex/tipos.ts      contrato do verbete e as gavetas
+codex/tipos.ts      contrato do verbete, as gavetas e as fontes
 codex/corpus.ts     índice, busca, retrolinks, costura com o mapa
 codex/prosa.tsx     resolve [[..]] em links navegáveis
-codex/valoran/      os dados, um arquivo por categoria
-codex/valoran/heraldica.tsx   brasões e glifos, SVG inline
+codex/heraldica.tsx brasões e glifos, SVG inline
+codex/calendario.ts as três órbitas, a rota de Corvus e os doze meses
+codex/mundo/        o que o mundo sabe de si — um arquivo por categoria
+codex/mesa/         o que a mesa viveu — elenco e sessões
 ```
+
+O acervo tem **duas camadas**, e essa é a divisão dos diretórios. `mundo/` é
+o cenário como as suas próprias fontes o registram; `mesa/` é o que aconteceu
+nas sessões. Cada arquivo entra no corpus carimbado com a fonte de onde veio
+(As Anais, a Gazeta, a Biblioteca de Andari, o Almanaque, a wiki da mesa, as
+notas de sessão), e o verbete mostra esse carimbo. Assim uma afirmação de
+1570 escrita por um cronista imperial não se confunde com uma anotação do
+Mestre de terça-feira — e nenhum dos ~200 verbetes precisou declarar a sua
+própria procedência linha a linha.
 
 A interface (`ui/components/Codex*.tsx`) é uma sobreposição de tela cheia, e
 não um painel do trilho: ler uma crônica numa faixa de 320px é castigo. A
@@ -112,12 +123,32 @@ Viridier, Dras, Nova Firen. Eles existem como verbetes honestos: o
 cartógrafo escreveu o nome, o cronista não explicou. São ganchos abertos
 para o Mestre, marcados como tais.
 
+### O céu como dado, não como texto
+
+O calendário valoriano não é uma imagem escaneada: é `codex/calendario.ts`, e
+o desenho na tela sai dele. Três órbitas (180, 360 e 540 dias), seis
+continentes com o seu código orbital, os trinta dias que são 19,5 de estadia
+mais 10,5 de viagem, e a tabela de 36 trechos que A Corvisseia percorre antes
+de se repetir. As velocidades não estão escritas em lugar nenhum — são
+distância dividida por 10,5 dias, calculadas na hora.
+
+Isso torna o calendário verificável, e `codex/calendario.test.ts` o verifica:
+que a rota fecha em si mesma, que cada trecho começa onde o anterior acabou,
+que as seis voltas são idênticas, que Valoran → Yōso mede sempre as mesmas
+1,82 UA (é o que prova que os três do meio estão a 120° um do outro), e que
+as velocidades calculadas batem com a prancha impressa do usuário dentro do
+ruído do arredondamento. Onde a prancha se contradiz — Equiral rotulada
+"Verão" mas impressa no bloco do outono, Dracônio desenhada com a lua errada
+— o dado registra a contradição num campo `nota` em vez de escolher um lado
+em silêncio.
+
 ### O guarda-corpo
 
 `codex/integridade.test.ts` barra o que mata um wiki: link para chave
-inexistente, verbete-ilha (que ninguém cita), beco sem saída (que não cita
-ninguém), resumo de duas frases, ponto de mapa órfão, marcação vazando para
-a tela. Roda no mesmo `npm test` que segura o deploy.
+inexistente (na prosa **e** na ficha, que passam pelo mesmo `<Prosa>`),
+verbete-ilha (que ninguém cita), beco sem saída (que não cita ninguém),
+resumo de duas frases, ponto de mapa órfão, marcação vazando para a tela.
+Roda no mesmo `npm test` que segura o deploy.
 
 ## Contratos
 
