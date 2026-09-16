@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest';
 import { CATEGORIAS, type Verbete } from './tipos';
 import { VERBETES, buscar, porCategoria, referenciam, tituloAmbiguo, verbete } from './corpus';
 import { semMarcacao } from './prosa';
-import { PONTOS_DO_MAPA } from './valoran/cartografia';
+import { PONTOS_DO_MAPA } from './mundo/cartografia';
 
 const CHAVES = new Set(VERBETES.map((v) => v.chave));
 

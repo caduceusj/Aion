@@ -14,7 +14,7 @@
  */
 
 import type { ReactNode } from 'react';
-import type { BrasaoId } from '../tipos';
+import type { BrasaoId } from './tipos';
 
 interface Desenho {
   viewBox: string;

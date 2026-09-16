@@ -132,29 +132,6 @@ export const FRAGMENTOS: Verbete[] = [
     eras: ['era-moderna'],
   },
 
-  {
-    chave: 'alhara',
-    titulo: 'Alhara',
-    epiteto: 'Onde o Luminífero é odiado',
-    categoria: 'lugar',
-    resumo: 'Região onde o povo odeia o Luminífero e cultua o Sofredor — um dos dois lares do culto, ao lado de Luctos.',
-    brasao: 'vazio',
-    ficha: [
-      { rotulo: 'Culto', valor: '[[o-sofredor|O Sofredor]]' },
-      { rotulo: 'Postura religiosa', valor: 'Odeia [[os-doze|o Luminífero]]' },
-      { rotulo: 'Fonte', valor: 'Notas pessoais do mestre, fora da wiki' },
-    ],
-    secoes: [
-      {
-        titulo: 'Um povo que virou as costas para o sol',
-        paragrafos: [
-          'As pessoas de Alhara odeiam o Luminífero — o deus do sol, líder d[[os-doze|os Doze]] segundo a fé oficial de Aer Firen. É em Alhara, ao lado de [[luctos|Luctos]], que o culto d[[o-sofredor|o Sofredor]] tem raízes, um deus menor que a coroa não reconhece.',
-        ],
-      },
-    ],
-    relacionados: ['o-sofredor', 'luctos', 'os-doze'],
-    eras: ['era-moderna'],
-  },
 
   {
     chave: 'sangue-de-gigante',

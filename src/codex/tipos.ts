@@ -15,12 +15,100 @@
  * quebrado em produção — ver `codex/integridade.test.ts`.
  */
 
+/**
+ * A camada de onde a lore vem.
+ *
+ * O Códice guarda dois corpos de conhecimento que não têm o mesmo estatuto, e
+ * fingir que têm é o que deixaria tudo confuso:
+ *
+ *   mundo — o que o mundo registrou sobre si: a crônica, os mapas, os livros.
+ *           Prosa em inglês, na voz de quem escreveu cada documento.
+ *   mesa  — a campanha acontecendo agora, com gente de verdade jogando.
+ *           Prosa em português, na voz de quem está à mesa.
+ */
+export type CamadaId = 'mundo' | 'mesa';
+
+/** O documento de onde um verbete saiu. */
+export type FonteId =
+  | 'anais'
+  | 'gazeta'
+  | 'andari'
+  | 'biblioteca'
+  | 'almanaque'
+  | 'wiki'
+  | 'notas';
+
+export interface Fonte {
+  id: FonteId;
+  camada: CamadaId;
+  /** Curto, para a etiqueta no alto do verbete. */
+  rotulo: string;
+  /** Uma linha dizendo o que é o documento. */
+  nota: string;
+}
+
+/**
+ * As sete procedências, e o que cada uma pode saber.
+ *
+ * Isto é o que evita a contradição virar erro: as Anais fecham em 1570 e não
+ * conhecem o nome de um só dos Doze; o almanaque conhece as órbitas mas não
+ * conhece política; a wiki conhece fichas. Quando duas discordam, o verbete
+ * mostra as duas e diz de onde cada uma veio.
+ */
+export const FONTES: Record<FonteId, Fonte> = {
+  anais: {
+    id: 'anais',
+    camada: 'mundo',
+    rotulo: 'As Anais',
+    nota: 'A crônica de Maedrin Rimors, erudito dos Arquivos Imperiais, fechada no ano 1570.',
+  },
+  gazeta: {
+    id: 'gazeta',
+    camada: 'mundo',
+    rotulo: 'A Gazeta',
+    nota: 'O mapa de 1575 — os lugares que o cartógrafo nomeou e a crônica não alcançou.',
+  },
+  andari: {
+    id: 'andari',
+    camada: 'mundo',
+    rotulo: 'O Ciclo de Andari',
+    nota: 'O relato élfico de Andari, que corrige as Anais em cinco pontos.',
+  },
+  biblioteca: {
+    id: 'biblioteca',
+    camada: 'mundo',
+    rotulo: 'A Biblioteca',
+    nota: 'Os livros do Tear Prateado: a Shadowfell, o Grande Pilar, os ritos dos Doze.',
+  },
+  almanaque: {
+    id: 'almanaque',
+    camada: 'mundo',
+    rotulo: 'O Almanaque',
+    nota: 'O calendário dos viajantes do vazio: as órbitas, os meses e a rota de Corvus.',
+  },
+  wiki: {
+    id: 'wiki',
+    camada: 'mesa',
+    rotulo: 'A Wiki',
+    nota: 'AION — RPG: The Complete Wiki, do próprio mestre: fichas, backstories e arcos.',
+  },
+  notas: {
+    id: 'notas',
+    camada: 'mesa',
+    rotulo: 'As Notas',
+    nota: 'As anotações de sessão do mestre, fora da wiki — o que foi dito na mesa.',
+  },
+};
+
 /** Gaveta do códice. A ordem aqui é a ordem da navegação. */
 export type CategoriaId =
   | 'era'
   | 'pessoa'
   | 'casa'
   | 'lugar'
+  // O céu: o sistema, as órbitas e o calendário que saiu delas. Fica ao lado
+  // dos lugares porque é isso que é — o lugar onde os lugares estão.
+  | 'ceu'
   | 'reliquia'
   | 'evento'
   | 'poder'
@@ -112,6 +200,16 @@ export interface Verbete {
   ordem?: number;
 }
 
+/**
+ * Um verbete já no acervo.
+ *
+ * A procedência não é escrita verbete a verbete: o corpus a atribui por
+ * arquivo, porque é o arquivo que corresponde ao documento. Assim nenhum
+ * verbete pode mentir sobre de onde veio, e ninguém precisa repetir a fonte
+ * mil vezes na mão.
+ */
+export type VerbeteNoAcervo = Verbete & { fonte: FonteId };
+
 export interface Categoria {
   id: CategoriaId;
   /** Plural, como aparece na navegação. */
@@ -147,6 +245,12 @@ export const CATEGORIAS: Categoria[] = [
     rotulo: 'Lugares',
     singular: 'Lugar',
     nota: 'Domínios de Valoran, e o que existe além do Mar Astral.',
+  },
+  {
+    id: 'ceu',
+    rotulo: 'O Céu',
+    singular: 'Céu',
+    nota: 'As três órbitas, a rota de Corvus e o calendário que saiu delas.',
   },
   {
     id: 'reliquia',

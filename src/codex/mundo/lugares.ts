@@ -424,6 +424,7 @@ export const LUGARES: Verbete[] = [
     brasao: 'folha',
     ficha: [
       { rotulo: 'Region', valor: 'A continent beyond the Astral Sea, apart from Valoran' },
+      { rotulo: 'Orbit', valor: 'Middle Cycle — 360 days, a third of the ring from [[valoran|Valoran]]' },
       { rotulo: 'Held by', valor: 'The Seelie Court — no House of Valoran' },
       { rotulo: 'Notable', valor: 'Invaded once, by the golden host of the Young King' },
       { rotulo: 'Condition', valor: 'Closed by a pact of non-interference' },
@@ -452,7 +453,7 @@ export const LUGARES: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['corte-seelie', 'guerra-verdejante', 'naus-oraculo', 'mar-astral', 'primeiro-bellias', 'ayren-herrys-ii'],
+    relacionados: ['corte-seelie', 'guerra-verdejante', 'naus-oraculo', 'mar-astral', 'primeiro-bellias', 'ayren-herrys-ii', 'sistema-de-aion'],
     eras: ['era-primeira-luz'],
     alcunhas: ['The Seelie Continent'],
   },
@@ -509,6 +510,7 @@ export const LUGARES: Verbete[] = [
     brasao: 'serpente-imperial',
     ficha: [
       { rotulo: 'Region', valor: 'Beyond Valoran; the chronicle gives no bearing' },
+      { rotulo: 'Orbit', valor: '[[sistema-de-aion|Middle Cycle]] — 360 days, a third of the ring from [[valoran|Valoran]]' },
       { rotulo: 'Held by', valor: 'The Hōseki Dynasty — no House of Valoran' },
       { rotulo: 'Notable', valor: 'Adversary of the empire in the War of the Winds' },
       { rotulo: 'Condition', valor: 'Unrecorded — its remnants scattered upon Valoran' },
@@ -537,7 +539,7 @@ export const LUGARES: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['dinastia-hoseki', 'imperatriz-hoseki', 'guerra-dos-ventos', 'casa-keaton', 'era-moderna'],
+    relacionados: ['dinastia-hoseki', 'imperatriz-hoseki', 'guerra-dos-ventos', 'casa-keaton', 'era-moderna', 'sistema-de-aion'],
     eras: ['era-moderna'],
     alcunhas: ['Yoso', 'The Hōseki Realm'],
   },

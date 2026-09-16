@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CATEGORIAS } from '@/codex/tipos';
 import { VERBETES, buscar, porCategoria, tituloAmbiguo, verbete } from '@/codex/corpus';
-import { Brasao } from '@/codex/valoran/heraldica';
+import { Brasao } from '@/codex/heraldica';
 import { useAionStore } from '@/state/store';
 import {
   IconBusca,

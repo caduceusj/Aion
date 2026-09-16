@@ -123,12 +123,15 @@ export const ANDARI: Verbete[] = [
   {
     chave: 'corvus',
     titulo: 'Corvus',
-    epiteto: 'The Shadowfell Home',
+    epiteto: 'The Moon That Walks',
     categoria: 'lugar',
-    resumo: 'The land in the Shadowfell that the Moon Peoples fled, and to which no page here records a return.',
+    resumo:
+      'The moon that walks between the six continents — and, inside it, the Shadowfell land the Moon Peoples fled.',
     brasao: 'eclipse',
     ficha: [
-      { rotulo: 'Kind', valor: 'Land within the Shadowfell' },
+      { rotulo: 'Kind', valor: 'A moon; and a land within the Shadowfell' },
+      { rotulo: 'Route', valor: 'All six continents, one every 30 days — see [[a-corvisseia|A Corvisseia]]' },
+      { rotulo: 'Rhythm', valor: '19 days and a half resting, 10 and a half crossing' },
       { rotulo: 'Peoples', valor: 'The Moon Peoples, before the Fall' },
       { rotulo: 'Left', valor: 'During the Age of a Thousand Kings' },
       { rotulo: 'Record', valor: 'Sealed in the Silver Loom' },
@@ -138,13 +141,34 @@ export const ANDARI: Verbete[] = [
         titulo: 'What Was Left Behind',
         paragrafos: [
           'The elves of [[andari|Andari]] and [[valari|Valari]] are not natives of Valoran. They came from Corvus, in the Shadowfell, and they came because of [[a-queda|the Fall]].',
-          'That is nearly everything this codex can state. The account of what happened in Corvus is kept in the sealed chamber of the [[tear-prateado|Silver Loom]], and this archivist has not read it.',
+          'That is nearly everything this codex can state of what happened there. The account is kept in the sealed chamber of the [[tear-prateado|Silver Loom]], and this archivist has not read it.',
+        ],
+      },
+      {
+        titulo: 'The Same Corvus',
+        paragrafos: [
+          'It is worth stating plainly, because two halves of this codex say the word without noticing each other. The Corvus the moon elves fled is the Corvus overhead: not a distant country but the moon itself, which belongs to no continent and visits all of them. [[povos-lunares|The Moon Peoples]] are named for it, [[a-queda|the Fall]] happened on it, and the sky it rules is the one the calendar is written from.',
+          'She keeps no orbit around anybody. She rests 19 days and a half above one continent, crosses to the next in 10 and a half, and comes back around to the first after 180 — which is where the month, and [[calendario-valoriano|every calendar on six worlds]], comes from. The land inside is in the Shadowfell; the body carrying it is in the sky.',
+        ],
+      },
+      {
+        titulo: 'What the Record Does Not Say',
+        paragrafos: [
+          'Whether the thing that drives her from continent to continent is the same thing that ruined her, and whether an elf of Andari looking up at the Luz de Corvus is looking at a home or at a wound, the archive does not say. [[a-corvisseia|The travellers\' almanac]] adds one uncomfortable detail: she paces herself, arriving on schedule whether the crossing is short or long. Something up there is choosing a speed.',
         ],
       },
     ],
-    relacionados: ['a-queda', 'povos-lunares', 'tear-prateado', 'andari'],
-    eras: ['era-mil-reis'],
-    alcunhas: ['Shadowfell'],
+    relacionados: [
+      'a-queda',
+      'povos-lunares',
+      'tear-prateado',
+      'andari',
+      'a-corvisseia',
+      'calendario-valoriano',
+      'sistema-de-aion',
+    ],
+    eras: ['era-mil-reis', 'era-moderna'],
+    alcunhas: ['Shadowfell', 'a lua', 'Luz de Corvus'],
   },
 
   {
@@ -209,6 +233,7 @@ export const ANDARI: Verbete[] = [
     brasao: 'vazio',
     ficha: [
       { rotulo: 'Kind', valor: 'Continent' },
+      { rotulo: 'Orbit', valor: '[[sistema-de-aion|Long Cycle]] — 540 days, opposite [[unkanten|Ukanten]] on the ring' },
       { rotulo: 'Was', valor: 'The inland sea of Sindaren' },
       { rotulo: 'Made', valor: 'By the Theft, in the White Queen’s age' },
       { rotulo: 'Standing', valor: 'Independent — never reclaimed' },
@@ -235,7 +260,7 @@ export const ANDARI: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['roubo-de-sindaren', 'valari', 'sindaren', 'casa-deallus', 'mayan-herrys', 'escola-arkanheim', 'symon'],
+    relacionados: ['roubo-de-sindaren', 'valari', 'sindaren', 'casa-deallus', 'mayan-herrys', 'escola-arkanheim', 'symon', 'sistema-de-aion'],
     eras: ['era-segunda-luz', 'era-moderna'],
   },
 

@@ -2,7 +2,7 @@ import type { Verbete } from '@/codex/tipos';
 import { CATEGORIAS } from '@/codex/tipos';
 import { referenciam, verbete as buscarVerbete } from '@/codex/corpus';
 import { Prosa } from '@/codex/prosa';
-import { Brasao } from '@/codex/valoran/heraldica';
+import { Brasao } from '@/codex/heraldica';
 
 /**
  * Um verbete aberto.

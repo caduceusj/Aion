@@ -1,51 +1,65 @@
 /**
  * O corpus do Códice: junta os verbetes, indexa e busca.
  *
- * Os dados vivem em `valoran/`, um arquivo por categoria. Aqui eles viram
- * um índice por chave — que é o que transforma um monte de texto em um wiki:
- * qualquer verbete alcança qualquer outro em um salto.
+ * Os dados vivem em duas pastas, e a divisão é a mesma que o mundo faz:
+ *
+ *   mundo/ — o que o mundo escreveu sobre si. Crônica, mapa, livros, almanaque.
+ *   mesa/  — a campanha em curso: jogadores, NPCs, arcos.
+ *
+ * Aqui os dois viram um índice por chave — que é o que transforma um monte de
+ * texto em um wiki: qualquer verbete alcança qualquer outro em um salto. E
+ * cada arquivo entra carimbado com a sua procedência, porque no Códice *de
+ * onde se sabe* é parte do que se sabe.
  */
 
-import type { CategoriaId, Verbete } from './tipos';
-import { ERAS } from './valoran/eras';
-import { PERSONAGENS } from './valoran/personagens';
-import { CASAS } from './valoran/casas';
-import { LUGARES } from './valoran/lugares';
-import { RELIQUIAS } from './valoran/reliquias';
-import { EVENTOS } from './valoran/eventos';
-import { PODERES } from './valoran/poderes';
-import { CARTOGRAFIA, COSTURA_DO_MAPA } from './valoran/cartografia';
-import { ANDARI } from './valoran/andari';
-import { ELENCO } from './valoran/elenco';
-import { COSMOLOGIA } from './valoran/cosmologia';
-import { GEOGRAFIA_E_TECNOLOGIA } from './valoran/geografia-e-tecnologia';
-import { LUA_VERMELHA } from './valoran/lua-vermelha';
-import { FRAGMENTOS } from './valoran/fragmentos';
+import type { CategoriaId, FonteId, Verbete, VerbeteNoAcervo } from './tipos';
+import { ERAS } from './mundo/eras';
+import { PERSONAGENS } from './mundo/personagens';
+import { CASAS } from './mundo/casas';
+import { LUGARES } from './mundo/lugares';
+import { RELIQUIAS } from './mundo/reliquias';
+import { EVENTOS } from './mundo/eventos';
+import { PODERES } from './mundo/poderes';
+import { CARTOGRAFIA, COSTURA_DO_MAPA } from './mundo/cartografia';
+import { ANDARI } from './mundo/andari';
+import { COSMOLOGIA } from './mundo/cosmologia';
+import { GEOGRAFIA_E_TECNOLOGIA } from './mundo/geografia';
+import { COSMOS } from './mundo/cosmos';
+import { ELENCO } from './mesa/elenco';
+import { LUA_VERMELHA } from './mesa/lua-vermelha';
+import { FRAGMENTOS } from './mesa/fragmentos';
 
-const BRUTOS: Verbete[] = [
-  ...ERAS,
-  ...PERSONAGENS,
-  ...CASAS,
-  ...LUGARES,
-  ...RELIQUIAS,
-  ...EVENTOS,
-  ...PODERES,
-  // A cartografia entra por último: são os lugares que só o mapa de 1575
-  // nomeia, e que a crônica de 1570 não alcançou.
-  ...CARTOGRAFIA,
-  // O ciclo de Andari veio depois das Anais e corrige vários pontos delas.
-  ...ANDARI,
-  // A mesa de verdade: jogadores, NPCs, grupos e arcos, vindos do Notion.
-  ...ELENCO,
-  // Cosmologia: a Shadowfell, o Grande Pilar, e os ritos que as Anais calam.
-  ...COSMOLOGIA,
-  // Geografia perdida: Ridash, a Aquila, Ilidaren, os Gigantes de Unkanten.
-  ...GEOGRAFIA_E_TECNOLOGIA,
-  // A Lua Vermelha, os Vernatto, e a crise política moderna de Aer Firen.
-  ...LUA_VERMELHA,
-  // Fragmentos soltos: lugares e nomes pequenos demais para gaveta própria.
-  ...FRAGMENTOS,
+/** Cada acervo com a fonte que o assina. A ordem é a ordem de entrada. */
+const ACERVOS: Array<{ fonte: FonteId; verbetes: Verbete[] }> = [
+  // A crônica de 1570, por gaveta.
+  { fonte: 'anais', verbetes: ERAS },
+  { fonte: 'anais', verbetes: PERSONAGENS },
+  { fonte: 'anais', verbetes: CASAS },
+  { fonte: 'anais', verbetes: LUGARES },
+  { fonte: 'anais', verbetes: RELIQUIAS },
+  { fonte: 'anais', verbetes: EVENTOS },
+  { fonte: 'anais', verbetes: PODERES },
+  // Os lugares que só o mapa de 1575 nomeia.
+  { fonte: 'gazeta', verbetes: CARTOGRAFIA },
+  // O relato de Andari, que corrige as Anais em cinco pontos.
+  { fonte: 'andari', verbetes: ANDARI },
+  // Os livros: a Shadowfell, o Grande Pilar, os ritos dos Doze.
+  { fonte: 'biblioteca', verbetes: COSMOLOGIA },
+  // O céu e o calendário: órbitas, meses e a rota de Corvus.
+  { fonte: 'almanaque', verbetes: COSMOS },
+  // Geografia perdida: Ridash, a Aquila, Ilidaren, os gigantes de Ukanten.
+  { fonte: 'notas', verbetes: GEOGRAFIA_E_TECNOLOGIA },
+  // A mesa: jogadores, NPCs, grupos e arcos, vindos da wiki do Notion.
+  { fonte: 'wiki', verbetes: ELENCO },
+  // A Lua Vermelha, os Vernatto e a crise política moderna de Aer Firen.
+  { fonte: 'notas', verbetes: LUA_VERMELHA },
+  // Fragmentos soltos: nomes pequenos demais para gaveta própria.
+  { fonte: 'notas', verbetes: FRAGMENTOS },
 ];
+
+const BRUTOS: VerbeteNoAcervo[] = ACERVOS.flatMap(({ fonte, verbetes }) =>
+  verbetes.map((entrada) => ({ ...entrada, fonte })),
+);
 
 /**
  * Todos os verbetes, já costurados ao mapa.
@@ -53,7 +67,7 @@ const BRUTOS: Verbete[] = [
  * A costura acrescenta ao "ver também" de cada região os assentamentos que o
  * cartógrafo pôs dentro dela — sem tocar em uma vírgula da prosa da crônica.
  */
-export const VERBETES: Verbete[] = BRUTOS.map((entrada) => {
+export const VERBETES: VerbeteNoAcervo[] = BRUTOS.map((entrada) => {
   const vizinhos = COSTURA_DO_MAPA[entrada.chave];
   if (!vizinhos) return entrada;
   const juntos = [...entrada.relacionados];
@@ -61,9 +75,9 @@ export const VERBETES: Verbete[] = BRUTOS.map((entrada) => {
   return { ...entrada, relacionados: juntos };
 });
 
-const POR_CHAVE = new Map<string, Verbete>(VERBETES.map((v) => [v.chave, v]));
+const POR_CHAVE = new Map<string, VerbeteNoAcervo>(VERBETES.map((v) => [v.chave, v]));
 
-export function verbete(chave: string): Verbete | undefined {
+export function verbete(chave: string): VerbeteNoAcervo | undefined {
   return POR_CHAVE.get(chave);
 }
 
@@ -87,14 +101,14 @@ export function tituloAmbiguo(titulo: string): boolean {
 }
 
 /** Verbetes de uma gaveta. Eras saem em ordem cronológica; o resto, alfabética. */
-export function porCategoria(categoria: CategoriaId): Verbete[] {
+export function porCategoria(categoria: CategoriaId): VerbeteNoAcervo[] {
   const lista = VERBETES.filter((v) => v.categoria === categoria);
   if (categoria === 'era') return lista.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
   return lista.sort((a, b) => a.titulo.localeCompare(b.titulo, 'en'));
 }
 
 /** As cinco eras em ordem — a linha do tempo da abertura. */
-export const LINHA_DO_TEMPO: Verbete[] = porCategoria('era');
+export const LINHA_DO_TEMPO: VerbeteNoAcervo[] = porCategoria('era');
 
 /**
  * Quem aponta para este verbete.
@@ -102,7 +116,7 @@ export const LINHA_DO_TEMPO: Verbete[] = porCategoria('era');
  * Um wiki honesto mostra os dois sentidos do link: além do "ver também" que
  * o autor escreveu, vale saber quem *cita* você sem que você cite de volta.
  */
-export function referenciam(chave: string): Verbete[] {
+export function referenciam(chave: string): VerbeteNoAcervo[] {
   return VERBETES.filter(
     (v) =>
       v.chave !== chave &&
@@ -122,7 +136,7 @@ function dobrar(texto: string): string {
 }
 
 interface Indexado {
-  verbete: Verbete;
+  verbete: VerbeteNoAcervo;
   titulo: string;
   alcunhas: string;
   resumo: string;
@@ -146,7 +160,7 @@ const INDICE: Indexado[] = VERBETES.map((v) => ({
 }));
 
 export interface Achado {
-  verbete: Verbete;
+  verbete: VerbeteNoAcervo;
   /** Maior é melhor. Só para ordenar. */
   peso: number;
   /** Onde casou, para a interface poder dizer por quê. */

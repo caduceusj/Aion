@@ -1,6 +1,6 @@
 import { CATEGORIAS } from '@/codex/tipos';
 import { LINHA_DO_TEMPO, porCategoria } from '@/codex/corpus';
-import { Brasao } from '@/codex/valoran/heraldica';
+import { Brasao } from '@/codex/heraldica';
 
 /**
  * A capa do códice.

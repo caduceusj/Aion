@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { PONTOS_DO_MAPA, type PontoDoMapa } from '@/codex/valoran/cartografia';
+import { PONTOS_DO_MAPA, type PontoDoMapa } from '@/codex/mundo/cartografia';
 import { existe, verbete } from '@/codex/corpus';
 import { IconMais, IconMenos, IconAlvo } from '@/ui/components/Icons';
 import mapaLimpo from '@/assets/valoran-mapa.webp';

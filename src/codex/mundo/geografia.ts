@@ -112,13 +112,15 @@ export const GEOGRAFIA_E_TECNOLOGIA: Verbete[] = [
 
   {
     chave: 'unkanten',
-    titulo: 'Unkanten',
+    titulo: 'Ukanten',
     epiteto: 'The Body of a Storm Giant',
     categoria: 'lugar',
-    resumo: 'The northern land of the storm giants — and, by a vision granted to the party, the literal body of a Valkyrie who lost a war against dragons.',
+    resumo: 'A continent of the long orbit, land of the storm giants — and, by a vision granted to the party, the body of a Valkyrie.',
     brasao: 'montanha',
     ficha: [
-      { rotulo: 'Kind', valor: 'Land of the storm giants — and, in body, a goddess' },
+      { rotulo: 'Kind', valor: 'Continent — land of the storm giants, and in body a goddess' },
+      { rotulo: 'Orbit', valor: 'Long Cycle — 540 days, opposite [[vrednost|Vrednost]] on the same ring' },
+      { rotulo: 'Spelling', valor: '*Ukanten* on the map and the calendar; *Unkanten* as the Valkyrie named herself' },
       { rotulo: 'True name of that goddess', valor: 'Unkanten' },
       { rotulo: 'Missing', valor: 'Her right hand — taken by the victors of an old war' },
       { rotulo: 'Kin', valor: 'A younger brother, now counted among the Twelve as [[os-doze|the Forger]]' },
@@ -148,9 +150,9 @@ export const GEOGRAFIA_E_TECNOLOGIA: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['ilidaren', 'os-doze', 'os-ritos-dos-doze', 'dartharion'],
+    relacionados: ['ilidaren', 'os-doze', 'os-ritos-dos-doze', 'dartharion', 'sistema-de-aion', 'vrednost'],
     eras: ['era-mil-reis', 'era-moderna'],
-    alcunhas: ['the Skycleaver', 'the Children of the Storm'],
+    alcunhas: ['Unkanten', 'the Skycleaver', 'the Children of the Storm'],
   },
 
   {
