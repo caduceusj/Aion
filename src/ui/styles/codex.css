@@ -2086,3 +2086,360 @@
 .instrumento:hover svg {
   color: var(--cx-ouro-claro);
 }
+
+/* =====================================================================
+   O CÉU — o modelo orbital vivo
+   =====================================================================
+   O quadro é espaço de verdade: azul-preto, estrelado, com as cores que o
+   modelo orbital do usuário deu a cada continente. A moldura em volta é a
+   do Códice — ouro, serifa e painel escuro —, para a vista pertencer ao
+   livro sem fingir que o céu é feito de pergaminho. */
+
+.ceu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.ceu__palco {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: var(--sp-4);
+  align-items: stretch;
+}
+
+.ceu__tela {
+  position: relative;
+  min-height: 660px;
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0a0e27 0%, #030410 100%);
+}
+
+.ceu__quadro {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+.ceu__anel {
+  fill: none;
+  stroke-opacity: 0.3;
+  stroke-width: 0.5;
+  stroke-dasharray: 2 3;
+}
+
+.ceu__apside {
+  font-family: var(--cx-mono, monospace);
+  font-size: 3.5px;
+}
+
+.ceu__estrela-nome {
+  fill: #ffd97a;
+  font-family: var(--cx-display);
+  font-size: 4.5px;
+  letter-spacing: 0.1em;
+}
+
+.ceu__rosa {
+  fill: #8a9ac0;
+  font-family: var(--cx-display);
+  font-size: 4.5px;
+}
+
+.ceu__divisa {
+  stroke: #3a4a7a;
+  stroke-width: 0.3;
+  stroke-dasharray: 1 2;
+  stroke-opacity: 0.5;
+}
+
+.ceu__traco {
+  stroke: #7a8ac0;
+  stroke-width: 0.4;
+  stroke-opacity: 0.75;
+}
+
+.ceu__constelacao-nome {
+  fill: #8a9ac0;
+  font-family: var(--cx-display);
+  font-size: 3px;
+  letter-spacing: 0.04em;
+}
+
+.ceu__corpo {
+  cursor: pointer;
+}
+
+.ceu__corpo:focus-visible {
+  outline: 1px solid var(--cx-ouro-claro);
+  outline-offset: 2px;
+}
+
+.ceu__corpo-nome {
+  font-family: var(--cx-display);
+  font-size: 3px;
+  font-weight: 700;
+}
+
+.ceu__corpo-vista {
+  fill: #ffd97a;
+  font-family: var(--cx-corpo);
+  font-size: 2.4px;
+  font-style: italic;
+}
+
+.ceu__corpo[data-lua='sim'] .ceu__corpo-nome {
+  fill: #fff;
+}
+
+.ceu__lua-nome {
+  fill: #ff6a9a;
+  font-family: var(--cx-display);
+  font-size: 2.4px;
+}
+
+.ceu__zoom-nome {
+  fill: #ffd97a;
+  font-family: var(--cx-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* --- o painel lateral --- */
+
+.ceu__painel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-md);
+  background: var(--cx-painel);
+  overflow-y: auto;
+  max-height: 660px;
+}
+
+.ceu__fatos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--sp-2);
+}
+
+.ceu__fatos > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--cx-linha-fraca);
+}
+
+.ceu__fatos dt {
+  font-size: var(--fs-xs);
+  color: var(--cx-apagado);
+}
+
+.ceu__fatos dd {
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho);
+  text-align: right;
+}
+
+.ceu__de {
+  color: var(--cx-apagado);
+}
+
+.ceu__constelacao {
+  color: var(--cx-ouro-claro) !important;
+  font-style: italic;
+}
+
+.ceu__continentes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: var(--sp-2);
+}
+
+.ceu__continente {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 5px 8px;
+  text-align: left;
+  border-left: 3px solid;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.ceu__continente:hover,
+.ceu__continente[data-zoom='sim'] {
+  background: rgba(201, 162, 75, 0.12);
+}
+
+.ceu__continente strong {
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+}
+
+.ceu__codigo {
+  opacity: 0.5;
+  font-weight: 400;
+}
+
+.ceu__continente small {
+  font-size: 0.68rem;
+  color: var(--cx-apagado);
+}
+
+.ceu__continente em {
+  color: var(--cx-ouro-claro);
+}
+
+.ceu__nota {
+  margin-top: var(--sp-3);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: var(--cx-apagado);
+}
+
+/* A faixa de Corvus: o único dado do painel que muda a cada instante. */
+.ceu__corvus {
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 106, 154, 0.3);
+  border-radius: var(--r-sm);
+  background: rgba(255, 106, 154, 0.08);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--cx-pergaminho);
+}
+
+.ceu__corvus strong {
+  font-family: var(--cx-display);
+  color: #ff8fb4;
+}
+
+.ceu__corvus b {
+  color: var(--cx-ouro-claro);
+  font-weight: 600;
+}
+
+.ceu__corvus[data-estado='viagem'] {
+  border-color: rgba(255, 106, 154, 0.55);
+}
+
+.ceu__legenda {
+  display: flex;
+  gap: var(--sp-3);
+  font-size: 0.7rem;
+  color: var(--cx-apagado);
+}
+
+.ceu__legenda li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ceu__legenda i {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* --- os controles --- */
+
+.ceu__controles {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-md);
+  background: var(--cx-painel);
+}
+
+.ceu__botao {
+  padding: 5px 12px;
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.ceu__botao:hover:not(:disabled) {
+  background: rgba(201, 162, 75, 0.14);
+  color: var(--cx-ouro-claro);
+}
+
+.ceu__botao:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.ceu__botao--forte {
+  min-width: 104px;
+  border-color: var(--cx-ouro);
+  color: var(--cx-ouro-claro);
+}
+
+.ceu__botao--pequeno {
+  padding: 3px 9px;
+  font-size: 0.68rem;
+}
+
+.ceu__botao--pequeno[data-ativo='sim'] {
+  background: var(--cx-ouro);
+  border-color: var(--cx-ouro);
+  color: #14100c;
+  font-weight: 700;
+}
+
+.ceu__velocidades {
+  display: flex;
+  gap: 3px;
+}
+
+.ceu__regua {
+  flex: 1;
+  min-width: 180px;
+  accent-color: var(--cx-ouro);
+}
+
+@media (max-width: 900px) {
+  .ceu__palco {
+    grid-template-columns: 1fr;
+  }
+
+  .ceu__tela {
+    min-height: 380px;
+  }
+
+  .ceu__painel {
+    max-height: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .ceu__tela {
+    min-height: 320px;
+  }
+
+  .ceu__controles {
+    gap: var(--sp-2);
+  }
+
+  .ceu__regua {
+    min-width: 100%;
+    order: 9;
+  }
+}

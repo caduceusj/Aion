@@ -14,6 +14,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   CICLOS,
+  CONSTELACOES,
   CONTINENTES,
   CORVISSEIA,
   DIAS_DA_CORVISSEIA,
@@ -27,9 +28,19 @@ import {
   ROTA,
   continente,
   continentePorCodigo,
+  afelioUA,
+  anguloEm,
+  constelacaoNoAngulo,
+  constelacaoVisivel,
+  distanciaEntre,
+  estadoDaLua,
   faseDaConstelacao,
   faseDaLua,
   mes,
+  perielioUA,
+  posicaoDaLua,
+  posicaoEm,
+  raioEm,
   trecho,
   velocidade,
 } from './calendario';
@@ -76,11 +87,28 @@ describe('a aritmética do céu', () => {
     expect(CICLOS.medio.raioUA).toBeLessThan(CICLOS.longo.raioUA);
   });
 
-  it('a órbita média é a que a corda constante de 1,82 UA exige', () => {
-    // Dois pontos da mesma órbita a 120° distam 2·a·sen60°. É esse número que
-    // fixa o raio médio, e é por isso que Valoran → Yōso nunca muda.
-    const corda = 2 * CICLOS.medio.raioUA * Math.sin(Math.PI / 3);
-    expect(corda).toBeCloseTo(1.82, 1);
+  it('os três semi-eixos são os que Kepler pede, a menos de 1%', () => {
+    // a ∝ T^⅔, ancorando a órbita média em 1 UA. Se alguém mexer num raio
+    // sem mexer no período, o sistema deixa de poder existir e isto avisa.
+    for (const ciclo of Object.values(CICLOS)) {
+      const deKepler = Math.pow(ciclo.periodo / CICLOS.medio.periodo, 2 / 3) * CICLOS.medio.raioUA;
+      const desvio = Math.abs(ciclo.raioUA - deKepler) / deKepler;
+      expect(desvio, `${ciclo.rotulo}: ${ciclo.raioUA} vs ${deKepler.toFixed(3)}`).toBeLessThan(0.01);
+    }
+  });
+
+  it('só o ciclo curto é um círculo; os outros dois têm periélio e afélio', () => {
+    expect(CICLOS.curto.excentricidade).toBe(0);
+    expect(CICLOS.medio.excentricidade).toBeGreaterThan(0);
+    expect(CICLOS.longo.excentricidade).toBeGreaterThan(0);
+    for (const corpo of CONTINENTES) {
+      expect(perielioUA(corpo), corpo.nome).toBeLessThanOrEqual(afelioUA(corpo));
+      const raios = Array.from({ length: 60 }, (_, i) => raioEm(corpo, i * 9));
+      for (const r of raios) {
+        expect(r, corpo.nome).toBeGreaterThanOrEqual(perielioUA(corpo) - 1e-9);
+        expect(r, corpo.nome).toBeLessThanOrEqual(afelioUA(corpo) + 1e-9);
+      }
+    }
   });
 });
 
@@ -216,5 +244,144 @@ describe('as fases de um dia', () => {
       const comLuz = MESES.filter((m) => faseDaLua(m, 1, corpo.id) === 'luz');
       expect(comLuz, corpo.nome).toHaveLength(2);
     }
+  });
+});
+
+describe('a mecânica do céu', () => {
+  it('os três do meio ficam sempre a 120° um do outro', () => {
+    const [fentor, valoran, yoso] = ['fentor', 'valoran', 'yoso'].map((id) =>
+      CONTINENTES.find((c) => c.id === id)!,
+    ) as [typeof CONTINENTES[number], typeof CONTINENTES[number], typeof CONTINENTES[number]];
+    for (let dia = 0; dia < DIAS_DA_CORVISSEIA; dia += 17) {
+      const separacao = (a: number, b: number) => {
+        const bruto = Math.abs(a - b) % 360;
+        return Math.min(bruto, 360 - bruto);
+      };
+      expect(separacao(anguloEm(valoran, dia), anguloEm(yoso, dia)), `dia ${dia}`).toBeCloseTo(120, 6);
+      expect(separacao(anguloEm(valoran, dia), anguloEm(fentor, dia)), `dia ${dia}`).toBeCloseTo(120, 6);
+    }
+  });
+
+  it('quando Vrednost está no periélio, Ukanten está no afélio', () => {
+    const vrednost = CONTINENTES.find((c) => c.id === 'vrednost')!;
+    const ukanten = CONTINENTES.find((c) => c.id === 'ukanten')!;
+    for (let dia = 0; dia < CICLOS.longo.periodo; dia += 13) {
+      // Meia volta de diferença, sempre: é isso que faz um estar perto
+      // exatamente quando o outro está longe.
+      const bruto = Math.abs(anguloEm(vrednost, dia) - anguloEm(ukanten, dia)) % 360;
+      expect(Math.min(bruto, 360 - bruto), `dia ${dia}`).toBeCloseTo(180, 6);
+    }
+
+    // No dia do periélio de um, o outro está no afélio — o mesmo dia.
+    const diaDoPerielio =
+      ((vrednost.rumoDoPerielio - vrednost.anguloInicial + 360) % 360) /
+      (360 / CICLOS.longo.periodo);
+    expect(raioEm(vrednost, diaDoPerielio)).toBeCloseTo(perielioUA(vrednost), 6);
+    expect(raioEm(ukanten, diaDoPerielio)).toBeCloseTo(afelioUA(ukanten), 6);
+  });
+
+  it('o ano de Valoran começa no periélio dele', () => {
+    const valoran = CONTINENTES.find((c) => c.id === 'valoran')!;
+    expect(raioEm(valoran, 0)).toBeCloseTo(perielioUA(valoran), 9);
+    expect(raioEm(valoran, DIAS_DO_ANO / 2)).toBeCloseTo(afelioUA(valoran), 9);
+  });
+
+  it('o modelo fecha em 1080 dias, como a tabela promete', () => {
+    // As distâncias entre continentes voltam a ser as mesmas depois de uma
+    // Corvisseia — o mesmo período que a tabela de trechos encontrou por
+    // outro caminho. As duas fontes concordam nisto.
+    for (const a of CONTINENTES) {
+      for (const b of CONTINENTES) {
+        if (a === b) continue;
+        for (let dia = 0; dia < 200; dia += 37) {
+          expect(
+            Math.abs(distanciaEntre(a, b, dia) - distanciaEntre(a, b, dia + DIAS_DA_CORVISSEIA)),
+            `${a.nome}→${b.nome} no dia ${dia}`,
+          ).toBeLessThan(1e-9);
+        }
+      }
+    }
+  });
+
+  it('Corvus está sempre junto do continente sobre o qual pousou', () => {
+    for (let dia = 0; dia < DIAS_DA_CORVISSEIA; dia += 7) {
+      const estado = estadoDaLua(dia);
+      if (estado.estado !== 'parada') continue;
+      const anfitriao = continentePorCodigo(estado.em);
+      const lua = posicaoDaLua(dia);
+      const casa = posicaoEm(anfitriao, dia);
+      expect(Math.hypot(lua.leste - casa.leste, lua.norte - casa.norte), `dia ${dia}`).toBeLessThan(0.1);
+    }
+  });
+
+  it('a estadia e a viagem somam o mês, dia a dia', () => {
+    let parada = 0;
+    let viagem = 0;
+    for (let dia = 0; dia < DIAS_DO_MES * 2; dia += 0.5) {
+      if (estadoDaLua(dia).estado === 'parada') parada += 0.5;
+      else viagem += 0.5;
+    }
+    expect(parada / 2).toBe(DIAS_DE_ESTADIA);
+    expect(viagem / 2).toBe(DIAS_DE_VIAGEM);
+  });
+
+  it('a lua do mês da tabela é a lua do mês do modelo', () => {
+    // Os dois lados do almanaque têm de contar a mesma história: o continente
+    // que a prancha imprime como "lua do mês" é o que o modelo mostra com
+    // Corvus em cima no meio daquele mês.
+    for (const m of MESES) {
+      const meio = (m.numero - 1) * DIAS_DO_MES + DIAS_DE_ESTADIA / 2;
+      const estado = estadoDaLua(meio);
+      expect(estado.estado, `mês ${m.nome}`).toBe('parada');
+      expect(continentePorCodigo(estado.em).id, `mês ${m.nome}`).toBe(m.lua);
+    }
+  });
+});
+
+describe('as doze constelações', () => {
+  it('são doze, cobrem o céu inteiro e não se sobrepõem', () => {
+    expect(CONSTELACOES).toHaveLength(12);
+    CONSTELACOES.forEach((c, i) => {
+      expect(c.indice).toBe(i);
+      expect(c.de).toBe(i * 30);
+    });
+    expect(new Set(CONSTELACOES.map((c) => c.nome)).size).toBe(12);
+  });
+
+  it('cada uma tem o seu desenho de estrelas', () => {
+    for (const c of CONSTELACOES) {
+      expect(c.tracos.length, c.nome).toBeGreaterThan(0);
+      for (const [inicio, fim] of c.tracos) {
+        expect(inicio, c.nome).not.toEqual(fim);
+      }
+    }
+  });
+
+  it('a fatia do céu é a mesma dando a volta', () => {
+    expect(constelacaoNoAngulo(0).nome).toBe(CONSTELACOES[0]!.nome);
+    expect(constelacaoNoAngulo(359.9).nome).toBe(CONSTELACOES[11]!.nome);
+    expect(constelacaoNoAngulo(360).nome).toBe(CONSTELACOES[0]!.nome);
+    expect(constelacaoNoAngulo(-1).nome).toBe(CONSTELACOES[11]!.nome);
+  });
+
+  it('o mês valoriano é a constelação que Valoran atravessa', () => {
+    // É esta a razão de os meses terem os nomes que têm, e o teste existe
+    // para que ela não possa ser quebrada por engano.
+    const valoran = CONTINENTES.find((c) => c.id === 'valoran')!;
+    for (const m of MESES) {
+      const dia = (m.numero - 1) * DIAS_DO_MES;
+      expect(constelacaoVisivel(valoran, dia).nome, `mês ${m.nome}`).toBe(m.constelacao);
+      expect(constelacaoVisivel(valoran, dia + 29).nome, `fim de ${m.nome}`).toBe(m.constelacao);
+    }
+  });
+
+  it('Al-Hara vê as doze duas vezes por ano; o anel longo, uma a cada 45 dias', () => {
+    const alhara = CONTINENTES.find((c) => c.id === 'al-hara')!;
+    const vistas = new Set<string>();
+    for (let dia = 0; dia < DIAS_DO_ANO / 2; dia += 1) vistas.add(constelacaoVisivel(alhara, dia).nome);
+    expect(vistas.size).toBe(12);
+
+    const vrednost = CONTINENTES.find((c) => c.id === 'vrednost')!;
+    expect(30 / (360 / CICLOS[vrednost.ciclo].periodo)).toBe(45);
   });
 });

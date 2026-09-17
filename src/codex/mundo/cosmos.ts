@@ -16,16 +16,36 @@
 import type { Verbete } from '../tipos';
 import {
   CICLOS,
+  CONSTELACOES,
   CORVISSEIA,
   DIAS_DA_CORVISSEIA,
   DIAS_DE_ESTADIA,
   DIAS_DE_VIAGEM,
+  continente,
+  perielioUA,
+  afelioUA,
   velocidade,
 } from '../calendario';
 
 /** O trecho mais longo da tabela — é ele que vira o aviso aos pilotos. */
 const MAIOR = CORVISSEIA.reduce((a, b) => (b.distanciaUA > a.distanciaUA ? b : a));
 const VELOCIDADE_MAXIMA = Math.round(velocidade(MAIOR.distanciaUA));
+
+/** Números em português mesmo dentro da prosa inglesa: 1,05 e não 1.05. */
+const num = (valor: number, casas = 2): string =>
+  valor.toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
+
+/** Um morador de cada anel, para perguntar a ele o periélio do anel inteiro. */
+const CONTINENTES_DO_CICLO = {
+  curto: continente('al-hara'),
+  medio: continente('valoran'),
+  longo: continente('vrednost'),
+} as const;
+
+const faixa = (ciclo: keyof typeof CONTINENTES_DO_CICLO): string => {
+  const alvo = CONTINENTES_DO_CICLO[ciclo];
+  return `${num(perielioUA(alvo))}–${num(afelioUA(alvo))} UA`;
+};
 
 export const COSMOS: Verbete[] = [
   {
@@ -39,15 +59,19 @@ export const COSMOS: Verbete[] = [
     ficha: [
       { rotulo: 'Star', valor: 'Aion' },
       { rotulo: 'Continents', valor: 'Six, across three orbits' },
-      { rotulo: 'Short Cycle', valor: `[[alhara|Al-Hara]] — ${CICLOS.curto.periodo} days, perfectly circular` },
+      {
+        rotulo: 'Short Cycle',
+        valor: `[[alhara|Al-Hara]] — ${CICLOS.curto.periodo} days, a true circle at ${num(CICLOS.curto.raioUA)} UA`,
+      },
       {
         rotulo: 'Middle Cycle',
-        valor: `[[fentor|Fentor]], [[valoran|Valoran]], [[yoso|Yōso]] — ${CICLOS.medio.periodo} days, elliptical`,
+        valor: `[[fentor|Fentor]], [[valoran|Valoran]], [[yoso|Yōso]] — ${CICLOS.medio.periodo} days, ${faixa('medio')}`,
       },
       {
         rotulo: 'Long Cycle',
-        valor: `[[unkanten|Ukanten]] and [[vrednost|Vrednost]] — ${CICLOS.longo.periodo} days, elliptical`,
+        valor: `[[unkanten|Ukanten]] and [[vrednost|Vrednost]] — ${CICLOS.longo.periodo} days, ${faixa('longo')}`,
       },
+      { rotulo: 'Sky', valor: '[[as-constelacoes|Twelve constellations]], thirty degrees each' },
       { rotulo: 'Moon', valor: '[[corvus|Corvus]], which belongs to no single continent' },
     ],
     epigrafe: 'Nothing here holds still, and the calendar is what the motion writes down.',
@@ -60,10 +84,18 @@ export const COSMOS: Verbete[] = [
         ],
       },
       {
-        titulo: 'The Proof in the Pyramid',
+        titulo: 'The Ellipses, Measured',
         paragrafos: [
-          'That the middle three are evenly spaced is not a claim of this almanac — it is a measurement. Every single time [[corvus|Corvus]] crosses from Valoran to Yōso, across three years of tables and six full circuits, she covers exactly 1,82 UA. Two points on one ring, a third of the way apart, never change their distance; any other arrangement would make that number wander, and it does not wander once.',
-          'The same figure fixes the scale of everything else. A chord of 1,82 UA puts the middle ring at about 1,05 UA from the star, which in turn sets the inner ring near 0,66 and the outer near 1,38 — the distances the rest of the table then obeys.',
+          `Only [[alhara|Al-Hara]] keeps a fixed distance. The other five run ellipses, and an ellipse has a near side and a far one: the middle ring swings between ${faixa('medio')} of the star, the outer between ${faixa('longo')}. That is a fifth of the outer ring's own width — enough that the same crossing can be a short hop one year and a murderous sprint the next.`,
+          `The three rings sit at ${num(CICLOS.curto.raioUA)}, ${num(CICLOS.medio.raioUA)} and ${num(CICLOS.longo.raioUA)} UA, and those are not three chosen numbers. Take the middle ring as one and the other two are what a falling body would have to be for those years: a period half as long buys an orbit at ${num(0.63)}, half again as long an orbit at ${num(1.31)}. The system was not arranged to be tidy. It was arranged to be *possible*, and it comes out to within one part in a hundred.`,
+          'The two outermost keep the same near side of the sky, a hundred and thirty-four degrees off north, and ride half a ring apart — which means that whenever [[vrednost|Vrednost]] is at its closest to the fire, [[unkanten|Ukanten]] is at its furthest, exactly. They are never warm together.',
+        ],
+      },
+      {
+        titulo: 'Where the Two Sources Disagree',
+        paragrafos: [
+          'This codex holds two documents about the same sky, and they do not fully agree. The route table — the working almanac, the one the pilots carry — records the crossing from Valoran to Yōso as 1,82 UA on every one of its six passes, without exception. On a ring of perfect circles a third apart, that is exactly what you would see, and it is the strongest evidence that the middle three are evenly spaced.',
+          'The orbital model gives the same ring an eccentricity of a tenth, and an eccentric ring cannot hold three bodies at a constant remove: the same crossing comes out between 1,59 and 1,67 UA, alternating. Both cannot be right. The table is kept as it stands, because it is the document that people actually navigate by and because its own internal arithmetic closes; the model is kept as it stands, because it is the one that explains why any distance varies at all. What neither of them explains is why the one crossing that should vary is the one that never does.',
         ],
       },
       {
@@ -83,6 +115,7 @@ export const COSMOS: Verbete[] = [
     ],
     relacionados: [
       'calendario-valoriano',
+      'as-constelacoes',
       'a-corvisseia',
       'corvus',
       'valoran',
@@ -110,6 +143,8 @@ export const COSMOS: Verbete[] = [
       { rotulo: 'Month', valor: '30 days — one arrival of [[corvus|Corvus]] to the next' },
       { rotulo: 'Week', valor: 'Six days: Aionia, Aridia, Lucidia, Fluendia, Elendia, Frígia' },
       { rotulo: 'Seasons', valor: 'Four, of three months each' },
+      { rotulo: 'Months named for', valor: '[[as-constelacoes|The twelve constellations]] Valoran crosses' },
+      { rotulo: 'Day one', valor: 'Valoran at perihelion — the nearest it comes to Aion all year' },
       { rotulo: 'Moon over Valoran', valor: 'Twice a year: Equiral and Corvinário' },
     ],
     epigrafe: 'Ascensão, Domínio, Virada — the constellation rises, reigns, and gives way.',
@@ -129,6 +164,14 @@ export const COSMOS: Verbete[] = [
         ],
       },
       {
+        titulo: 'Why It Is Valoran\'s Calendar and Nobody Else\'s',
+        paragrafos: [
+          'Valoran rounds the star in 360 days, which means it crosses exactly one degree of sky a day. [[as-constelacoes|The sky is cut into twelve]] of thirty degrees each. Thirty days, thirty degrees, one constellation: the Valorian month is not a convention laid over the sky, it is the arc Valoran travels while one figure of stars stands over it. Every month on this sheet is named for what Valoran itself was looking at.',
+          'The anchoring goes further than the names. On the first day of *Aquiário*, the first day of the year, Valoran is at perihelion — the closest it comes to the fire in the whole circuit. Half a year later, on the first of *Caessar*, it is at its furthest. Its two neighbours on the ring reach their own nearest points on the first of *Lithral* and the first of *Felissar*, four months apart each time, because a third of a ring is a third of a year is four months exactly. The months do not merely count days. They mark where the world is.',
+          'Nobody else on the ring gets this. [[alhara|Al-Hara]] runs through all twelve constellations twice in a Valorian year and would want months of fifteen days; [[unkanten|Ukanten]] and [[vrednost|Vrednost]] spend forty-five days under each and would want months half again as long. They all use this calendar anyway — because the thing it really counts is the moon, and the moon is the same for everyone.',
+        ],
+      },
+      {
         titulo: 'Where the Sheet Contradicts Itself',
         paragrafos: [
           'The printed sheet carries two errors, and this codex keeps both rather than quietly fixing them. *Equiral* is labelled a summer month while being printed in the autumn block between two autumn months — the seasons only divide evenly if it is autumn. And *Dracônio* is drawn with the moon over [[alhara|Al-Hara]], which would put Corvus above the same continent twice in three months; [[a-corvisseia|the route table]] gives Ukanten for that month, and the route table is the one that has to add up.',
@@ -141,7 +184,7 @@ export const COSMOS: Verbete[] = [
         ],
       },
     ],
-    relacionados: ['sistema-de-aion', 'a-corvisseia', 'corvus', 'valoran', 'os-doze'],
+    relacionados: ['sistema-de-aion', 'as-constelacoes', 'a-corvisseia', 'corvus', 'valoran', 'os-doze'],
     eras: ['era-moderna'],
     alcunhas: ['calendário valoriano', 'os doze meses', 'Aquiário', 'Corvinário'],
   },
@@ -196,6 +239,64 @@ export const COSMOS: Verbete[] = [
     alcunhas: ['A Longa Jornada', 'Corvisseia'],
   },
 
+  {
+    chave: 'as-constelacoes',
+    titulo: 'The Twelve Constellations',
+    epiteto: 'The Wheel the Months Are Named For',
+    categoria: 'ceu',
+    resumo:
+      'Twelve figures of stars, thirty degrees of sky apiece, fixed behind everything that moves — and the reason a month is a month.',
+    brasao: 'estrela',
+    ficha: [
+      { rotulo: 'Count', valor: 'Twelve, each holding thirty degrees of sky' },
+      { rotulo: 'In order', valor: CONSTELACOES.slice(0, 6).map((c) => c.nome).join(', ') },
+      { rotulo: 'And then', valor: CONSTELACOES.slice(6).map((c) => c.nome).join(', ') },
+      { rotulo: 'Seen from Valoran', valor: 'One a month — thirty days, thirty degrees' },
+      {
+        rotulo: 'Seen from the short ring',
+        valor: 'One every fifteen days — [[alhara|Al-Hara]] sees all twelve twice a year',
+      },
+      {
+        rotulo: 'Seen from the long ring',
+        valor: 'One every forty-five days — [[unkanten|Ukanten]] and [[vrednost|Vrednost]] take their time',
+      },
+    ],
+    epigrafe: 'Everything in this sky moves except the things we tell time by.',
+    secoes: [
+      {
+        titulo: 'A Wheel of Twelve',
+        paragrafos: [
+          'Beyond the outermost orbit, far enough that nothing in the system can be said to approach it, the sky of Aion is divided into twelve equal slices of thirty degrees, and each slice holds a figure of stars. *Águia* the Eagle stands due north and the wheel runs east from there: *Lobo* the Wolf, *Girassol* the Sunflower, *Lebre* the Hare, *Lítope*, *Cavalo* the Horse, *Baleia* the Whale, *Árvore* the Tree, *Felino* the Cat, *Roedor* the Rodent, *Serpente* the Serpent, and *Corvo* the Crow, which closes the round.',
+          'They are the only fixed thing in the whole account. Six continents wheel, a moon jumps between them, and every distance in [[a-corvisseia|the table]] changes from one circuit to the next — but the twelve do not move, and that is precisely what makes them useful. To say where something is in this system, you say which constellation it is standing under.',
+        ],
+      },
+      {
+        titulo: 'Which Is Why the Months Have Those Names',
+        paragrafos: [
+          'Each continent faces whichever slice it happens to be crossing, and so each one reads a different figure on the same night. [[valoran|Valoran]] takes a full year of 360 days to go round, which is one degree a day, which is thirty days to a slice — and thirty days is a month. [[calendario-valoriano|Every Valorian month]] is named for the constellation Valoran was under while it lasted, in the order the sky puts them.',
+          'The wheel closes on the Crow, and so does the year. The twelfth month is *Corvinário*, the twelfth constellation is *Corvo*, and *Corvinário* is one of the two months [[corvus|Corvus]] spends over Valoran. For thirty days at the end of every year, a Valorian looks up at the Crow in the stars with the Crow overhead — and the chronicle never once remarks on it.',
+        ],
+      },
+      {
+        titulo: 'Twelve and Twelve',
+        paragrafos: [
+          'The archive holds one other twelve. [[os-doze|The Twelve]] have been called upon for strength since before the Age of a Thousand Kings, and of them the record fixes exactly one thing — their number — while insisting that no page here knows their names. The almanac, which has never claimed to be a religious document, divides the sky into twelve and gives each part a name.',
+          'This scholar will not close that circle. The correspondence is set down because it is there, and because a codex that noticed it and said nothing would be hiding something; what it means, if it means anything, belongs to [[igreja-dos-doze|the church]] and not to an archivist. It is worth saying only that the almanac is a sailing document, drawn up by people who needed to know where a moon would be, and that nothing in it suggests its makers thought they were naming gods.',
+        ],
+      },
+      {
+        titulo: 'What the Record Does Not Say',
+        paragrafos: [
+          'Who drew them, or when, or from where. A constellation is a line drawn between stars by somebody standing somewhere, and the six continents do not stand in the same place — yet all six use this same wheel, with these same figures, in this same order. Somebody\'s sky won, and no page in this archive says whose.',
+          'Nor what a *Lítope* is. Eleven of the twelve name a creature or a thing that appears elsewhere in this codex; the fifth names nothing the archive has ever heard of, and the figure drawn for it — a stalk, two arms, two crowns — resolves the question no further.',
+        ],
+      },
+    ],
+    relacionados: ['calendario-valoriano', 'sistema-de-aion', 'valoran', 'corvus', 'os-doze', 'alhara'],
+    eras: ['era-moderna'],
+    alcunhas: ['as doze constelações', 'a roda do céu', 'Corvo', 'Lítope'],
+  },
+
   // =====================================================================
   // OS CONTINENTES QUE FALTAVAM
   // =====================================================================
@@ -209,7 +310,8 @@ export const COSMOS: Verbete[] = [
       'The continent the Annals are written from: third of the middle orbit, and one of the two the moon visits twice a year.',
     brasao: 'herrys',
     ficha: [
-      { rotulo: 'Orbit', valor: `Middle Cycle — ${CICLOS.medio.periodo} days, elliptical` },
+      { rotulo: 'Orbit', valor: `[[sistema-de-aion|Middle Cycle]] — ${CICLOS.medio.periodo} days, ${faixa('medio')}` },
+      { rotulo: 'Nearest the fire', valor: 'The first of *Aquiário* — the first day of its own year' },
       { rotulo: 'Neighbours on the ring', valor: '[[fentor|Fentor]] and [[yoso|Yōso]], a third of the ring away each' },
       { rotulo: 'Year', valor: '360 days — twelve months, four seasons' },
       { rotulo: 'Moon', valor: 'Twice a year, in Equiral and Corvinário' },
@@ -260,7 +362,8 @@ export const COSMOS: Verbete[] = [
       'The innermost continent, alone on the only circular orbit — and the land where the Luminífero is hated.',
     brasao: 'sol',
     ficha: [
-      { rotulo: 'Orbit', valor: `Short Cycle — ${CICLOS.curto.periodo} days, perfectly circular` },
+      { rotulo: 'Orbit', valor: `[[sistema-de-aion|Short Cycle]] — ${CICLOS.curto.periodo} days, a true circle at ${num(CICLOS.curto.raioUA)} UA` },
+      { rotulo: 'Distance from Aion', valor: 'The same every day of the year — it has no near side' },
       { rotulo: 'Alone', valor: 'The only continent on its ring' },
       { rotulo: 'Faith', valor: 'Hates [[os-doze|the Luminífero]]; keeps [[o-sofredor|the Sufferer]]' },
       { rotulo: 'Moon', valor: 'Twice a year — Lureor and Brassar' },

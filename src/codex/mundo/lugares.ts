@@ -424,7 +424,9 @@ export const LUGARES: Verbete[] = [
     brasao: 'folha',
     ficha: [
       { rotulo: 'Region', valor: 'A continent beyond the Astral Sea, apart from Valoran' },
-      { rotulo: 'Orbit', valor: 'Middle Cycle — 360 days, a third of the ring from [[valoran|Valoran]]' },
+      { rotulo: 'Orbit', valor: '[[sistema-de-aion|Middle Cycle]] — 360 days, a third of the ring from [[valoran|Valoran]]' },
+      { rotulo: 'Distance from Aion', valor: '0,90 UA at its nearest, 1,10 at its furthest' },
+      { rotulo: 'Nearest the fire', valor: 'The first of *Felissar*, four months after [[valoran|Valoran]]' },
       { rotulo: 'Held by', valor: 'The Seelie Court — no House of Valoran' },
       { rotulo: 'Notable', valor: 'Invaded once, by the golden host of the Young King' },
       { rotulo: 'Condition', valor: 'Closed by a pact of non-interference' },
@@ -511,6 +513,8 @@ export const LUGARES: Verbete[] = [
     ficha: [
       { rotulo: 'Region', valor: 'Beyond Valoran; the chronicle gives no bearing' },
       { rotulo: 'Orbit', valor: '[[sistema-de-aion|Middle Cycle]] — 360 days, a third of the ring from [[valoran|Valoran]]' },
+      { rotulo: 'Distance from Aion', valor: '0,90 UA at its nearest, 1,10 at its furthest' },
+      { rotulo: 'Nearest the fire', valor: 'The first of *Lithral*, four months before [[fentor|Fentor]]' },
       { rotulo: 'Held by', valor: 'The Hōseki Dynasty — no House of Valoran' },
       { rotulo: 'Notable', valor: 'Adversary of the empire in the War of the Winds' },
       { rotulo: 'Condition', valor: 'Unrecorded — its remnants scattered upon Valoran' },

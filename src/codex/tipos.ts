@@ -250,7 +250,7 @@ export const CATEGORIAS: Categoria[] = [
     id: 'ceu',
     rotulo: 'O Céu',
     singular: 'Céu',
-    nota: 'As três órbitas, a rota de Corvus e o calendário que saiu delas.',
+    nota: 'As três órbitas, as doze constelações, a rota de Corvus e o calendário que saiu delas.',
   },
   {
     id: 'reliquia',

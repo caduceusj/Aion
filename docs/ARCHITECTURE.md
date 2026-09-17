@@ -132,15 +132,28 @@ mais 10,5 de viagem, e a tabela de 36 trechos que A Corvisseia percorre antes
 de se repetir. As velocidades não estão escritas em lugar nenhum — são
 distância dividida por 10,5 dias, calculadas na hora.
 
+O mesmo arquivo guarda os elementos orbitais de cada continente — semi-eixo,
+excentricidade, rumo do periélio, ângulo no dia 0 —, e daí saem `posicaoEm`,
+`constelacaoVisivel` e `posicaoDaLua`. **Toda** posição desenhada no site vem
+dessas funções: o diagrama estático da aba do ano e o modelo vivo da aba do
+céu não têm geometria própria, e por isso não podem discordar.
+
 Isso torna o calendário verificável, e `codex/calendario.test.ts` o verifica:
 que a rota fecha em si mesma, que cada trecho começa onde o anterior acabou,
-que as seis voltas são idênticas, que Valoran → Yōso mede sempre as mesmas
-1,82 UA (é o que prova que os três do meio estão a 120° um do outro), e que
-as velocidades calculadas batem com a prancha impressa do usuário dentro do
-ruído do arredondamento. Onde a prancha se contradiz — Equiral rotulada
-"Verão" mas impressa no bloco do outono, Dracônio desenhada com a lua errada
-— o dado registra a contradição num campo `nota` em vez de escolher um lado
-em silêncio.
+que as seis voltas são idênticas, que os três semi-eixos obedecem a terceira
+lei de Kepler a menos de 1%, que os três do meio ficam a 120° um do outro em
+qualquer dia, que Vrednost e Ukanten estão sempre em oposição, que o mês
+valoriano é mesmo a constelação que Valoran atravessa, e que as velocidades
+calculadas batem com a prancha impressa do usuário dentro do ruído do
+arredondamento.
+
+Onde as fontes se contradizem, o Códice registra a contradição em vez de
+escolher um lado em silêncio. A prancha rotula Equiral de "Verão" e a imprime
+no bloco do outono; desenha Dracônio com a lua errada; e — a maior delas — a
+tabela de trechos dá 1,82 UA para Valoran → Yōso em todas as seis passagens,
+o que exige um anel circular, enquanto o modelo orbital dá àquele anel uma
+excentricidade de um décimo, que faria a mesma distância oscilar. As duas
+ficam, cada uma na sua função, com a divergência escrita no verbete.
 
 ### O guarda-corpo
 

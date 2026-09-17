@@ -86,8 +86,8 @@ export function CodexAbertura({ aoNavegar }: { aoNavegar: (chave: string) => voi
             <IconOrbita size={26} />
             <strong>O Almanaque</strong>
             <small>
-              As três órbitas de Aion, os doze meses valorianos e a rota de Corvus pelos seis
-              continentes.
+              O sistema de Aion andando: três órbitas, doze constelações, a folha do mês e a
+              rota de Corvus pelos seis continentes.
             </small>
           </button>
         </div>

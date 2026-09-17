@@ -234,6 +234,8 @@ export const ANDARI: Verbete[] = [
     ficha: [
       { rotulo: 'Kind', valor: 'Continent' },
       { rotulo: 'Orbit', valor: '[[sistema-de-aion|Long Cycle]] — 540 days, opposite [[unkanten|Ukanten]] on the ring' },
+      { rotulo: 'Distance from Aion', valor: '1,03 UA at its nearest, 1,59 at its furthest' },
+      { rotulo: 'Nearest the fire', valor: 'The seventh of *Helior* — the day [[unkanten|Ukanten]] is furthest' },
       { rotulo: 'Was', valor: 'The inland sea of Sindaren' },
       { rotulo: 'Made', valor: 'By the Theft, in the White Queen’s age' },
       { rotulo: 'Standing', valor: 'Independent — never reclaimed' },

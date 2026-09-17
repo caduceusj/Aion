@@ -69,7 +69,7 @@ você mesmo roda, para os aparelhos se acharem.
 
 **O Códice**
 - A lore da campanha por cima da mesa, em uma aba própria (tecla `C`)
-- 175 verbetes navegáveis: eras, personagens, casas, lugares, o céu, relíquias,
+- 176 verbetes navegáveis: eras, personagens, casas, lugares, o céu, relíquias,
   eventos e potências
 - Wiki de verdade: toda menção na prosa é um link, e cada verbete mostra quem cita ele
 - Cada verbete diz de onde veio: As Anais, a Gazeta, a Biblioteca de Andari, o
@@ -78,6 +78,8 @@ você mesmo roda, para os aparelhos se acharem.
 - Atlas com o mapa em duas pranchas alternáveis, zoom, arraste e pontos clicáveis
 - Almanaque com as três órbitas de Aion, os doze meses valorianos e a rota de
   Corvus pelos seis continentes, mês a mês
+- Modelo orbital vivo: os seis continentes nas elipses de verdade, as doze
+  constelações ao fundo e a lua saltando entre eles ao longo dos 1080 dias
 - Onde a crônica cala, o verbete diz que ela cala — nada de lore inventada
 
 **Mesa**
@@ -122,7 +124,7 @@ npm run verifica:mesa         # confere a mesa de ponta a ponta
 
 No app, abra **O Códice**
 - A lore da campanha por cima da mesa, em uma aba própria (tecla `C`)
-- 175 verbetes navegáveis: eras, personagens, casas, lugares, o céu, relíquias,
+- 176 verbetes navegáveis: eras, personagens, casas, lugares, o céu, relíquias,
   eventos e potências
 - Wiki de verdade: toda menção na prosa é um link, e cada verbete mostra quem cita ele
 - Cada verbete diz de onde veio: As Anais, a Gazeta, a Biblioteca de Andari, o
@@ -131,6 +133,8 @@ No app, abra **O Códice**
 - Atlas com o mapa em duas pranchas alternáveis, zoom, arraste e pontos clicáveis
 - Almanaque com as três órbitas de Aion, os doze meses valorianos e a rota de
   Corvus pelos seis continentes, mês a mês
+- Modelo orbital vivo: os seis continentes nas elipses de verdade, as doze
+  constelações ao fundo e a lua saltando entre eles ao longo dos 1080 dias
 - Onde a crônica cala, o verbete diz que ela cala — nada de lore inventada
 
 **Mesa**, aponte o endereço para o IP dessa máquina

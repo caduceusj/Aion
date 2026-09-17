@@ -274,7 +274,7 @@ export function Codex() {
             <IconOrbita size={17} />
             <span>
               <strong>O Almanaque</strong>
-              <small>As órbitas, os doze meses e a rota de Corvus</small>
+              <small>O céu vivo, os doze meses e a rota de Corvus</small>
             </span>
           </button>
 

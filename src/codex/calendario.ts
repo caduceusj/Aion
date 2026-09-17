@@ -53,14 +53,16 @@ export interface Ciclo {
   periodo: number;
   forma: 'circular' | 'elíptica';
   /**
-   * Semi-eixo médio em UA.
+   * Semi-eixo maior em UA, como o modelo orbital do usuário o fixa.
    *
-   * Derivado, não inventado: o trecho Valoran → Yoso mede 1,82 UA em toda
-   * passagem da tabela, e dois pontos da mesma órbita a 120° um do outro
-   * distam `2·a·sen 60°`. Isso fixa a órbita média em a ≈ 1,05 UA, e as
-   * outras duas saem da terceira lei de Kepler (a ∝ T^⅔).
+   * Os três obedecem a terceira lei de Kepler a menos de 1%: ancorando a
+   * órbita média em 1 UA, `a ∝ T^⅔` pede 0,630 e 1,3104 para as outras
+   * duas, e o modelo traz 0,624 e 1,310. O sistema foi desenhado para
+   * fechar com a física, não só com o calendário.
    */
   raioUA: number;
+  /** 0 é círculo perfeito. Só Al-Hara tem. */
+  excentricidade: number;
   nota: string;
 }
 
@@ -70,7 +72,8 @@ export const CICLOS: Record<CicloId, Ciclo> = {
     rotulo: 'O Ciclo Curto',
     periodo: 180,
     forma: 'circular',
-    raioUA: 0.66,
+    raioUA: 0.624,
+    excentricidade: 0,
     nota: 'Al-Hara sozinha, na única órbita perfeitamente circular do sistema.',
   },
   medio: {
@@ -78,7 +81,8 @@ export const CICLOS: Record<CicloId, Ciclo> = {
     rotulo: 'O Ciclo Médio',
     periodo: 360,
     forma: 'elíptica',
-    raioUA: 1.05,
+    raioUA: 1.0,
+    excentricidade: 0.1,
     nota: 'Fentor, Valoran e Yoso, dispostos em pirâmide — sempre a 120° um do outro.',
   },
   longo: {
@@ -86,7 +90,8 @@ export const CICLOS: Record<CicloId, Ciclo> = {
     rotulo: 'O Ciclo Longo',
     periodo: 540,
     forma: 'elíptica',
-    raioUA: 1.38,
+    raioUA: 1.31,
+    excentricidade: 0.214,
     nota: 'Ukanten e Vrednost, em polos opostos da mesma órbita.',
   },
 };
@@ -107,17 +112,27 @@ export interface Continente {
   /** Verbete do Códice, para o diagrama poder levar à lore. */
   chave: string;
   ciclo: CicloId;
-  /** Onde fica no diagrama, em graus. Os três médios a 120°; os dois longos opostos. */
-  angulo: number;
+  /**
+   * Onde o continente estava no dia 1 do ano 0, em graus de céu a partir do
+   * Norte. Os três médios a 120° um do outro; os dois longos em oposição.
+   */
+  anguloInicial: number;
+  /**
+   * Para que lado do céu aponta o periélio — o ponto da órbita mais perto de
+   * Aion. Sem sentido para Al-Hara, que não tem periélio.
+   */
+  rumoDoPerielio: number;
+  /** A cor com que o modelo orbital desenha este continente. */
+  cor: string;
 }
 
 export const CONTINENTES: Continente[] = [
-  { id: 'al-hara', codigo: 'C1', nome: 'Al-Hara', chave: 'alhara', ciclo: 'curto', angulo: 20 },
-  { id: 'fentor', codigo: 'C2', nome: 'Fentor', chave: 'fentor', ciclo: 'medio', angulo: 210 },
-  { id: 'valoran', codigo: 'C3', nome: 'Valoran', chave: 'valoran', ciclo: 'medio', angulo: 330 },
-  { id: 'yoso', codigo: 'C4', nome: 'Yōso', chave: 'yoso', ciclo: 'medio', angulo: 90 },
-  { id: 'vrednost', codigo: 'C5', nome: 'Vrednost', chave: 'vrednost', ciclo: 'longo', angulo: 145 },
-  { id: 'ukanten', codigo: 'C6', nome: 'Ukanten', chave: 'unkanten', ciclo: 'longo', angulo: 325 },
+  { id: 'al-hara', codigo: 'C1', nome: 'Al-Hara', chave: 'alhara', ciclo: 'curto', anguloInicial: 0, rumoDoPerielio: 0, cor: '#ffb066' },
+  { id: 'fentor', codigo: 'C2', nome: 'Fentor', chave: 'fentor', ciclo: 'medio', anguloInicial: 120, rumoDoPerielio: 0, cor: '#6af0c0' },
+  { id: 'valoran', codigo: 'C3', nome: 'Valoran', chave: 'valoran', ciclo: 'medio', anguloInicial: 0, rumoDoPerielio: 0, cor: '#7aa8ff' },
+  { id: 'yoso', codigo: 'C4', nome: 'Yōso', chave: 'yoso', ciclo: 'medio', anguloInicial: 240, rumoDoPerielio: 0, cor: '#f07ad4' },
+  { id: 'vrednost', codigo: 'C5', nome: 'Vrednost', chave: 'vrednost', ciclo: 'longo', anguloInicial: 90, rumoDoPerielio: 134, cor: '#a0e8ff' },
+  { id: 'ukanten', codigo: 'C6', nome: 'Ukanten', chave: 'unkanten', ciclo: 'longo', anguloInicial: 270, rumoDoPerielio: 134, cor: '#c0a0ff' },
 ];
 
 const POR_CODIGO = new Map(CONTINENTES.map((c) => [c.codigo, c]));
@@ -400,3 +415,191 @@ export const velocidade = (distanciaUA: number): number =>
 /** O trecho que Corvus percorre no fim de um mês da Corvisseia (1 a 36). */
 export const trecho = (mesDaCorvisseia: number): Trecho =>
   CORVISSEIA[(mesDaCorvisseia - 1) % CORVISSEIA.length]!;
+
+// =====================================================================
+// A MECÂNICA DO CÉU
+// =====================================================================
+//
+// Daqui para baixo o calendário deixa de ser tabela e vira geometria. Os
+// elementos orbitais são os do modelo do usuário, e todas as posições saem
+// deles — nenhuma é desenhada à mão. A convenção é a da rosa dos ventos:
+// 0° é o Norte e o ângulo cresce para Leste, que é como o modelo original
+// mede o céu.
+
+/** Um ponto do sistema, em UA, visto de cima do plano das órbitas. */
+export interface Ponto {
+  leste: number;
+  norte: number;
+}
+
+const rad = (graus: number): number => (graus * Math.PI) / 180;
+
+/** Quantos graus de céu um continente percorre por dia. */
+export const grausPorDia = (corpo: Continente): number => 360 / CICLOS[corpo.ciclo].periodo;
+
+/** Onde o continente está na sua órbita num dia, em graus a partir do Norte. */
+export const anguloEm = (corpo: Continente, dia: number): number =>
+  (((corpo.anguloInicial + dia * grausPorDia(corpo)) % 360) + 360) % 360;
+
+/**
+ * A que distância de Aion o continente está num dia.
+ *
+ * É a equação polar da elipse com o foco na estrela: `r = a(1−e²)/(1+e·cos θ)`,
+ * medindo θ a partir do periélio. Numa órbita circular ela devolve sempre o
+ * mesmo `a`, que é exatamente o caso de Al-Hara.
+ */
+export function raioEm(corpo: Continente, dia: number): number {
+  const ciclo = CICLOS[corpo.ciclo];
+  const e = ciclo.excentricidade;
+  if (e === 0) return ciclo.raioUA;
+  const theta = rad(anguloEm(corpo, dia) - corpo.rumoDoPerielio);
+  return (ciclo.raioUA * (1 - e * e)) / (1 + e * Math.cos(theta));
+}
+
+/** Onde o continente está no plano do sistema, em UA. */
+export function posicaoEm(corpo: Continente, dia: number): Ponto {
+  const r = raioEm(corpo, dia);
+  const theta = rad(anguloEm(corpo, dia));
+  return { leste: r * Math.sin(theta), norte: r * Math.cos(theta) };
+}
+
+/** A distância entre dois continentes num dia, em UA. */
+export function distanciaEntre(a: Continente, b: Continente, dia: number): number {
+  const pa = posicaoEm(a, dia);
+  const pb = posicaoEm(b, dia);
+  return Math.hypot(pb.leste - pa.leste, pb.norte - pa.norte);
+}
+
+export const perielioUA = (corpo: Continente): number =>
+  CICLOS[corpo.ciclo].raioUA * (1 - CICLOS[corpo.ciclo].excentricidade);
+
+export const afelioUA = (corpo: Continente): number =>
+  CICLOS[corpo.ciclo].raioUA * (1 + CICLOS[corpo.ciclo].excentricidade);
+
+// =====================================================================
+// AS DOZE CONSTELAÇÕES
+// =====================================================================
+
+/**
+ * O céu de Aion é repartido em doze fatias de 30°, e cada uma tem o seu
+ * desenho de estrelas. A fatia para onde um continente aponta é a
+ * constelação que ele vê — e é daí que vêm os nomes dos meses.
+ *
+ * Valoran anda exatamente 1° por dia, porque o seu ano tem 360 dias. Trinta
+ * dias, trinta graus, uma fatia inteira: o mês valoriano *é* a constelação
+ * que Valoran atravessa. Al-Hara, no dobro da pressa, vê as doze duas vezes
+ * por ano; Ukanten e Vrednost levam 45 dias em cada uma.
+ *
+ * Os traços são o desenho do modelo do usuário, estrela por estrela, em
+ * coordenadas locais de −8 a 8.
+ */
+export interface Constelacao {
+  /** 0 a 11, na ordem em que o céu as põe. */
+  indice: number;
+  nome: string;
+  /** Primeiro grau da fatia; ela vai até `de + 30`. */
+  de: number;
+  /** Pares de pontos ligados por linha: as estrelas e o traço entre elas. */
+  tracos: Array<[[number, number], [number, number]]>;
+}
+
+const GRAUS_POR_CONSTELACAO = 30;
+
+const TRACOS: Record<string, Array<[[number, number], [number, number]]>> = {
+  'Águia': [[[-6, 1], [-2, -2]], [[-2, -2], [0, 2]], [[0, 2], [2, -2]], [[2, -2], [6, 1]], [[0, 2], [0, 6]]],
+  Lobo: [[[-4, 5], [-1, -1]], [[-1, -1], [0, -5]], [[0, -5], [1, -1]], [[1, -1], [4, 5]], [[0, -5], [-1, -7]], [[0, -5], [1, -7]]],
+  Girassol: [[[0, -6], [0, 6]], [[-5, -3], [5, 3]], [[-5, 3], [5, -3]], [[-3, -5], [3, 5]], [[-3, 5], [3, -5]]],
+  Lebre: [[[-3, 4], [-1, -2]], [[-1, -2], [-1, -6]], [[-1, -2], [1, -6]], [[-1, -2], [3, 4]], [[-3, 4], [3, 4]]],
+  'Lítope': [[[0, 6], [0, -2]], [[0, -2], [-3, -5]], [[0, -2], [3, -5]], [[-3, -5], [-1, -7]], [[3, -5], [1, -7]]],
+  Cavalo: [[[-5, 5], [-2, 0]], [[-2, 0], [0, -4]], [[0, -4], [3, -6]], [[0, -4], [2, 1]], [[2, 1], [5, 5]]],
+  Baleia: [[[-6, 0], [0, -3]], [[0, -3], [6, 0]], [[6, 0], [3, 3]], [[3, 3], [-4, 3]], [[-4, 3], [-6, 0]], [[6, 0], [8, -2]]],
+  'Árvore': [[[0, 6], [0, -1]], [[0, -1], [-4, -5]], [[0, -1], [4, -5]], [[0, 2], [-3, 5]], [[0, 2], [3, 5]], [[0, -4], [0, -7]]],
+  Felino: [[[-4, 5], [-2, 1]], [[-2, 1], [0, -3]], [[0, -3], [2, 1]], [[2, 1], [4, 5]], [[-2, 1], [-3, -2]], [[2, 1], [3, -2]]],
+  Roedor: [[[-4, 3], [-1, 0]], [[-1, 0], [0, -3]], [[0, -3], [1, 0]], [[1, 0], [4, 3]], [[0, -3], [-2, -5]], [[0, -3], [2, -5]]],
+  Serpente: [[[-6, 3], [-3, -2]], [[-3, -2], [0, 3]], [[0, 3], [3, -2]], [[3, -2], [6, 3]]],
+  Corvo: [[[-6, -2], [-1, 1]], [[-1, 1], [0, -3]], [[0, -3], [1, 1]], [[1, 1], [6, -2]], [[0, 1], [0, 5]]],
+};
+
+/** Na ordem do céu, que é a ordem dos meses. */
+export const CONSTELACOES: Constelacao[] = MESES.map((m, indice) => ({
+  indice,
+  nome: m.constelacao,
+  de: indice * GRAUS_POR_CONSTELACAO,
+  tracos: TRACOS[m.constelacao] ?? [],
+}));
+
+/** A constelação de uma fatia do céu. */
+export const constelacaoNoAngulo = (graus: number): Constelacao =>
+  CONSTELACOES[
+    Math.floor(((((graus % 360) + 360) % 360) / GRAUS_POR_CONSTELACAO)) % MESES_DO_ANO
+  ]!;
+
+/** Para que constelação um continente aponta num dia. */
+export const constelacaoVisivel = (corpo: Continente, dia: number): Constelacao =>
+  constelacaoNoAngulo(anguloEm(corpo, dia));
+
+// =====================================================================
+// CORVUS, DIA A DIA
+// =====================================================================
+
+export interface EstadoDaLua {
+  /** Parada sobre um continente, ou a caminho do próximo. */
+  estado: 'parada' | 'viagem';
+  em: CodigoOrbital;
+  para: CodigoOrbital;
+  /** 0 a 1 dentro da etapa em que ela está. */
+  progresso: number;
+}
+
+/** Onde Corvus está e o que está fazendo, num dia qualquer da Corvisseia. */
+export function estadoDaLua(dia: number): EstadoDaLua {
+  const noCiclo = ((dia % DIAS_DA_VOLTA) + DIAS_DA_VOLTA) % DIAS_DA_VOLTA;
+  const indice = Math.floor(noCiclo / DIAS_DO_MES) % ROTA.length;
+  const noTrecho = noCiclo - indice * DIAS_DO_MES;
+  const em = ROTA[indice]!;
+  const para = ROTA[(indice + 1) % ROTA.length]!;
+  return noTrecho < DIAS_DE_ESTADIA
+    ? { estado: 'parada', em, para, progresso: noTrecho / DIAS_DE_ESTADIA }
+    : {
+        estado: 'viagem',
+        em,
+        para,
+        progresso: (noTrecho - DIAS_DE_ESTADIA) / DIAS_DE_VIAGEM,
+      };
+}
+
+/**
+ * Onde Corvus está no plano do sistema.
+ *
+ * Parada, ela orbita de perto o continente onde pousou. Em viagem, descreve
+ * um arco entre os dois — uma curva, não uma reta, porque nada que se move a
+ * centenas de km/s muda de rumo em ângulo reto.
+ */
+export function posicaoDaLua(dia: number): Ponto {
+  const estado = estadoDaLua(dia);
+  const origem = posicaoEm(continentePorCodigo(estado.em), dia);
+
+  if (estado.estado === 'parada') {
+    const giro = dia * 0.6;
+    const orbe = 0.075;
+    return { leste: origem.leste + orbe * Math.cos(giro), norte: origem.norte + orbe * Math.sin(giro) };
+  }
+
+  const destino = posicaoEm(continentePorCodigo(estado.para), dia);
+  // Suaviza a partida e a chegada: ela acelera e freia, não salta.
+  const f = estado.progresso * estado.progresso * (3 - 2 * estado.progresso);
+  const dl = destino.leste - origem.leste;
+  const dn = destino.norte - origem.norte;
+  const comprimento = Math.hypot(dl, dn) || 1;
+  const arco = 0.12 * comprimento;
+  const cl = (origem.leste + destino.leste) / 2 - (dn / comprimento) * arco;
+  const cn = (origem.norte + destino.norte) / 2 + (dl / comprimento) * arco;
+  return {
+    leste: (1 - f) * (1 - f) * origem.leste + 2 * (1 - f) * f * cl + f * f * destino.leste,
+    norte: (1 - f) * (1 - f) * origem.norte + 2 * (1 - f) * f * cn + f * f * destino.norte,
+  };
+}
+
+/** O dia da Corvisseia (0 a 1079) em que um mês começa. */
+export const inicioDoMes = (mesDaCorvisseia: number): number =>
+  ((mesDaCorvisseia - 1) % CORVISSEIA.length) * DIAS_DO_MES;

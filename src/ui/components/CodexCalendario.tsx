@@ -18,12 +18,14 @@ import {
   faseDaConstelacao,
   faseDaLua,
   mes as mesDoAno,
+  posicaoEm,
   trecho,
   velocidade,
   type ContinenteId,
   type Mes,
 } from '@/codex/calendario';
 import { existe } from '@/codex/corpus';
+import { CodexCeu } from '@/ui/components/CodexCeu';
 
 /**
  * O Almanaque: o calendário de Aion, e o céu de onde ele saiu.
@@ -45,28 +47,26 @@ const numero = (valor: number, casas = 2): string =>
 
 const CENTRO = 200;
 const RAIO_MAXIMO = 150;
-/** UA por pixel, fixado pela órbita mais externa. */
-const ESCALA = RAIO_MAXIMO / CICLOS.longo.raioUA;
-
-const raioNaTela = (ciclo: keyof typeof CICLOS): number => CICLOS[ciclo].raioUA * ESCALA;
+/** UA por pixel, fixado pelo afélio da órbita mais externa. */
+const ESCALA = RAIO_MAXIMO / (CICLOS.longo.raioUA * (1 + CICLOS.longo.excentricidade));
 
 /**
  * Onde um continente está no mês pedido.
  *
- * As órbitas giram de verdade: um mês são 30 dias, e cada anel avança
- * 360°·30/período. Os dois invariantes que o sistema promete se mantêm
- * sozinhos — os três do meio sempre a 120°, os dois de fora sempre opostos —
- * porque giram juntos. O que o desenho não tem é a elipse; é ela que faz as
- * distâncias da tabela variarem, e por isso a distância exibida vem sempre
- * da tabela, nunca do desenho.
+ * A geometria não é deste arquivo: vem de `codex/calendario.ts`, a mesma que
+ * move o modelo vivo da aba ao lado. Assim as duas vistas nunca discordam
+ * sobre onde um continente está — inclusive sobre a elipse, que aproxima e
+ * afasta cada um de Aion ao longo do ano.
+ *
+ * O dia escolhido é o da partida de Corvus: o fim da estadia dela, que é o
+ * instante que o trecho do mês mede.
  */
+const diaDoMes = (numeroDoMes: number): number =>
+  (numeroDoMes - 1) * DIAS_DO_MES + DIAS_DE_ESTADIA;
+
 function posicao(id: ContinenteId, numeroDoMes: number): { x: number; y: number } {
-  const alvo = continente(id);
-  const periodo = CICLOS[alvo.ciclo].periodo;
-  const giro = (360 * ((numeroDoMes - 1) * DIAS_DO_MES)) / periodo;
-  const radianos = ((alvo.angulo + giro) * Math.PI) / 180;
-  const raio = raioNaTela(alvo.ciclo);
-  return { x: CENTRO + raio * Math.cos(radianos), y: CENTRO + raio * Math.sin(radianos) };
+  const p = posicaoEm(continente(id), diaDoMes(numeroDoMes));
+  return { x: CENTRO + p.leste * ESCALA, y: CENTRO - p.norte * ESCALA };
 }
 
 // =====================================================================
@@ -89,16 +89,26 @@ function Diagrama({
   return (
     <figure className="almanaque__diagrama">
       <svg viewBox="0 0 400 400" role="img" aria-label="As três órbitas de Aion">
-        {(['longo', 'medio', 'curto'] as const).map((ciclo) => (
-          <circle
-            key={ciclo}
-            className="orbita__anel"
-            cx={CENTRO}
-            cy={CENTRO}
-            r={raioNaTela(ciclo)}
-            data-ciclo={ciclo}
-          />
-        ))}
+        {(['longo', 'medio', 'curto'] as const).map((id) => {
+          const ciclo = CICLOS[id];
+          const a = ciclo.raioUA * ESCALA;
+          const b = a * Math.sqrt(1 - ciclo.excentricidade * ciclo.excentricidade);
+          // O foco é a estrela, então o centro da elipse fica deslocado dela.
+          const desvio = a * ciclo.excentricidade;
+          const rumo = id === 'longo' ? 134 : 0;
+          return (
+            <ellipse
+              key={id}
+              className="orbita__anel"
+              cx={0}
+              cy={0}
+              rx={a}
+              ry={b}
+              data-ciclo={id}
+              transform={`translate(${CENTRO + desvio * Math.sin(((rumo + 180) * Math.PI) / 180)} ${CENTRO - desvio * Math.cos(((rumo + 180) * Math.PI) / 180)}) rotate(${rumo - 90})`}
+            />
+          );
+        })}
 
         {/* O salto do mês: de onde a lua está para onde ela vai. */}
         <line className="orbita__salto" x1={de.x} y1={de.y} x2={para.x} y2={para.y} />
@@ -145,8 +155,8 @@ function Diagrama({
         No mês de <strong>{mes.nome}</strong>, Corvus está sobre{' '}
         <strong>{continente(mes.lua).nome}</strong> e parte para{' '}
         <strong>{destino.nome}</strong> — {numero(daVez.distanciaUA)} UA em {numero(DIAS_DE_VIAGEM, 1)}{' '}
-        dias, cerca de {Math.round(velocidade(daVez.distanciaUA))} km/s. Os anéis giram no ritmo
-        real de cada órbita; a elipse, que é o que faz as distâncias mudarem, fica na tabela.
+        dias, cerca de {Math.round(velocidade(daVez.distanciaUA))} km/s. Os anéis são as órbitas
+        de verdade, elipses e tudo, no instante exato em que ela levanta voo.
       </figcaption>
     </figure>
   );
@@ -317,7 +327,7 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
   // portanto o único estado da prancha em que as três fases aparecem.
   const [numeroDoMes, setNumeroDoMes] = useState(6);
   const [onde, setOnde] = useState<ContinenteId>('valoran');
-  const [aba, setAba] = useState<'ano' | 'corvisseia'>('ano');
+  const [aba, setAba] = useState<'ano' | 'ceu' | 'corvisseia'>('ano');
 
   const mes = mesDoAno(numeroDoMes);
 
@@ -341,6 +351,15 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
           <button
             type="button"
             role="tab"
+            aria-selected={aba === 'ceu'}
+            data-ativo={aba === 'ceu' ? 'sim' : undefined}
+            onClick={() => setAba('ceu')}
+          >
+            O Céu
+          </button>
+          <button
+            type="button"
+            role="tab"
             aria-selected={aba === 'corvisseia'}
             data-ativo={aba === 'corvisseia' ? 'sim' : undefined}
             onClick={() => setAba('corvisseia')}
@@ -350,6 +369,7 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
         </div>
       </header>
 
+      {aba === 'ceu' ? null : (
       <nav className="almanaque__meses" aria-label="Os doze meses">
         {MESES.map((item) => (
           <button
@@ -366,6 +386,7 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
           </button>
         ))}
       </nav>
+      )}
 
       {aba === 'ano' ? (
         <>
@@ -407,7 +428,10 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
                   <div className="ciclo" key={id} data-ciclo={id}>
                     <h4>{ciclo.rotulo}</h4>
                     <p className="ciclo__numeros">
-                      {ciclo.periodo} dias · {ciclo.forma} · ~{numero(ciclo.raioUA)} UA
+                      {ciclo.periodo} dias · {ciclo.forma} ·{' '}
+                      {ciclo.excentricidade === 0
+                        ? `${numero(ciclo.raioUA)} UA sempre`
+                        : `${numero(ciclo.raioUA * (1 - ciclo.excentricidade))}–${numero(ciclo.raioUA * (1 + ciclo.excentricidade))} UA`}
                     </p>
                     <p className="ciclo__moradores">
                       {moradores.map((c) => (
@@ -431,6 +455,8 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
             </p>
           </section>
         </>
+      ) : aba === 'ceu' ? (
+        <CodexCeu aoNavegar={aoNavegar} />
       ) : (
         <Corvisseia mesDestacado={numeroDoMes} aoEscolher={setNumeroDoMes} />
       )}

@@ -54,6 +54,17 @@ describe('o corpus está inteiro', () => {
     expect(tortas).toEqual([]);
   });
 
+  it('os rótulos da ficha são texto puro — a marcação vale só no valor', () => {
+    // O `dt` não passa pelo <Prosa>, então um [[elo]] ali vaza para a tela.
+    const sujos: string[] = [];
+    for (const entrada of VERBETES) {
+      for (const fato of entrada.ficha) {
+        if (/\[\[|\*/.test(fato.rotulo)) sujos.push(`${entrada.chave} → ${fato.rotulo}`);
+      }
+    }
+    expect(sujos).toEqual([]);
+  });
+
   it('todo verbete tem título, resumo, ficha e ao menos uma seção com texto', () => {
     for (const entrada of VERBETES) {
       expect(entrada.titulo.trim().length, entrada.chave).toBeGreaterThan(0);

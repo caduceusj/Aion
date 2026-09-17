@@ -119,7 +119,9 @@ export const GEOGRAFIA_E_TECNOLOGIA: Verbete[] = [
     brasao: 'montanha',
     ficha: [
       { rotulo: 'Kind', valor: 'Continent — land of the storm giants, and in body a goddess' },
-      { rotulo: 'Orbit', valor: 'Long Cycle — 540 days, opposite [[vrednost|Vrednost]] on the same ring' },
+      { rotulo: 'Orbit', valor: '[[sistema-de-aion|Long Cycle]] — 540 days, opposite [[vrednost|Vrednost]] on the same ring' },
+      { rotulo: 'Distance from Aion', valor: '1,03 UA at its nearest, 1,59 at its furthest' },
+      { rotulo: 'Nearest the fire', valor: 'The seventh of *Corvinário* — the day [[vrednost|Vrednost]] is furthest' },
       { rotulo: 'Spelling', valor: '*Ukanten* on the map and the calendar; *Unkanten* as the Valkyrie named herself' },
       { rotulo: 'True name of that goddess', valor: 'Unkanten' },
       { rotulo: 'Missing', valor: 'Her right hand — taken by the victors of an old war' },
