@@ -62,6 +62,29 @@ interface Tela {
 /** Do plano do sistema para a tela: o norte é para cima, então o y inverte. */
 const naTela = (p: Ponto): Tela => ({ x: p.leste * ESCALA, y: -p.norte * ESCALA });
 
+/**
+ * Para que lado escrever o nome de um corpo.
+ *
+ * Apontar sempre para a direita fazia dois nomes se atropelarem sempre que
+ * dois continentes passavam perto na tela. Empurrar o rótulo para fora, na
+ * direção que sai de Aion, resolve: dois corpos em ângulos diferentes têm
+ * rótulos em direções diferentes, que é justamente quando eles se chocam.
+ */
+function rotulo(p: Tela, afastamento: number, dir?: Tela) {
+  const alvo = dir ?? p;
+  const distancia = Math.hypot(alvo.x, alvo.y) || 1;
+  const sentido = Math.sign(afastamento) || 1;
+  const ux = (alvo.x / distancia) * sentido;
+  const uy = (alvo.y / distancia) * sentido;
+  const passo = Math.abs(afastamento);
+  return {
+    x: p.x + ux * passo,
+    y: p.y + uy * passo,
+    ancora: (ux > 0.3 ? 'start' : ux < -0.3 ? 'end' : 'middle') as 'start' | 'middle' | 'end',
+    base: (uy > 0.3 ? 'hanging' : uy < -0.3 ? 'auto' : 'middle') as 'auto' | 'middle' | 'hanging',
+  };
+}
+
 /** O quadro que enquadra a órbita de um continente, para o zoom. */
 function moldura(corpo: Continente): { cx: number; cy: number; meio: number } {
   const ciclo = CICLOS[corpo.ciclo];
@@ -149,13 +172,33 @@ function useCenario() {
             leste: afelioUA(corpo) * Math.sin(rad(rumo + 180)),
             norte: afelioUA(corpo) * Math.cos(rad(rumo + 180)),
           });
+          // As letras vão para dentro da órbita: fora delas fica o anel das
+          // constelações, e "A" estava caindo em cima de *Serpente*.
+          const pt = rotulo(p, -6);
+          const at = rotulo(a, -6);
           return [
             <circle key={`${corpo.id}-p`} cx={p.x} cy={p.y} r="1.5" fill="#ffd97a" />,
             <circle key={`${corpo.id}-a`} cx={a.x} cy={a.y} r="1.5" fill="#6ab0ff" />,
-            <text key={`${corpo.id}-pt`} className="ceu__apside" x={p.x + 2.5} y={p.y - 2} fill="#ffd97a">
+            <text
+              key={`${corpo.id}-pt`}
+              className="ceu__apside"
+              x={pt.x}
+              y={pt.y}
+              textAnchor={pt.ancora}
+              dominantBaseline={pt.base}
+              fill="#ffd97a"
+            >
               P
             </text>,
-            <text key={`${corpo.id}-at`} className="ceu__apside" x={a.x - 4} y={a.y - 2} fill="#6ab0ff">
+            <text
+              key={`${corpo.id}-at`}
+              className="ceu__apside"
+              x={at.x}
+              y={at.y}
+              textAnchor={at.ancora}
+              dominantBaseline={at.base}
+              fill="#6ab0ff"
+            >
               A
             </text>,
           ];
@@ -255,6 +298,13 @@ function Quadro({
   const lua = naTela(posicaoDaLua(dia));
   const estado = estadoDaLua(dia);
   const pousada = estado.estado === 'parada' ? continentePorCodigo(estado.em) : null;
+  // Pousada, ela fica colada no anfitrião e os dois nomes se somavam. O
+  // rótulo dela sai na direção que vai do continente para a lua — que é
+  // sempre a direção contrária à do rótulo do continente.
+  const casa = pousada ? naTela(posicaoEm(pousada, dia)) : null;
+  const rotuloDaLua = casa
+    ? rotulo(lua, 7, { x: lua.x - casa.x, y: lua.y - casa.y })
+    : rotulo(lua, 8);
 
   return (
     <svg className="ceu__quadro" viewBox={caixa} preserveAspectRatio="xMidYMid meet" role="img"
@@ -269,6 +319,7 @@ function Quadro({
         const p = naTela(posicaoEm(corpo, dia));
         const vista = constelacaoVisivel(corpo, dia);
         const aqui = pousada?.id === corpo.id;
+        const nome = rotulo(p, 6);
         return (
           <g
             key={corpo.id}
@@ -295,10 +346,23 @@ function Quadro({
               strokeOpacity="0.5"
             />
             <circle cx={p.x} cy={p.y} r="1.6" fill={corpo.cor} />
-            <text className="ceu__corpo-nome" x={p.x + 4.5} y={p.y + 1.2} fill={corpo.cor}>
+            <text
+              className="ceu__corpo-nome"
+              x={nome.x}
+              y={nome.y}
+              textAnchor={nome.ancora}
+              dominantBaseline={nome.base}
+              fill={corpo.cor}
+            >
               {corpo.nome}
             </text>
-            <text className="ceu__corpo-vista" x={p.x + 4.5} y={p.y + 4.5}>
+            <text
+              className="ceu__corpo-vista"
+              x={nome.x}
+              y={nome.y + 3.6}
+              textAnchor={nome.ancora}
+              dominantBaseline={nome.base}
+            >
               {vista.nome}
             </text>
           </g>
@@ -306,7 +370,13 @@ function Quadro({
       })}
 
       <circle cx={lua.x} cy={lua.y} r="1.9" fill="#ff6a9a" stroke="#fff" strokeWidth="0.3" />
-      <text className="ceu__lua-nome" x={lua.x + 2.5} y={lua.y - 2.5}>
+      <text
+        className="ceu__lua-nome"
+        x={rotuloDaLua.x}
+        y={rotuloDaLua.y}
+        textAnchor={rotuloDaLua.ancora}
+        dominantBaseline={rotuloDaLua.base}
+      >
         Corvus
       </text>
 

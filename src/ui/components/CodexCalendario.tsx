@@ -69,6 +69,33 @@ function posicao(id: ContinenteId, numeroDoMes: number): { x: number; y: number 
   return { x: CENTRO + p.leste * ESCALA, y: CENTRO - p.norte * ESCALA };
 }
 
+/**
+ * Onde escrever o nome de um continente.
+ *
+ * Sempre por cima do disco fazia dois nomes se atropelarem quando dois
+ * continentes estavam perto na tela — e eles ficam perto com frequência,
+ * porque é disso que o diagrama trata. Empurrar o rótulo para fora, na
+ * direção que sai de Aion, separa-os: dois corpos em ângulos diferentes
+ * têm rótulos em direções diferentes.
+ */
+function ondeVaiORotulo(
+  p: { x: number; y: number },
+  afastamento: number,
+): { x: number; y: number; ancora: 'start' | 'middle' | 'end'; base: 'auto' | 'middle' | 'hanging' } {
+  const dx = p.x - CENTRO;
+  const dy = p.y - CENTRO;
+  const distancia = Math.hypot(dx, dy) || 1;
+  const ux = dx / distancia;
+  const uy = dy / distancia;
+  return {
+    x: p.x + ux * afastamento,
+    y: p.y + uy * afastamento,
+    // Quem está à direita do centro escreve para a direita, e assim por diante.
+    ancora: ux > 0.35 ? 'start' : ux < -0.35 ? 'end' : 'middle',
+    base: uy > 0.35 ? 'hanging' : uy < -0.35 ? 'auto' : 'middle',
+  };
+}
+
 // =====================================================================
 // O DIAGRAMA
 // =====================================================================
@@ -88,7 +115,10 @@ function Diagrama({
 
   return (
     <figure className="almanaque__diagrama">
-      <svg viewBox="0 0 400 400" role="img" aria-label="As três órbitas de Aion">
+      {/* Apertado no conteúdo: o afélio da órbita externa mais o rótulo. Com a
+          moldura de 400 sobrava margem morta, e no celular margem morta é
+          rolagem a mais para ver o mesmo desenho. */}
+      <svg viewBox="32 32 336 336" role="img" aria-label="As três órbitas de Aion">
         {(['longo', 'medio', 'curto'] as const).map((id) => {
           const ciclo = CICLOS[id];
           const a = ciclo.raioUA * ESCALA;
@@ -122,6 +152,7 @@ function Diagrama({
           const p = posicao(corpo.id, mes.numero);
           const aqui = corpo.id === mes.lua;
           const alvo = corpo.id === destino.id;
+          const rotulo = ondeVaiORotulo(p, aqui ? 21 : 15);
           return (
             <g
               key={corpo.id}
@@ -140,9 +171,10 @@ function Diagrama({
               {aqui ? <circle className="orbita__halo" cx={p.x} cy={p.y} r="15" /> : null}
               <text
                 className="orbita__nome"
-                x={p.x}
-                y={p.y - (aqui ? 19 : 14)}
-                textAnchor="middle"
+                x={rotulo.x}
+                y={rotulo.y}
+                textAnchor={rotulo.ancora}
+                dominantBaseline={rotulo.base}
               >
                 {corpo.nome}
               </text>
