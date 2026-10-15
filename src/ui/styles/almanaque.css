@@ -1,0 +1,2725 @@
+/**
+ * O Almanaque.
+ *
+ * Mora aqui desde que saiu de codex.css, que passou de dois mil e seiscentas
+ * linhas com três telas, uma folha impressa e um céu dentro. O resto do
+ * códice é livro; o almanaque é instrumento — e as variáveis `--cx-*` que ele
+ * usa continuam vindo de `.codice`, onde ele é desenhado.
+ *
+ * Três texturas de propósito. A folha do mês é papel: o calendário existe
+ * impresso no mundo, e mostrá-lo pousado na mesa do arquivo diz isso sem uma
+ * linha de texto. O céu é espaço de verdade — azul-preto, estrelado, com as
+ * cores que o modelo orbital deu a cada continente. E a Corvisseia é o
+ * próprio códice: ouro sobre negro quente, com as três cores do pulo como
+ * único acento.
+ *
+ * Organização do arquivo, na ordem em que as coisas aparecem na tela:
+ *   1. o casco: título, abas, ponto de vista
+ *   2. O Ano: navegador, folha impressa, cartão do mês
+ *   3. O Céu: quadro, régua, painel, órbitas
+ *   4. A Corvisseia: números, ritmo, matriz, detalhe, "por que seis"
+ *   5. o que muda no estreito
+ */
+
+.almanaque {
+  /* As três forças do pulo, do mais manso ao mais duro. É a única paleta
+     que atravessa as três telas: aparece na régua do céu, no ritmo e na
+     matriz da Corvisseia, no cartão do mês e no velocímetro. */
+  --pulo-sem: #6c7fb0;
+  --pulo-normal: #c9a24b;
+  --pulo-intenso: #e0585a;
+
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-5) var(--sp-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+
+  /* A largura que importa não é a da janela, é a que sobra depois da barra
+     lateral do Códice. As grades abaixo perguntam a ESTE elemento quanto
+     espaço ele tem, e por isso se acertam sozinhas com o índice aberto, com
+     o índice fechado e no celular. */
+  container: almanaque / inline-size;
+}
+
+.almanaque [data-pulo='sem-pulo'] {
+  --pulo: var(--pulo-sem);
+}
+.almanaque [data-pulo='normal'] {
+  --pulo: var(--pulo-normal);
+}
+.almanaque [data-pulo='intenso'] {
+  --pulo: var(--pulo-intenso);
+}
+
+/* ================================================================= casco */
+
+.almanaque__topo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.almanaque__eyebrow {
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+}
+
+.almanaque__titulo {
+  font-family: var(--cx-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cx-pergaminho);
+  margin-top: var(--sp-1);
+}
+
+.almanaque__abas {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+}
+
+.almanaque__abas button {
+  padding: 6px var(--sp-4);
+  border-radius: var(--r-pill);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cx-apagado);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.almanaque__abas button:hover {
+  color: var(--cx-ouro-claro);
+}
+
+.almanaque__abas button[data-ativo='sim'] {
+  color: var(--cx-ouro-claro);
+  background: rgba(201, 162, 75, 0.14);
+}
+
+.almanaque__rotulo {
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+  margin-bottom: var(--sp-2);
+}
+
+.almanaque__nota {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--cx-apagado);
+  margin-top: var(--sp-3);
+}
+
+/* O ponto de vista é o único controle que vale para as três telas, e por
+   isso mora no casco, entre o título e o conteúdo. */
+.almanaque__ponto {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-4);
+  padding: 8px var(--sp-4);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.almanaque__ponto .almanaque__rotulo {
+  margin: 0;
+}
+
+.almanaque__ponto-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.almanaque__ponto-chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho-2);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.almanaque__ponto-chips button i {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--cor);
+  box-shadow: 0 0 6px var(--cor);
+}
+
+.almanaque__ponto-chips button:hover {
+  border-color: var(--cor);
+  color: var(--cx-pergaminho);
+}
+
+.almanaque__ponto-chips button[data-ativo='sim'] {
+  border-color: var(--cor);
+  background: rgba(201, 162, 75, 0.12);
+  background: color-mix(in srgb, var(--cor) 16%, transparent);
+  color: var(--cx-pergaminho);
+}
+
+/* ================================================================= O Ano */
+
+.mes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.mes__navegador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.mes__anos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mes__anos .almanaque__rotulo {
+  margin: 0 4px 0 0;
+}
+
+.mes__anos button {
+  width: 34px;
+  height: 30px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: 8px;
+  font-family: var(--cx-display);
+  color: var(--cx-pergaminho-2);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.mes__anos button:hover {
+  border-color: var(--cx-linha);
+  color: var(--cx-ouro-claro);
+}
+
+.mes__anos button[data-ativo='sim'] {
+  border-color: var(--cx-ouro);
+  background: rgba(201, 162, 75, 0.16);
+  color: var(--cx-ouro-claro);
+}
+
+.mes__anos small {
+  margin-left: var(--sp-3);
+  font-size: var(--fs-xs);
+  color: var(--cx-apagado);
+}
+
+/* --- a fita dos doze meses --- */
+
+.almanaque__meses {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.pastilha-mes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) 6px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-top: 3px solid var(--estacao-cor, var(--cx-linha));
+  border-radius: var(--r-sm);
+  text-align: left;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.pastilha-mes[data-estacao='verao'] {
+  --estacao-cor: #b8453f;
+}
+.pastilha-mes[data-estacao='outono'] {
+  --estacao-cor: #b8712a;
+}
+.pastilha-mes[data-estacao='inverno'] {
+  --estacao-cor: #63799f;
+}
+.pastilha-mes[data-estacao='primavera'] {
+  --estacao-cor: #2f8f43;
+}
+
+.pastilha-mes span {
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--cx-pergaminho-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pastilha-mes small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-micro);
+  color: var(--cx-apagado);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pastilha-mes small i {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.pastilha-mes:hover {
+  border-color: var(--cx-linha);
+  background: rgba(201, 162, 75, 0.06);
+}
+
+.pastilha-mes[data-ativo='sim'] {
+  background: rgba(201, 162, 75, 0.14);
+  border-color: var(--cx-ouro);
+}
+
+.pastilha-mes[data-ativo='sim'] span {
+  color: var(--cx-ouro-claro);
+}
+
+/* --- folha e cartão --- */
+
+.mes__corpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-5);
+  align-items: start;
+}
+
+.mes__folha {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+/* --- a folha impressa --- */
+
+.folha {
+  background: #efe6d2;
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  color: #2a2620;
+  box-shadow: var(--shadow-lg);
+  border-top: 6px solid var(--estacao, #b8453f);
+}
+
+.folha__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-3);
+}
+
+.folha__mes {
+  font-family: var(--cx-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: #241f18;
+}
+
+.folha__linha {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: #6a6155;
+}
+
+/* O disco é a lua do mês, com o nome do continente que ela cobre. Fica
+   escuro quando não é o continente de onde se olha — é noite escura — e
+   acende quando é. */
+.folha__lua {
+  display: grid;
+  place-content: center;
+  gap: 1px;
+  width: 88px;
+  height: 88px;
+  flex: none;
+  border-radius: 50%;
+  background: #4a4a4a;
+  color: #efe6d2;
+  text-align: center;
+  padding: 6px;
+  transition: all var(--dur-mid, 220ms) var(--ease-out);
+}
+
+.folha__lua small {
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.folha__lua strong {
+  font-family: var(--cx-display);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.02em;
+}
+
+.folha__lua[data-aqui='sim'] {
+  background: #e4e1d8;
+  color: #2a2620;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7);
+}
+
+.folha__semana,
+.folha__grade {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.folha__semana {
+  margin-bottom: 3px;
+}
+
+.folha__semana span {
+  background: #f7f2e6;
+  border-radius: 3px;
+  padding: 4px 2px;
+  text-align: center;
+  font-size: var(--fs-micro);
+  color: #5f574a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folha__dia {
+  position: relative;
+  min-height: 46px;
+  border-radius: 3px 3px 0 0;
+  padding: 4px 5px 8px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: #3a342a;
+}
+
+.folha__dia[data-fase='ascensao'] {
+  background: #fbf0ba;
+}
+.folha__dia[data-fase='dominio'] {
+  background: #fcd94f;
+}
+.folha__dia[data-fase='virada'] {
+  background: #f7d3ae;
+}
+
+/* A faixa da lua corre por baixo de cada dia, como na prancha impressa. */
+.folha__lua-faixa {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  /* Sem esta linha, a faixa clara some dentro do amarelo do papel. */
+  border-top: 1px solid rgba(28, 28, 28, 0.55);
+}
+
+.folha__lua-faixa[data-fase='escura'] {
+  background: #1c1c1c;
+}
+.folha__lua-faixa[data-fase='luz'] {
+  background: #fdfdfb;
+}
+.folha__lua-faixa[data-fase='ecos'] {
+  background: #4d4d4d;
+}
+
+.folha__nota {
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid rgba(42, 38, 32, 0.18);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: #6a6155;
+}
+
+/* --- como ler a folha, encostado nela --- */
+
+.mes__legendas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--sp-4) var(--sp-5);
+  padding: var(--sp-4);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-md);
+}
+
+.legenda__item {
+  display: grid;
+  grid-template-columns: 14px auto;
+  gap: 2px var(--sp-3);
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--cx-pergaminho-2);
+}
+
+.mes__legendas > div > .legenda__item:last-child {
+  margin-bottom: 0;
+}
+
+.legenda__item strong {
+  font-weight: 600;
+}
+
+.legenda__item small {
+  grid-column: 2;
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--cx-apagado);
+}
+
+.legenda__cor {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  margin-top: 3px;
+}
+
+.legenda__cor[data-fase='ascensao'] {
+  background: #fbf0ba;
+}
+.legenda__cor[data-fase='dominio'] {
+  background: #fcd94f;
+}
+.legenda__cor[data-fase='virada'] {
+  background: #f7d3ae;
+}
+.legenda__cor--lua {
+  border: 1px solid rgba(28, 28, 28, 0.55);
+}
+.legenda__cor--lua[data-fase='escura'] {
+  background: #1c1c1c;
+  border-color: rgba(201, 162, 75, 0.3);
+}
+.legenda__cor--lua[data-fase='luz'] {
+  background: #fdfdfb;
+}
+.legenda__cor--lua[data-fase='ecos'] {
+  background: #4d4d4d;
+}
+
+/* --- o cartão do mês: o céu em miniatura --- */
+
+.mes__cartao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-md);
+  background: linear-gradient(180deg, rgba(10, 14, 39, 0.5), rgba(3, 4, 16, 0.6));
+  min-width: 0;
+}
+
+.mes__salto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-family: var(--cx-display);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+}
+
+.mes__seta {
+  color: var(--cx-apagado);
+  font-size: var(--fs-md);
+}
+
+.mes__cena {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-sm);
+  background: radial-gradient(circle at center, #0a0e27 0%, #030410 100%);
+}
+
+.mes__numeros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mes__numeros > div {
+  padding: 8px 10px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  min-width: 0;
+}
+
+.mes__numeros dt {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cx-apagado);
+}
+
+.mes__numeros dd {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+  color: var(--cx-pergaminho);
+  white-space: nowrap;
+}
+
+.mes__numeros > [data-pulo] {
+  border-color: var(--pulo);
+  border-color: color-mix(in srgb, var(--pulo) 45%, transparent);
+}
+
+.mes__numeros > [data-pulo] dd {
+  color: var(--pulo);
+}
+
+.mes__glifo {
+  font-weight: 700;
+  letter-spacing: -0.1em;
+}
+
+.mes__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mes__botao {
+  flex: 1 1 auto;
+  padding: 8px var(--sp-4);
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  color: var(--cx-pergaminho);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.mes__botao:hover {
+  background: rgba(201, 162, 75, 0.14);
+  color: var(--cx-ouro-claro);
+}
+
+.mes__botao--forte {
+  border-color: var(--cx-ouro);
+  background: var(--cx-ouro);
+  color: #14100c;
+  font-weight: 700;
+}
+
+.mes__botao--forte:hover {
+  background: var(--cx-ouro-claro);
+  color: #14100c;
+}
+
+.mes__nota {
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: var(--cx-apagado);
+}
+
+/* ================================================================= O Céu */
+
+.ceu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.ceu__palco {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+.ceu__coluna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+/* O quadro é quadrado porque o viewBox é quadrado: assim nada sobra de
+   letterbox. O teto de altura impede que o céu, num monitor largo, empurre
+   os controles para fora da tela. */
+.ceu__tela {
+  position: relative;
+  aspect-ratio: 1;
+  max-height: min(72vh, 44rem);
+  width: 100%;
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0a0e27 0%, #030410 100%);
+}
+
+.ceu__quadro {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+/* O selo: a data e o que Corvus está fazendo, sobre o próprio quadro. Quem
+   está no celular com os controles na tela não vê o painel, e é ele que diz
+   em que dia se está. */
+.ceu__selo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 72%;
+  padding: 8px 12px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: 10px;
+  background: rgba(3, 4, 16, 0.62);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+.ceu__selo strong {
+  font-family: var(--cx-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--cx-ouro-claro);
+}
+
+.ceu__selo span {
+  font-size: var(--fs-xs);
+  color: var(--cx-apagado);
+}
+
+.ceu__selo-lua {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cx-pergaminho) !important;
+}
+
+.ceu__selo-lua i {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* --- o que se desenha dentro do quadro --- */
+
+.ceu__anel {
+  fill: none;
+  stroke-opacity: 0.3;
+  stroke-width: 0.5;
+  stroke-dasharray: 2 3;
+}
+
+.ceu__apside {
+  font-family: var(--font-mono, monospace);
+  font-size: 3.5px;
+}
+
+.ceu__estrela-nome {
+  fill: #ffd97a;
+  font-family: var(--cx-display);
+  font-size: 4.5px;
+  letter-spacing: 0.1em;
+}
+
+.ceu__rosa {
+  fill: #8a9ac0;
+  font-family: var(--cx-display);
+  font-size: 4.5px;
+}
+
+.ceu__divisa {
+  stroke: #3a4a7a;
+  stroke-width: 0.3;
+  stroke-dasharray: 1 2;
+  stroke-opacity: 0.5;
+}
+
+.ceu__traco {
+  stroke: #7a8ac0;
+  stroke-width: 0.4;
+  stroke-opacity: 0.75;
+}
+
+.ceu__constelacao-nome {
+  fill: #8a9ac0;
+  font-family: var(--cx-display);
+  font-size: 3px;
+  letter-spacing: 0.04em;
+}
+
+/* O trajeto previsto de Corvus neste mês, e o anel onde o destino estará
+   quando ela pousar: o continente se mexe durante os 10,5 dias, e é lá que
+   ela chega, não onde ele estava. */
+.ceu__trajeto {
+  fill: none;
+  stroke: #ffd97a;
+  stroke-opacity: 0.5;
+  stroke-dasharray: 2 2.5;
+  stroke-linecap: round;
+}
+
+.ceu__pouso {
+  fill: none;
+  stroke: #ffd97a;
+  stroke-opacity: 0.6;
+  stroke-dasharray: 1.5 1.5;
+}
+
+/* Do continente escolhido até a constelação que ele encara — e essa
+   constelação, acesa na cor dele por cima da dos outros. */
+.ceu__visada {
+  stroke-width: 0.5;
+  stroke-opacity: 0.55;
+  stroke-dasharray: 1.5 2;
+}
+
+.ceu__acesa line {
+  stroke-width: 0.8;
+  stroke-opacity: 0.95;
+  stroke-linecap: round;
+}
+
+.ceu__acesa text {
+  font-family: var(--cx-display);
+  font-size: 4px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  paint-order: stroke;
+  stroke: #030410;
+  stroke-width: 1.8px;
+  stroke-linejoin: round;
+}
+
+.ceu__corpo {
+  cursor: pointer;
+}
+
+.ceu__corpo:focus-visible {
+  outline: 1px solid var(--cx-ouro-claro);
+  outline-offset: 2px;
+}
+
+.ceu__halo {
+  fill: none;
+  stroke-opacity: 0.9;
+  stroke-dasharray: 1.6 1.6;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ceu-halo 18s linear infinite;
+}
+
+@keyframes ceu-halo {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ceu__corpo-nome {
+  font-family: var(--cx-display);
+  font-size: 3px;
+  font-weight: 700;
+}
+
+.ceu__corpo-vista {
+  fill: #ffd97a;
+  font-family: var(--cx-corpo);
+  font-size: 2.4px;
+  font-style: italic;
+}
+
+.ceu__corpo[data-lua='sim'] .ceu__corpo-nome {
+  fill: #fff;
+}
+
+.ceu__lua-nome {
+  fill: #ff6a9a;
+  font-family: var(--cx-display);
+  font-size: 2.4px;
+}
+
+.ceu__zoom-nome {
+  fill: #ffd97a;
+  font-family: var(--cx-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* A miniatura da folha do mês: o quadro é menor e aparece menor, então a
+   escrita é maior em unidades de viewBox. O desenho não muda. */
+.ceu__quadro[data-modo='mini'] .ceu__corpo-nome {
+  font-size: 6.4px;
+}
+.ceu__quadro[data-modo='mini'] .ceu__lua-nome {
+  font-size: 5.4px;
+}
+.ceu__quadro[data-modo='mini'] .ceu__estrela-nome {
+  font-size: 5.6px;
+}
+.ceu__quadro[data-modo='mini'] .ceu__anel {
+  stroke-width: 0.8;
+  stroke-opacity: 0.4;
+}
+
+/* --- controles --- */
+
+.ceu__controles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+}
+
+.ceu__passos,
+.ceu__velocidades {
+  display: flex;
+  gap: 4px;
+}
+
+.ceu__botao {
+  padding: 6px 12px;
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.ceu__botao:hover:not(:disabled) {
+  background: rgba(201, 162, 75, 0.14);
+  color: var(--cx-ouro-claro);
+}
+
+.ceu__botao[data-ativo='sim'] {
+  border-color: var(--cx-ouro);
+  background: rgba(201, 162, 75, 0.16);
+  color: var(--cx-ouro-claro);
+}
+
+.ceu__botao--forte {
+  min-width: 7rem;
+  border-color: var(--cx-ouro);
+  color: var(--cx-ouro-claro);
+}
+
+.ceu__botao--pequeno {
+  padding: 4px 9px;
+  font-size: 0.7rem;
+}
+
+.ceu__botao--pequeno[data-ativo='sim'] {
+  background: var(--cx-ouro);
+  border-color: var(--cx-ouro);
+  color: #14100c;
+  font-weight: 700;
+}
+
+/* --- a régua: os 1080 dias, com a rota desenhada --- */
+
+.regua {
+  position: relative;
+  padding-top: 16px;
+}
+
+.regua__anos {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cx-apagado);
+}
+
+.regua__faixa {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  height: 46px;
+  border-bottom: 1px solid var(--cx-linha-fraca);
+}
+
+.regua__mes {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+/* A divisa entre meses não ocupa espaço: um gap deslocaria o cursor, que é
+   calculado em porcentagem da largura, e o desenho deixaria de concordar com
+   o dia que ele diz. */
+.regua__mes::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.regua__mes[data-ano-novo='sim']::before {
+  background: rgba(240, 205, 128, 0.5);
+}
+
+.regua__pouso {
+  flex: 19.5;
+  height: 10px;
+  background: var(--cor);
+  opacity: 0.5;
+  border-radius: 2px 0 0 0;
+}
+
+.regua__viagem {
+  flex: 10.5;
+  height: calc(6px + var(--h) * 34px);
+  background: var(--pulo);
+  opacity: 0.92;
+  border-radius: 0 2px 0 0;
+}
+
+.regua__mes[data-lua='sim'] .regua__pouso {
+  height: 15px;
+  opacity: 1;
+  box-shadow: 0 0 10px var(--cor);
+}
+
+.regua__cursor {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+
+.regua__cursor::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -4px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  transform: rotate(45deg) scale(0.7);
+  border-radius: 2px;
+}
+
+/* Quem recebe o gesto é um `<input type=range>` de verdade, transparente,
+   por cima do desenho: arrastar, tocar e o teclado funcionam sem lógica de
+   ponteiro, e o leitor de tela anuncia um controle deslizante. */
+.regua__entrada {
+  position: absolute;
+  inset: 16px 0 0;
+  width: 100%;
+  height: calc(100% - 16px);
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+.regua:has(.regua__entrada:focus-visible) .regua__faixa {
+  outline: 2px solid var(--cx-ouro-claro);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.ceu__legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--sp-4);
+  font-size: 0.7rem;
+  color: var(--cx-apagado);
+}
+
+.ceu__legenda li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ceu__legenda i {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.ceu__legenda .ceu__legenda-trajeto {
+  width: 16px;
+  height: 0;
+  border-radius: 0;
+  border-top: 1.5px dashed #ffd97a;
+  opacity: 0.8;
+}
+
+.ceu__dica {
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--cx-ouro-fundo);
+}
+
+/* --- o painel lateral --- */
+
+.ceu__painel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-md);
+  background: var(--cx-painel);
+  min-width: 0;
+}
+
+.ceu__corvus {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 106, 154, 0.3);
+  border-radius: var(--r-sm);
+  background: rgba(255, 106, 154, 0.07);
+}
+
+.ceu__corvus[data-estado='viagem'] {
+  border-color: rgba(255, 106, 154, 0.6);
+}
+
+.ceu__corvus .almanaque__rotulo {
+  color: #ff8fb4;
+  margin-bottom: 4px;
+}
+
+.ceu__corvus-frase {
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--cx-pergaminho);
+}
+
+.ceu__corvus-frase b {
+  font-weight: 700;
+}
+
+/* O mês de Corvus: 19,5 dias parada, 10,5 viajando, e onde se está nele. */
+.ceu__mes-da-lua {
+  position: relative;
+  display: flex;
+  height: 8px;
+  margin-top: 10px;
+  border-radius: 4px;
+  overflow: visible;
+}
+
+.ceu__mes-pouso {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 4px 0 0 4px;
+}
+
+.ceu__mes-viagem {
+  border-radius: 0 4px 4px 0;
+  opacity: 0.9;
+}
+
+.ceu__mes-da-lua b {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+}
+
+.ceu__mes-legenda {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 0.62rem;
+  color: var(--cx-apagado);
+}
+
+.ceu__corvus-pulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho-2);
+}
+
+.ceu__glifo {
+  color: var(--pulo);
+  font-weight: 700;
+  letter-spacing: -0.1em;
+}
+
+.ceu__ligacao {
+  margin-top: 8px;
+  font-size: var(--fs-xs);
+  color: var(--cx-ouro-claro);
+  text-align: left;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.ceu__ligacao:hover {
+  color: #fff;
+}
+
+.ceu__fatos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--sp-2);
+}
+
+.ceu__fatos > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--cx-linha-fraca);
+}
+
+.ceu__fatos dt {
+  font-size: var(--fs-xs);
+  color: var(--cx-apagado);
+}
+
+.ceu__fatos dd {
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho);
+  text-align: right;
+}
+
+.ceu__de {
+  color: var(--cx-apagado);
+}
+
+.ceu__constelacao {
+  font-style: italic;
+  font-weight: 600;
+}
+
+.ceu__continentes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: var(--sp-2);
+}
+
+/* O cartão é uma caixa com dois botões lado a lado: um botão dentro de outro
+   não é HTML válido, e o leitor de tela anunciaria um só. */
+.ceu__continente {
+  display: flex;
+  align-items: stretch;
+  border-left: 3px solid;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.ceu__continente:hover,
+.ceu__continente[data-escolhido='sim'] {
+  background: rgba(201, 162, 75, 0.12);
+}
+
+.ceu__continente-corpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 8px;
+  text-align: left;
+  min-width: 0;
+}
+
+.ceu__continente-corpo strong {
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+}
+
+.ceu__codigo {
+  opacity: 0.5;
+  font-weight: 400;
+}
+
+.ceu__continente small {
+  font-size: 0.68rem;
+  color: var(--cx-apagado);
+}
+
+.ceu__continente em {
+  color: var(--cx-ouro-claro);
+}
+
+.ceu__verbete {
+  flex: none;
+  width: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--cx-apagado);
+  border-left: 1px solid var(--cx-linha-fraca);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.ceu__verbete:hover {
+  color: var(--cx-ouro-claro);
+}
+
+/* --- as três órbitas --- */
+
+.ciclos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--sp-4);
+}
+
+.ciclo {
+  padding: var(--sp-4);
+  border: 1px solid var(--cx-linha-fraca);
+  border-left: 3px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+}
+
+.ciclo[data-ciclo='medio'] {
+  border-left-color: var(--cx-ouro);
+}
+
+.ciclo h4 {
+  font-family: var(--cx-display);
+  font-size: var(--fs-base);
+  letter-spacing: 0.08em;
+  color: var(--cx-pergaminho);
+}
+
+.ciclo__numeros {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--cx-ouro-fundo);
+  margin: var(--sp-1) 0 var(--sp-2);
+}
+
+.ciclo__moradores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+
+.ciclo__moradores button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px var(--sp-3);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho-2);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.ciclo__moradores button i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.ciclo__moradores button:hover {
+  border-color: var(--cx-ouro);
+  color: var(--cx-ouro-claro);
+}
+
+.ciclo__nota {
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: var(--cx-apagado);
+}
+
+/* ========================================================== A Corvisseia */
+
+.corvisseia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.corvisseia__intro {
+  max-width: 64ch;
+  font-size: var(--fs-md);
+  line-height: 1.7;
+  color: var(--cx-pergaminho-2);
+}
+
+.corvisseia__intro strong {
+  font-weight: 600;
+  color: var(--cx-ouro-claro);
+}
+
+/* --- os quatro números que resumem a tabela --- */
+
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+.numeros__cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-top: 3px solid var(--cor);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.02);
+  text-align: left;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.numeros__cartao:hover {
+  border-color: var(--cor);
+  background: rgba(255, 255, 255, 0.045);
+  transform: translateY(-1px);
+}
+
+.numeros__cartao[data-ativo='sim'] {
+  background: rgba(201, 162, 75, 0.1);
+  border-color: var(--cx-ouro);
+}
+
+.numeros__rotulo {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cx-apagado);
+}
+
+.numeros__cartao strong {
+  font-family: var(--cx-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--cx-pergaminho);
+}
+
+.numeros__cartao small {
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  color: var(--cx-apagado);
+}
+
+/* --- a grade: ritmo e matriz à esquerda, o trecho escolhido à direita --- */
+
+/* Estreita, a grade é uma coluna e o detalhe fica entre o ritmo e a matriz:
+   toca-se num mês do ritmo e o detalhe aparece logo abaixo. Larga, o detalhe
+   passa para a direita e acompanha a rolagem. */
+.corvisseia__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'ritmo'
+    'detalhe'
+    'matriz';
+  gap: var(--sp-6) var(--sp-5);
+  align-items: start;
+}
+
+.corvisseia__ritmo {
+  grid-area: ritmo;
+  min-width: 0;
+}
+
+.corvisseia__matriz {
+  grid-area: matriz;
+  min-width: 0;
+}
+
+.corvisseia__legenda {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-xs);
+  line-height: 1.65;
+  color: var(--cx-apagado);
+}
+
+.corvisseia__legenda strong {
+  font-weight: 600;
+  color: var(--cx-pergaminho-2);
+}
+
+.corvisseia__rota {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 2px;
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--cx-pergaminho-2);
+}
+
+.corvisseia__ponto {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 5px;
+  border-radius: 50%;
+}
+
+.corvisseia__elo {
+  color: var(--cx-apagado);
+  margin: 0 3px;
+}
+
+/* --- o ritmo: três anos em três fileiras, os meses alinhados --- */
+
+.ritmo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.ritmo__ano-rotulo {
+  margin-bottom: 4px;
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cx-ouro-fundo);
+}
+
+.ritmo__meses {
+  --area: 64px;
+  --rodape: 42px;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 3px;
+}
+
+/* As duas linhas tracejadas marcam onde o pulo muda de nome: meia UA e uma
+   UA e meia, a 20% e a 60% da altura da barra mais alta possível (2,5 UA). */
+.ritmo__guia {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  bottom: calc(var(--rodape) + var(--area) * var(--nivel));
+  border-top: 1px dashed rgba(201, 162, 75, 0.22);
+  pointer-events: none;
+}
+
+.ritmo__guia[data-nivel='intenso'] {
+  --nivel: 0.6;
+}
+.ritmo__guia[data-nivel='normal'] {
+  --nivel: 0.2;
+}
+
+.ritmo__mes {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.ritmo__valor {
+  height: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 16px;
+  text-align: center;
+  color: transparent;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.ritmo__area {
+  display: flex;
+  align-items: flex-end;
+  height: var(--area);
+  padding: 0 24%;
+}
+
+.ritmo__barra {
+  display: block;
+  width: 100%;
+  height: calc(var(--h) * 100%);
+  min-height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--pulo);
+  transform-origin: bottom;
+  animation: ritmo-cresce 520ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 14ms);
+}
+
+@keyframes ritmo-cresce {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+.ritmo__pouso {
+  display: grid;
+  place-items: center;
+  height: 22px;
+  margin-top: 4px;
+  border-radius: 5px;
+  background: var(--cor);
+  color: #0b0b14;
+  font-family: var(--cx-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  opacity: 0.74;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.ritmo__nome {
+  height: 16px;
+  font-size: 0.6rem;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--cx-apagado);
+}
+
+.ritmo__mes:hover {
+  background: rgba(201, 162, 75, 0.08);
+  border-color: var(--cx-linha-fraca);
+}
+
+.ritmo__mes:hover .ritmo__valor,
+.ritmo__mes[data-selecionado='sim'] .ritmo__valor {
+  color: var(--cx-pergaminho);
+}
+
+.ritmo__mes[data-selecionado='sim'] {
+  background: rgba(201, 162, 75, 0.14);
+  border-color: var(--cx-ouro);
+}
+
+.ritmo__mes[data-selecionado='sim'] .ritmo__pouso {
+  opacity: 1;
+}
+
+/* O anel em volta do pouso: neste mês Corvus está sobre o continente de
+   onde se olha. */
+.ritmo__mes[data-lua='sim'] .ritmo__pouso {
+  opacity: 1;
+  box-shadow:
+    0 0 0 2px #0c0a08,
+    0 0 0 3.5px var(--cor),
+    0 0 12px var(--cor);
+}
+
+/* --- a matriz: seis trechos por seis voltas --- */
+
+.matriz-bloco {
+  min-width: 0;
+}
+
+.matriz {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 4px;
+}
+
+/* O título descreve a tabela para quem a ouve; quem a vê já a entende. */
+.matriz__titulo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.matriz th {
+  padding: 4px 2px;
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--cx-apagado);
+}
+
+.matriz th[data-ativa='sim'] {
+  color: var(--cx-ouro-claro);
+}
+
+.matriz__canto {
+  width: 9.6rem;
+  text-align: left !important;
+  padding-left: 8px !important;
+}
+
+.matriz__trecho {
+  width: 9.6rem;
+  padding-left: 8px !important;
+  border-left: 2px solid transparent;
+  font-size: var(--fs-sm) !important;
+  letter-spacing: 0 !important;
+  text-align: left !important;
+  text-transform: none !important;
+  white-space: nowrap;
+  color: var(--cx-pergaminho-2) !important;
+}
+
+.matriz__trecho[data-toca='sim'] {
+  border-left-color: var(--cor-onde);
+}
+
+.matriz tr[data-ativa='sim'] .matriz__trecho {
+  color: var(--cx-ouro-claro) !important;
+}
+
+.matriz__ponta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.matriz__ponta i {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--cor);
+}
+
+.matriz__seta {
+  margin: 0 3px;
+  color: var(--cx-apagado);
+}
+
+.matriz__celula {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 100%;
+  min-height: 58px;
+  padding: 6px 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  background: color-mix(in srgb, var(--pulo) 14%, transparent);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.matriz__celula strong {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--cx-pergaminho);
+}
+
+.matriz__celula small {
+  font-size: 0.62rem;
+  color: var(--cx-apagado);
+}
+
+/* A barra é a distância, na mesma escala em todas as células. */
+.matriz__barra {
+  position: absolute;
+  left: 8px;
+  bottom: 4px;
+  height: 3px;
+  width: calc((100% - 16px) * var(--pct));
+  border-radius: 2px;
+  background: var(--pulo);
+}
+
+.matriz__celula:hover {
+  border-color: var(--pulo);
+  transform: translateY(-1px);
+}
+
+.matriz__celula[data-volta='sim'] {
+  background: rgba(255, 255, 255, 0.07);
+  background: color-mix(in srgb, var(--pulo) 24%, transparent);
+}
+
+.matriz__celula[data-selecionada='sim'] {
+  border-color: var(--cx-ouro-claro);
+  box-shadow:
+    0 0 0 2px rgba(240, 205, 128, 0.32),
+    0 8px 20px rgba(0, 0, 0, 0.45);
+  transform: translateY(-1px);
+}
+
+.matriz__repete {
+  width: 5.4rem;
+  padding-left: 4px !important;
+  font-size: var(--fs-xs) !important;
+  letter-spacing: 0 !important;
+  text-align: left !important;
+  text-transform: none !important;
+  color: var(--cx-apagado);
+}
+
+.matriz__chave {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--sp-4);
+  margin-top: var(--sp-3);
+}
+
+.matriz__chave li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  color: var(--cx-pergaminho-2);
+}
+
+.matriz__chave small {
+  color: var(--cx-apagado);
+}
+
+.matriz__glifo {
+  color: var(--pulo);
+  font-weight: 700;
+  letter-spacing: -0.1em;
+}
+
+.matriz__nota {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-xs);
+  line-height: 1.65;
+  color: var(--cx-apagado);
+}
+
+/* --- o detalhe do trecho escolhido --- */
+
+.detalhe {
+  grid-area: detalhe;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-md);
+  background: linear-gradient(180deg, rgba(25, 20, 16, 0.92), rgba(12, 10, 8, 0.92));
+  box-shadow: var(--shadow-lg);
+  min-width: 0;
+}
+
+.detalhe__topo .almanaque__rotulo {
+  margin-bottom: 2px;
+}
+
+.detalhe__quando {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.05em;
+  color: var(--cx-apagado);
+}
+
+.detalhe__rota {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin-top: 6px;
+  font-family: var(--cx-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.detalhe__seta {
+  font-size: 1.1rem;
+  color: var(--cx-apagado);
+}
+
+.detalhe__numeros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.detalhe__numeros > div {
+  padding: 8px 10px;
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  min-width: 0;
+}
+
+.detalhe__numeros dt {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cx-apagado);
+}
+
+.detalhe__numeros dd {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  line-height: 1.2;
+  color: var(--cx-pergaminho);
+}
+
+.detalhe__numeros dd small {
+  font-size: 0.68rem;
+  color: var(--cx-apagado);
+}
+
+.detalhe__numeros .detalhe__sub {
+  margin-top: 3px;
+  font-family: var(--cx-corpo);
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: var(--cx-apagado);
+}
+
+.detalhe__pulo {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--pulo);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  background: color-mix(in srgb, var(--pulo) 11%, transparent);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--cx-pergaminho-2);
+}
+
+.detalhe__glifo {
+  flex: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.1em;
+  color: var(--pulo);
+}
+
+.detalhe__variacao {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-xs);
+  line-height: 1.55;
+  color: var(--cx-apagado);
+}
+
+.detalhe__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detalhe__botao {
+  flex: 1 1 auto;
+  padding: 8px var(--sp-3);
+  border: 1px solid var(--cx-linha);
+  border-radius: var(--r-sm);
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--cx-pergaminho);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.detalhe__botao:hover {
+  background: rgba(201, 162, 75, 0.14);
+  color: var(--cx-ouro-claro);
+}
+
+.detalhe__botao--forte {
+  flex-basis: 100%;
+  border-color: var(--cx-ouro);
+  background: var(--cx-ouro);
+  color: #14100c;
+  font-weight: 700;
+}
+
+.detalhe__botao--forte:hover {
+  background: var(--cx-ouro-claro);
+  color: #14100c;
+}
+
+/* --- o velocímetro --- */
+
+.velocimetro {
+  position: relative;
+  padding: 24px 0 20px;
+}
+
+.velocimetro__terra {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--cx-pergaminho-2);
+  transform: translateX(-50%);
+}
+
+.velocimetro__terra i {
+  width: 1px;
+  height: 9px;
+  background: var(--cx-pergaminho-2);
+}
+
+.velocimetro__faixa {
+  position: relative;
+  display: flex;
+  height: 12px;
+}
+
+.velocimetro__faixa > i {
+  display: block;
+  height: 100%;
+  background: var(--pulo);
+  opacity: 0.3;
+  transition: opacity var(--dur-mid, 220ms) var(--ease-out);
+}
+
+.velocimetro__faixa > i:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.velocimetro__faixa > i:last-of-type {
+  border-radius: 0 6px 6px 0;
+}
+
+.velocimetro__faixa > i[data-ativa='sim'] {
+  opacity: 1;
+}
+
+.velocimetro__ponteiro {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: calc(var(--v) * 100%);
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+  transition: left 520ms var(--ease-out);
+}
+
+.velocimetro__graduacao {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--cx-apagado);
+}
+
+.velocimetro__graduacao span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.velocimetro__graduacao span:first-child {
+  transform: none;
+}
+
+.velocimetro__graduacao span:last-child {
+  transform: translateX(-100%);
+}
+
+/* --- o mesmo trecho, nas seis voltas --- */
+
+.sequencia {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.sequencia button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  padding: 4px 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.sequencia__valor {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--cx-apagado);
+}
+
+.sequencia__area {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+}
+
+.sequencia__area i {
+  display: block;
+  width: 54%;
+  height: calc(var(--h) * 100%);
+  min-height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--pulo);
+  opacity: 0.62;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.sequencia__volta {
+  font-size: 0.62rem;
+  color: var(--cx-apagado);
+}
+
+.sequencia button:hover {
+  background: rgba(201, 162, 75, 0.08);
+}
+
+.sequencia button:hover i,
+.sequencia button[aria-pressed='true'] i {
+  opacity: 1;
+}
+
+.sequencia button[aria-pressed='true'] {
+  border-color: var(--cx-ouro);
+  background: rgba(201, 162, 75, 0.12);
+}
+
+.sequencia button[aria-pressed='true'] .sequencia__valor,
+.sequencia button[aria-pressed='true'] .sequencia__volta {
+  color: var(--cx-pergaminho);
+}
+
+/* --- por que seis voltas --- */
+
+.porque {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.porque__lead {
+  max-width: 60ch;
+  font-size: var(--fs-md);
+  line-height: 1.6;
+  color: var(--cx-pergaminho);
+}
+
+.porque__texto {
+  max-width: 66ch;
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  color: var(--cx-pergaminho-2);
+}
+
+.engrenagens {
+  padding-bottom: 26px;
+  position: relative;
+}
+
+.engrenagens__pistas {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.engrenagens__pista p {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  /* A marca do fim cruza a pista inteira; sem este respiro ela riscava o
+     último algarismo de "× 6". */
+  padding-right: 12px;
+  margin-bottom: 4px;
+  font-size: var(--fs-sm);
+  color: var(--cx-pergaminho-2);
+}
+
+.engrenagens__pista small {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--cx-apagado);
+}
+
+.engrenagens__trilho {
+  display: flex;
+  gap: 3px;
+  height: 14px;
+}
+
+.engrenagens__trilho i {
+  flex: 1;
+  border-radius: 3px;
+  background: var(--cor);
+  opacity: 0.55;
+}
+
+/* A marca vertical cruza as três pistas: nas de 180 e 360 ela coincide no
+   dia 360, nas de 180 e 540 no 540 — e as três só se encontram na última. */
+.engrenagens__marca {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 1px;
+  margin-left: -1.5px;
+  background: rgba(201, 162, 75, 0.2);
+  pointer-events: none;
+}
+
+.engrenagens__marca[data-fim='sim'] {
+  width: 2px;
+  background: var(--cx-ouro-claro);
+  box-shadow: 0 0 10px rgba(240, 205, 128, 0.7);
+}
+
+.engrenagens__eixo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18px;
+  border-top: 1px solid var(--cx-linha-fraca);
+}
+
+.engrenagens__eixo span {
+  position: absolute;
+  top: 5px;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--cx-apagado);
+}
+
+.engrenagens__eixo span[data-fim='sim'] {
+  transform: translateX(-100%);
+  font-weight: 700;
+  color: var(--cx-ouro-claro);
+}
+
+.porque__lista {
+  display: grid;
+  gap: 6px;
+}
+
+.porque__lista li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 4px var(--sp-3);
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  font-size: var(--fs-sm);
+}
+
+.porque__lista strong {
+  font-family: var(--cx-display);
+  font-weight: 600;
+  color: var(--cx-pergaminho);
+}
+
+.porque__lista span {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--cx-apagado);
+}
+
+.porque__lista em {
+  font-style: normal;
+  color: var(--cx-ouro-claro);
+}
+
+/* A barra do rodapé só existe no celular, onde o detalhe fica acima da
+   matriz e sai de vista quando se toca nela. */
+.resumo-fixo {
+  display: none;
+}
+
+/* ============================================================== o estreito */
+
+/* Largo o bastante para o cartão do mês ao lado da folha. */
+@container almanaque (min-width: 52rem) {
+  .mes__corpo {
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  }
+
+  .mes__cartao {
+    position: sticky;
+    top: var(--sp-3);
+  }
+}
+
+/* Largo o bastante para o céu ter mais de 460px e o painel os seus 320. */
+@container almanaque (min-width: 50rem) {
+  .ceu__palco {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+  }
+}
+
+@container almanaque (min-width: 40rem) {
+  .numeros {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Largo o bastante para a matriz ter ao menos 620px ao lado do detalhe. */
+@container almanaque (min-width: 63rem) {
+  .corvisseia__grade {
+    grid-template-columns: minmax(0, 1fr) 23rem;
+    grid-template-areas:
+      'ritmo detalhe'
+      'matriz detalhe';
+  }
+
+  .detalhe {
+    position: sticky;
+    top: var(--sp-3);
+  }
+}
+
+/* --- celular: a tela do almanaque inteira cabe em ~360px --- */
+
+@container almanaque (max-width: 40rem) {
+  .almanaque__titulo {
+    font-size: var(--fs-lg);
+    letter-spacing: 0.06em;
+  }
+
+  .almanaque__topo {
+    gap: var(--sp-3);
+  }
+
+  .almanaque__abas {
+    width: 100%;
+  }
+
+  .almanaque__abas button {
+    flex: 1;
+    min-height: 38px;
+    padding: 6px var(--sp-1);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  /* O ponto de vista vira uma fileira que rola de lado: seis chips em duas
+     linhas gastariam o dobro da altura de uma tela que já é curta. */
+  .almanaque__ponto {
+    flex-wrap: nowrap;
+    gap: var(--sp-3);
+    padding: 6px var(--sp-3);
+  }
+
+  .almanaque__ponto .almanaque__rotulo {
+    flex: none;
+    letter-spacing: 0.14em;
+  }
+
+  .almanaque__ponto-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 2px 0;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .almanaque__ponto-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .almanaque__ponto-chips button {
+    flex: none;
+    min-height: 34px;
+    scroll-snap-align: start;
+  }
+
+  .mes__anos button,
+  .almanaque__meses .pastilha-mes {
+    min-height: 40px;
+  }
+
+  /* Quatro por fileira: três fileiras em vez de quatro, e a folha sobe 60px. */
+  .almanaque__meses {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pastilha-mes {
+    padding: var(--sp-2) 5px;
+  }
+
+  .folha__semana span {
+    font-size: 0.55rem;
+    letter-spacing: -0.02em;
+  }
+
+  .folha__dia {
+    min-height: 38px;
+    padding: 3px 3px 8px;
+  }
+
+  .folha__lua {
+    width: 76px;
+    height: 76px;
+  }
+
+  .mes__acoes .mes__botao {
+    min-height: 40px;
+  }
+
+  .mes__salto {
+    font-size: var(--fs-md);
+  }
+
+  /* --- o céu --- */
+
+  .ceu__selo {
+    top: 8px;
+    left: 8px;
+    max-width: 66%;
+    padding: 5px 9px;
+  }
+
+  .ceu__selo strong {
+    font-size: var(--fs-sm);
+  }
+
+  .ceu__selo span {
+    font-size: 0.66rem;
+  }
+
+  .ceu__controles {
+    gap: 6px;
+  }
+
+  /* Dedo, não ponteiro: 40px é o mínimo que se acerta sem olhar. */
+  .ceu__botao {
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: var(--fs-sm);
+  }
+
+  .ceu__botao--forte {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ceu__botao--pequeno {
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: var(--fs-xs);
+  }
+
+  .ceu__passos,
+  .ceu__velocidades {
+    gap: 6px;
+  }
+
+  .ceu__dica {
+    display: none;
+  }
+
+  .ceu__fatos dt,
+  .ceu__fatos dd {
+    font-size: var(--fs-sm);
+  }
+
+  .ceu__fatos > div {
+    padding: 6px 0;
+  }
+
+  .ceu__continente-corpo {
+    padding: 8px 10px;
+  }
+
+  .ceu__continente small {
+    font-size: 0.76rem;
+  }
+
+  .ceu__verbete {
+    width: 44px;
+  }
+
+  .ciclo__moradores button {
+    min-height: 40px;
+  }
+
+  /* O SVG tem viewBox fixo: encolher a largura encolhe junto as letras
+     desenhadas dentro dele, e a 390px os nomes das constelações ficavam
+     com 4px. A correção é aumentar a fonte em unidades de viewBox — o
+     desenho não muda, a tipografia volta ao tamanho de leitura. */
+  .ceu__corpo-nome {
+    font-size: 5.6px;
+  }
+
+  /* A constelação de cada continente já está no painel; aqui só suja. */
+  .ceu__corpo-vista {
+    display: none;
+  }
+
+  .ceu__lua-nome {
+    font-size: 4.6px;
+  }
+
+  .ceu__constelacao-nome {
+    font-size: 5px;
+  }
+
+  .ceu__acesa text {
+    font-size: 5.6px;
+  }
+
+  .ceu__estrela-nome,
+  .ceu__rosa {
+    font-size: 7.5px;
+  }
+
+  .ceu__apside {
+    font-size: 6px;
+  }
+
+  .ceu__anel {
+    stroke-width: 0.8;
+    stroke-opacity: 0.42;
+  }
+
+  .ceu__traco {
+    stroke-width: 0.6;
+  }
+
+  .ceu__quadro[data-modo='mini'] .ceu__corpo-nome {
+    font-size: 8px;
+  }
+  .ceu__quadro[data-modo='mini'] .ceu__lua-nome {
+    font-size: 6.6px;
+  }
+  .ceu__quadro[data-modo='mini'] .ceu__estrela-nome {
+    font-size: 7px;
+  }
+
+  /* --- a Corvisseia --- */
+
+  .numeros__cartao {
+    padding: 10px 12px;
+  }
+
+  .numeros__cartao strong {
+    font-size: 1.3rem;
+  }
+
+  .numeros__cartao small {
+    font-size: 0.7rem;
+  }
+
+  .corvisseia__intro {
+    font-size: var(--fs-base);
+  }
+
+  .ritmo__meses {
+    --area: 56px;
+    gap: 2px;
+  }
+
+  .ritmo__pouso {
+    height: 20px;
+    font-size: 0.56rem;
+  }
+
+  /* A matriz estreita: o nome do trecho em duas linhas, sem a coluna de
+     repetição (o detalhe a repete) e sem os km/s (idem). */
+  .matriz {
+    border-spacing: 3px;
+  }
+
+  .matriz__canto,
+  .matriz__trecho {
+    width: 5.4rem;
+  }
+
+  .matriz__trecho {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    column-gap: 3px;
+    padding-left: 6px !important;
+    font-size: 0.7rem !important;
+    line-height: 1.3;
+    white-space: normal;
+  }
+
+  .matriz__trecho .matriz__ponta:first-child {
+    flex-basis: 100%;
+  }
+
+  .matriz__seta {
+    margin: 0;
+  }
+
+  .matriz__repete,
+  .matriz__celula small,
+  .matriz__volta-palavra {
+    display: none;
+  }
+
+  .matriz__celula {
+    min-height: 46px;
+    padding: 4px 1px 8px;
+  }
+
+  .matriz__celula strong {
+    font-size: 0.7rem;
+  }
+
+  .matriz__barra {
+    left: 5px;
+    width: calc((100% - 10px) * var(--pct));
+  }
+
+  .matriz th {
+    letter-spacing: 0.04em;
+    font-size: 0.6rem;
+  }
+
+  .detalhe {
+    padding: var(--sp-3);
+  }
+
+  .detalhe__rota {
+    font-size: 1.3rem;
+  }
+
+  .detalhe__numeros dd {
+    font-size: 1.02rem;
+  }
+
+  .detalhe__botao {
+    min-height: 40px;
+  }
+
+  .porque {
+    padding: var(--sp-4) var(--sp-3);
+  }
+
+  .porque__lista li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* A barra do rodapé: o detalhe está acima da matriz, fora de vista quando
+     se toca nela, e esta barra mostra o que acabou de ser escolhido. */
+  .resumo-fixo {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    margin: 0 calc(var(--sp-3) * -1);
+    padding: 10px var(--sp-4) calc(10px + env(safe-area-inset-bottom, 0px));
+    border-top: 2px solid var(--pulo);
+    background: rgba(12, 10, 8, 0.95);
+    backdrop-filter: blur(8px);
+    font-size: var(--fs-sm);
+  }
+
+  .resumo-fixo__rota {
+    font-family: var(--cx-display);
+    font-weight: 600;
+  }
+
+  .resumo-fixo__numeros {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--cx-pergaminho-2);
+  }
+
+  .resumo-fixo__numeros b {
+    color: var(--pulo);
+    letter-spacing: -0.1em;
+  }
+}
+
+@media (max-width: 560px) {
+  .almanaque {
+    padding: var(--sp-4) var(--sp-3) var(--sp-6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ceu__halo,
+  .ritmo__barra {
+    animation: none;
+  }
+}
