@@ -354,6 +354,15 @@ export function Ceu({ a }: { a: Almanaque }) {
               <span>
                 ano {data.ano} · dia {Math.floor(a.dia) + 1}
               </span>
+              {/* Aproximado, o selo diz de quem é a órbita em quadro. O rótulo
+                  ficava desenhado dentro do SVG, no canto de cima à esquerda —
+                  exatamente onde este selo está, e o escondia. */}
+              {aproximar ? (
+                <span className="ceu__selo-zoom">
+                  ◎ Órbita de <b style={{ color: olhar.cor }}>{olhar.nome}</b> · voltado para{' '}
+                  {constelacaoVisivel(olhar, a.dia).nome}
+                </span>
+              ) : null}
               <span className="ceu__selo-lua" data-estado={estado.estado}>
                 {/* Parada, o ponto é de Corvus; em viagem, é a cor do pulo. */}
                 <i style={{ background: estado.estado === 'parada' ? '#ff6a9a' : COR_DO_PULO[t.pulo] }} />

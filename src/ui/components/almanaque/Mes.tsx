@@ -230,12 +230,14 @@ export function Mes({ a }: { a: Almanaque }) {
         </nav>
       </div>
 
+      {/* Três filhos diretos da grade, para a ordem mudar com a largura: larga,
+          a folha e a legenda ficam empilhadas à esquerda e o cartão à direita;
+          estreita, vem folha, cartão e só no fim a legenda — que é consulta, e
+          não deve empurrar o salto do mês 700px para baixo da folha que o decide. */}
       <div className="mes__corpo">
-        <div className="mes__folha">
-          <Folha mes={data.mes} onde={a.onde} />
-          <ComoLer onde={a.onde} />
-        </div>
+        <Folha mes={data.mes} onde={a.onde} />
         <CartaoDoMes a={a} mesC={data.mesC} />
+        <ComoLer onde={a.onde} />
       </div>
     </div>
   );

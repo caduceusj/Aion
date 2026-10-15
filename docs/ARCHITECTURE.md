@@ -86,9 +86,11 @@ codex/tipos.ts      contrato do verbete, as gavetas e as fontes
 codex/corpus.ts     índice, busca, retrolinks, costura com o mapa
 codex/prosa.tsx     resolve [[..]] em links navegáveis
 codex/heraldica.tsx brasões e glifos, SVG inline
-codex/calendario.ts as três órbitas, a rota de Corvus e os doze meses
+codex/calendario.ts as três órbitas, a rota de Corvus, os doze meses e o relógio
+codex/formato.ts    números em português: 19,5 e não 19.5
 codex/mundo/        o que o mundo sabe de si — um arquivo por categoria
 codex/mesa/         o que a mesa viveu — elenco e sessões
+ui/components/almanaque/   as três telas do almanaque, uma por arquivo
 ```
 
 O acervo tem **duas camadas**, e essa é a divisão dos diretórios. `mundo/` é
@@ -135,8 +137,15 @@ distância dividida por 10,5 dias, calculadas na hora.
 O mesmo arquivo guarda os elementos orbitais de cada continente — semi-eixo,
 excentricidade, rumo do periélio, ângulo no dia 0 —, e daí saem `posicaoEm`,
 `constelacaoVisivel` e `posicaoDaLua`. **Toda** posição desenhada no site vem
-dessas funções: o diagrama estático da aba do ano e o modelo vivo da aba do
-céu não têm geometria própria, e por isso não podem discordar.
+dessas funções: a miniatura da folha do mês e o céu vivo são a mesma `Cena`
+em dois tamanhos, sem geometria própria, e por isso não podem discordar.
+
+Ele guarda também o **relógio**. O almanaque tem três escalas — o dia (o céu),
+o mês (a folha) e o trecho (a Corvisseia) — que não são três assuntos, e sim
+três nomes para a mesma posição na linha de 1080 dias. `mesDaCorvisseia`,
+`anoDoMes`, `voltaDoMes`, `diaDaPartida` e `diaDaChegada` traduzem entre elas,
+e os testes confirmam que o modelo vivo concorda com a tabela: Corvus levanta
+voo exatamente no dia que o relógio diz, rumo ao destino que a tabela diz.
 
 Isso torna o calendário verificável, e `codex/calendario.test.ts` o verifica:
 que a rota fecha em si mesma, que cada trecho começa onde o anterior acabou,
@@ -150,10 +159,57 @@ arredondamento.
 Onde as fontes se contradizem, o Códice registra a contradição em vez de
 escolher um lado em silêncio. A prancha rotula Equiral de "Verão" e a imprime
 no bloco do outono; desenha Dracônio com a lua errada; e — a maior delas — a
-tabela de trechos dá 1,82 UA para Valoran → Yōso em todas as seis passagens,
-o que exige um anel circular, enquanto o modelo orbital dá àquele anel uma
-excentricidade de um décimo, que faria a mesma distância oscilar. As duas
-ficam, cada uma na sua função, com a divergência escrita no verbete.
+tabela de trechos e o modelo orbital **não concordam em valor**: o modelo erra
+a tabela em 0,7 UA em média, e em 11 dos 36 trechos a diferença passa de uma
+UA. Nenhum deslocamento do dia zero, nem a inversão do sentido das órbitas,
+aproxima as duas a menos de um décimo, e dez parâmetros livres não passam de
+0,09. A tabela dá 1,82 UA para Valoran → Yōso nas seis passagens, o que exige
+um anel circular, enquanto o modelo dá àquele anel uma excentricidade de um
+décimo.
+
+Concordam, em compensação, na **estrutura**: cada trecho da tabela se repete a
+cada mmc(período A, período B) voltas — 2, 3, 6, 6, 6, e Valoran → Yōso
+constante —, e é por isso que A Corvisseia tem seis voltas: 1080 é o mínimo
+múltiplo comum dos períodos do sistema. As duas fontes ficam, cada uma na sua
+função (a tabela é o que se navega; o modelo é o que explica por que a
+distância varia), e um teste afirma a divergência para que a lore não possa
+continuar dizendo que ela existe depois de alguém corrigi-la.
+
+### O almanaque como instrumento
+
+O almanaque (`ui/components/CodexCalendario.tsx`) é o casco de três telas, e o
+casco é dono de dois estados: o **dia** (0 a 1080) e o **ponto de vista** (de
+qual continente se olha). As telas não guardam tempo — leem esses dois e podem
+movê-los, e por isso escolher Lereal na folha leva a lua até Lereal no céu, e
+uma célula da Corvisseia abre o céu no instante em que Corvus parte. O estado
+vive em `almanaque/memoria.ts`, que o preserva enquanto a página vive (quem
+sai para ler um verbete volta ao mesmo dia) e sabe esquecê-lo, para que o fim
+de um teste não vire o começo do seguinte.
+
+As telas respondem à pergunta que cada uma faz melhor. A **folha** mostra o
+calendário impresso, com a legenda encostada nele e o salto do mês numa
+miniatura do céu. O **céu** mostra a posição de tudo, com a régua dos 1080 dias
+desenhada como a própria rota (a estadia na cor do continente, o pico da
+viagem na altura da distância). A **Corvisseia** mostra o padrão: o ritmo dos
+36 meses em três fileiras alinhadas, a matriz de seis trechos por seis voltas,
+o detalhe do trecho escolhido com um velocímetro, e a explicação de por que o
+ciclo fecha em 1080.
+
+Três decisões valem registro:
+
+- **A largura que importa é a do almanaque, não a da janela.** O índice do
+  Códice tira espaço do conteúdo, então "tela larga" não diz quanto cabe. As
+  grades perguntam ao próprio almanaque (container queries) e se acertam
+  sozinhas com o índice aberto, fechado e no celular.
+- **A régua do céu é um `<input type="range">` de verdade**, transparente, por
+  cima do desenho. Arrastar, tocar e o teclado funcionam sem lógica de
+  ponteiro, e o leitor de tela anuncia um controle deslizante.
+- **A animação anda por tempo de relógio, não por quadro.** Com um passo fixo
+  por `requestAnimationFrame`, a lua corria o dobro numa tela de 120 Hz.
+
+`almanaque/almanaque.test.tsx` segura o que a interface promete: o cursor
+compartilhado, a distância certa em cada ano, o teclado da matriz e o ponto de
+vista.
 
 ### O guarda-corpo
 

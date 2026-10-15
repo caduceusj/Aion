@@ -471,16 +471,6 @@ export function Cena({ dia, onde, modo = 'completo', zoom = null, aoEscolher }: 
         Corvus
       </text>
 
-      {zoom ? (
-        <text
-          className="ceu__zoom-nome"
-          x={moldura(zoom).cx - moldura(zoom).meio + 3}
-          y={moldura(zoom).cy - moldura(zoom).meio + moldura(zoom).meio * 0.09 + 2}
-          fontSize={Math.max(moldura(zoom).meio * 0.055, 2.2)}
-        >
-          {zoom.nome} · voltado para {constelacaoVisivel(zoom, dia).nome}
-        </text>
-      ) : null}
     </svg>
   );
 }

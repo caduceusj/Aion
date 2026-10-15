@@ -161,6 +161,21 @@ describe('a Corvisseia', () => {
   });
 });
 
+describe('um trecho tocado e abandonado', () => {
+  it('não faz o céu abrir rodando mais tarde', () => {
+    abrir();
+    fireEvent.click(aba('A Corvisseia'));
+    fireEvent.click(document.getElementById('celula-27') as HTMLElement);
+    fireEvent.click(screen.getByRole('button', { name: /Tocar este trecho/ }));
+    expect(screen.getByRole('button', { name: /Pausar/ }).getAttribute('aria-pressed')).toBe('true');
+
+    // O leitor desiste no meio e vai olhar a folha; depois volta ao céu pela aba.
+    fireEvent.click(aba('O Ano'));
+    fireEvent.click(aba('O Céu'));
+    expect(screen.getByRole('button', { name: /Rodar/ }).getAttribute('aria-pressed')).toBe('false');
+  });
+});
+
 describe('o céu', () => {
   it('a régua é um controle deslizante de verdade, com o dia por extenso', () => {
     abrir();
@@ -170,6 +185,15 @@ describe('o céu', () => {
     expect(regua.getAttribute('aria-valuetext')).toContain('de Equiral');
     fireEvent.change(regua, { target: { value: '900' } });
     expect(regua.getAttribute('aria-valuetext')).toContain('Dia 901');
+  });
+
+  it('aproximar diz, no selo, de quem é a órbita em quadro', () => {
+    abrir();
+    fireEvent.click(aba('O Céu'));
+    expect(document.querySelector('.ceu__selo')?.textContent).not.toContain('Órbita de');
+    fireEvent.click(screen.getByRole('button', { name: /Aproximar/ }));
+    expect(document.querySelector('.ceu__selo')?.textContent).toContain('Órbita de Valoran');
+    expect(document.querySelector('.ceu__selo')?.textContent).toContain('voltado para Cavalo');
   });
 
   it('clicar num continente o escolhe como ponto de vista', () => {

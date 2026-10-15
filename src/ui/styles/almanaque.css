@@ -314,15 +314,24 @@
 .mes__corpo {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'folha'
+    'cartao'
+    'legenda';
   gap: var(--sp-5);
   align-items: start;
 }
 
-.mes__folha {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-4);
-  min-width: 0;
+.mes__corpo > .folha {
+  grid-area: folha;
+}
+
+.mes__corpo > .mes__cartao {
+  grid-area: cartao;
+}
+
+.mes__corpo > .mes__legendas {
+  grid-area: legenda;
 }
 
 /* --- a folha impressa --- */
@@ -728,6 +737,14 @@
   color: var(--cx-apagado);
 }
 
+.ceu__selo-zoom {
+  color: var(--cx-ouro-claro) !important;
+}
+
+.ceu__selo-zoom b {
+  font-weight: 700;
+}
+
 .ceu__selo-lua {
   display: flex;
   align-items: center;
@@ -878,13 +895,6 @@
   fill: #ff6a9a;
   font-family: var(--cx-display);
   font-size: 2.4px;
-}
-
-.ceu__zoom-nome {
-  fill: #ffd97a;
-  font-family: var(--cx-display);
-  font-weight: 700;
-  letter-spacing: 0.06em;
 }
 
 /* A miniatura da folha do mês: o quadro é menor e aparece menor, então a
@@ -1600,7 +1610,7 @@
   border-radius: 3px 3px 0 0;
   background: var(--pulo);
   transform-origin: bottom;
-  animation: ritmo-cresce 520ms var(--ease-out) both;
+  animation: ritmo-cresce var(--dur-slow) var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 14ms);
 }
 
@@ -2058,7 +2068,7 @@
   border-radius: 2px;
   background: #fff;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
-  transition: left 520ms var(--ease-out);
+  transition: left var(--dur-slow) var(--ease-out);
 }
 
 .velocimetro__graduacao {
@@ -2312,6 +2322,14 @@
 @container almanaque (min-width: 52rem) {
   .mes__corpo {
     grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+    grid-template-areas:
+      'folha cartao'
+      'legenda cartao';
+    /* A folha e a legenda são uma coluna só, e o cartão pode ser mais alto
+       que as duas: a sobra tem de ir para a linha de baixo, senão a linha
+       da folha estica e abre um vão entre ela e a legenda. */
+    grid-template-rows: auto 1fr;
+    row-gap: var(--sp-4);
   }
 
   .mes__cartao {
@@ -2345,6 +2363,49 @@
   .detalhe {
     position: sticky;
     top: var(--sp-3);
+  }
+}
+
+/* Entre o celular e a grade larga o detalhe ocupa a largura toda, e feito
+   para ~370px ele esticava até as seis barras da sequência virarem seis
+   tijolos. Aqui ele se reparte em duas colunas: os números e o velocímetro
+   de um lado, a sequência e as ações do outro. */
+@container almanaque (min-width: 40rem) and (max-width: 62.99rem) {
+  .detalhe {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--sp-5);
+    align-items: start;
+  }
+
+  .detalhe__topo {
+    grid-column: 1 / -1;
+  }
+
+  .detalhe__numeros {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .detalhe .velocimetro {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .detalhe__pulo {
+    grid-column: 1;
+    grid-row: 4;
+  }
+
+  .detalhe__sequencia {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+  }
+
+  .detalhe__acoes {
+    grid-column: 2;
+    grid-row: 4;
+    align-self: end;
   }
 }
 
@@ -2440,6 +2501,11 @@
 
   .mes__salto {
     font-size: var(--fs-md);
+  }
+
+  /* "››› Intenso" em mono a 15px não cabe num terço de 360px. */
+  .mes__numeros dd {
+    font-size: var(--fs-sm);
   }
 
   /* --- o céu --- */

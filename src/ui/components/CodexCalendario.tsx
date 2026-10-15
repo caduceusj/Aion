@@ -59,6 +59,13 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
     document.querySelector('.codice__leitura')?.scrollTo({ top: 0 });
   }, [aba]);
 
+  // Trocar de aba pelo seletor abandona um "tocar este trecho" que tivesse
+  // ficado pendente: sem isto, o céu abriria depois, sozinho, rodando até o
+  // fim de um trecho que ninguém mais estava olhando.
+  const trocarAba = useCallback((proxima: AbaId) => {
+    setTocarAte(null);
+    setAba(proxima);
+  }, []);
   const irParaDia = useCallback((novo: number) => setDia(dentroDaCorvisseia(novo)), []);
   const irParaMes = useCallback((mesC: number) => {
     setTocarAte(null);
@@ -91,7 +98,7 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
     evento.preventDefault();
     const atual = ABAS.findIndex((x) => x.id === aba);
     const proxima = ABAS[(atual + passo + ABAS.length) % ABAS.length]!;
-    setAba(proxima.id);
+    trocarAba(proxima.id);
     requestAnimationFrame(() => document.getElementById(`almanaque-aba-${proxima.id}`)?.focus());
   };
 
@@ -113,7 +120,7 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
               aria-controls="almanaque-painel"
               tabIndex={aba === x.id ? 0 : -1}
               data-ativo={aba === x.id ? 'sim' : undefined}
-              onClick={() => setAba(x.id)}
+              onClick={() => trocarAba(x.id)}
             >
               {x.rotulo}
             </button>

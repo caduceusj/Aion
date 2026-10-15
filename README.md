@@ -76,10 +76,15 @@ você mesmo roda, para os aparelhos se acharem.
   Almanaque, a wiki da mesa ou as notas de sessão
 - Busca por nome, epíteto ou texto — sem acento e sem caixa
 - Atlas com o mapa em duas pranchas alternáveis, zoom, arraste e pontos clicáveis
-- Almanaque com as três órbitas de Aion, os doze meses valorianos e a rota de
-  Corvus pelos seis continentes, mês a mês
-- Modelo orbital vivo: os seis continentes nas elipses de verdade, as doze
-  constelações ao fundo e a lua saltando entre eles ao longo dos 1080 dias
+- Almanaque em três telas que dividem um só cursor de tempo: a folha impressa
+  de cada mês (nos três anos da Corvisseia), o céu de Aion andando — seis
+  continentes nas elipses reais, as doze constelações, Corvus saltando entre
+  eles — e A Corvisseia, os 1080 dias em que o padrão de distâncias fecha,
+  lido como ritmo, matriz trecho × volta e detalhe com velocímetro
+- "Olhando de" é um controle global: decide a faixa da lua na folha, a
+  constelação acesa no céu e os trechos em destaque na Corvisseia
+- O almanaque se usa no celular e no teclado: espaço roda o céu, setas andam um
+  dia (com Shift, um mês), e a matriz da Corvisseia se navega pelas setas
 - Onde a crônica cala, o verbete diz que ela cala — nada de lore inventada
 
 **Mesa**
@@ -131,10 +136,15 @@ No app, abra **O Códice**
   Almanaque, a wiki da mesa ou as notas de sessão
 - Busca por nome, epíteto ou texto — sem acento e sem caixa
 - Atlas com o mapa em duas pranchas alternáveis, zoom, arraste e pontos clicáveis
-- Almanaque com as três órbitas de Aion, os doze meses valorianos e a rota de
-  Corvus pelos seis continentes, mês a mês
-- Modelo orbital vivo: os seis continentes nas elipses de verdade, as doze
-  constelações ao fundo e a lua saltando entre eles ao longo dos 1080 dias
+- Almanaque em três telas que dividem um só cursor de tempo: a folha impressa
+  de cada mês (nos três anos da Corvisseia), o céu de Aion andando — seis
+  continentes nas elipses reais, as doze constelações, Corvus saltando entre
+  eles — e A Corvisseia, os 1080 dias em que o padrão de distâncias fecha,
+  lido como ritmo, matriz trecho × volta e detalhe com velocímetro
+- "Olhando de" é um controle global: decide a faixa da lua na folha, a
+  constelação acesa no céu e os trechos em destaque na Corvisseia
+- O almanaque se usa no celular e no teclado: espaço roda o céu, setas andam um
+  dia (com Shift, um mês), e a matriz da Corvisseia se navega pelas setas
 - Onde a crônica cala, o verbete diz que ela cala — nada de lore inventada
 
 **Mesa**, aponte o endereço para o IP dessa máquina
