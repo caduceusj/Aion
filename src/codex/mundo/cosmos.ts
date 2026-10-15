@@ -26,14 +26,12 @@ import {
   afelioUA,
   velocidade,
 } from '../calendario';
+import { numero } from '../formato';
 
 /** O trecho mais longo da tabela — é ele que vira o aviso aos pilotos. */
 const MAIOR = CORVISSEIA.reduce((a, b) => (b.distanciaUA > a.distanciaUA ? b : a));
 const VELOCIDADE_MAXIMA = Math.round(velocidade(MAIOR.distanciaUA));
 
-/** Números em português mesmo dentro da prosa inglesa: 1,05 e não 1.05. */
-const num = (valor: number, casas = 2): string =>
-  valor.toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
 
 /** Um morador de cada anel, para perguntar a ele o periélio do anel inteiro. */
 const CONTINENTES_DO_CICLO = {
@@ -44,7 +42,7 @@ const CONTINENTES_DO_CICLO = {
 
 const faixa = (ciclo: keyof typeof CONTINENTES_DO_CICLO): string => {
   const alvo = CONTINENTES_DO_CICLO[ciclo];
-  return `${num(perielioUA(alvo))}–${num(afelioUA(alvo))} UA`;
+  return `${numero(perielioUA(alvo))}–${numero(afelioUA(alvo))} UA`;
 };
 
 export const COSMOS: Verbete[] = [
@@ -61,7 +59,7 @@ export const COSMOS: Verbete[] = [
       { rotulo: 'Continents', valor: 'Six, across three orbits' },
       {
         rotulo: 'Short Cycle',
-        valor: `[[alhara|Al-Hara]] — ${CICLOS.curto.periodo} days, a true circle at ${num(CICLOS.curto.raioUA)} UA`,
+        valor: `[[alhara|Al-Hara]] — ${CICLOS.curto.periodo} days, a true circle at ${numero(CICLOS.curto.raioUA)} UA`,
       },
       {
         rotulo: 'Middle Cycle',
@@ -87,15 +85,16 @@ export const COSMOS: Verbete[] = [
         titulo: 'The Ellipses, Measured',
         paragrafos: [
           `Only [[alhara|Al-Hara]] keeps a fixed distance. The other five run ellipses, and an ellipse has a near side and a far one: the middle ring swings between ${faixa('medio')} of the star, the outer between ${faixa('longo')}. That is a fifth of the outer ring's own width — enough that the same crossing can be a short hop one year and a murderous sprint the next.`,
-          `The three rings sit at ${num(CICLOS.curto.raioUA)}, ${num(CICLOS.medio.raioUA)} and ${num(CICLOS.longo.raioUA)} UA, and those are not three chosen numbers. Take the middle ring as one and the other two are what a falling body would have to be for those years: a period half as long buys an orbit at ${num(0.63)}, half again as long an orbit at ${num(1.31)}. The system was not arranged to be tidy. It was arranged to be *possible*, and it comes out to within one part in a hundred.`,
+          `The three rings sit at ${numero(CICLOS.curto.raioUA)}, ${numero(CICLOS.medio.raioUA)} and ${numero(CICLOS.longo.raioUA)} UA, and those are not three chosen numbers. Take the middle ring as one and the other two are what a falling body would have to be for those years: a period half as long buys an orbit at ${numero(0.63)}, half again as long an orbit at ${numero(1.31)}. The system was not arranged to be tidy. It was arranged to be *possible*, and it comes out to within one part in a hundred.`,
           'The two outermost keep the same near side of the sky, a hundred and thirty-four degrees off north, and ride half a ring apart — which means that whenever [[vrednost|Vrednost]] is at its closest to the fire, [[unkanten|Ukanten]] is at its furthest, exactly. They are never warm together.',
         ],
       },
       {
         titulo: 'Where the Two Sources Disagree',
         paragrafos: [
-          'This codex holds two documents about the same sky, and they do not fully agree. The route table — the working almanac, the one the pilots carry — records the crossing from Valoran to Yōso as 1,82 UA on every one of its six passes, without exception. On a ring of perfect circles a third apart, that is exactly what you would see, and it is the strongest evidence that the middle three are evenly spaced.',
-          'The orbital model gives the same ring an eccentricity of a tenth, and an eccentric ring cannot hold three bodies at a constant remove: the same crossing comes out between 1,59 and 1,67 UA, alternating. Both cannot be right. The table is kept as it stands, because it is the document that people actually navigate by and because its own internal arithmetic closes; the model is kept as it stands, because it is the one that explains why any distance varies at all. What neither of them explains is why the one crossing that should vary is the one that never does.',
+          'This codex holds two documents about the same sky, and they agree about less than they should. The route table — the working almanac, the one the pilots carry — fixes thirty-six crossings and gives each a distance. The orbital model fixes the rings, how eccentric each one is, and where every continent stood on the first day, and from those any distance can be worked out. Laid side by side they differ crossing by crossing: the model\'s straight-line distances miss the table\'s by seven-tenths of a UA on average, and in eleven of the thirty-six they are more than a full UA apart. In the ninth month the model puts [[vrednost|Vrednost]] and [[fentor|Fentor]] about two UA from each other; the table says 0,49.',
+          'Neither sliding the calendar\'s first day nor reversing the direction of the orbits brings the two within a tenth of a UA. Where they do agree is in *structure*, which is the stranger and more reassuring half. Each crossing in the table repeats after exactly as many circuits as its two continents need to stand in the same places again — two for [[yoso|Yōso]] to [[alhara|Al-Hara]], three for Al-Hara to Vrednost, all six for the three crossings that join the middle ring to the outer one. [[a-corvisseia|The table]] was not made up from nothing: it keeps to the periods of the sky it describes, and only its numbers drift from the model\'s.',
+          'One crossing, [[valoran|Valoran]] to Yōso, never varies at all — 1,82 UA in all six circuits — which a circular ring does exactly and an eccentric one cannot. The table is kept as it stands, because it is what people navigate by; the model is kept as it stands, because it is the one that explains why any distance should vary in the first place. This archive does not choose between them.',
         ],
       },
       {
@@ -202,7 +201,7 @@ export const COSMOS: Verbete[] = [
       { rotulo: 'Circuits', valor: 'Six turns of the moon around the six continents' },
       { rotulo: 'Route', valor: 'C4 → C1 → C5 → C2 → C6 → C3, and back to C4' },
       { rotulo: 'Fixed', valor: `${DIAS_DE_ESTADIA} days resting, ${DIAS_DE_VIAGEM} days crossing — always` },
-      { rotulo: 'Longest crossing', valor: `${MAIOR.distanciaUA.toFixed(2)} UA, at about ${VELOCIDADE_MAXIMA} km/s` },
+      { rotulo: 'Longest crossing', valor: `${numero(MAIOR.distanciaUA)} UA, at about ${VELOCIDADE_MAXIMA} km/s` },
     ],
     epigrafe: 'She never takes longer. She simply goes faster.',
     secoes: [
@@ -214,9 +213,16 @@ export const COSMOS: Verbete[] = [
         ],
       },
       {
+        titulo: 'Why Six',
+        paragrafos: [
+          'Six is not a round number the almanac settled on; it is the least common multiple of the sky. [[valoran|Valoran]], [[fentor|Fentor]] and [[yoso|Yōso]] take 360 days to round the star, [[unkanten|Ukanten]] and [[vrednost|Vrednost]] take 540, and [[alhara|Al-Hara]] takes 180. The rings return to the same arrangement together only when each has completed a whole number of turns, and the first day on which that is true is the 1080th — three turns of the middle ring, two of the outer, six of the inner, and six circuits of the moon.',
+          'The same arithmetic tells each crossing how soon it can repeat. Yōso to Al-Hara joins a continent of 360 days to one of 180, so it comes back identical every second circuit; Al-Hara to Vrednost, 180 and 540, every third. The three crossings that join the middle ring to the outer one cannot repeat before the full 1080. Only Valoran to Yōso never changes, because both of its ends ride the same ring and keep their distance for ever.',
+        ],
+      },
+      {
         titulo: 'No Jump, Normal, Intense',
         paragrafos: [
-          'Crossings are graded by how far she has to go. Under half a UA she barely seems to move and the almanac writes *Sem pulo*; around a UA is a *Normal* jump; a UA and a half or more is *Intenso*. In a single Corvisseia the same stretch can be all three: the crossing from Vrednost to Fentor runs 0,49 UA in one circuit and 2,49 UA in another — five times the distance, in the same ten and a half days.',
+          'Crossings are graded by how far she has to go. Under half a UA she barely seems to move and the almanac writes *Sem pulo*; around a UA is a *Normal* jump; a UA and a half or more is *Intenso*. In a single Corvisseia the same stretch can be all three: the crossing from Vrednost to Fentor runs 0,49 UA in one circuit and 2,49 UA in another — five times the distance, in the same ten and a half days. The widest swing of all belongs to Ukanten and Valoran, which run from 0,25 UA to 2,40 — nearly tenfold.',
           'The one crossing that never changes is Valoran to Yōso: 1,82 UA, about 300 km/s, every circuit without exception. Two continents on the same ring, a third of it apart, cannot drift.',
         ],
       },
@@ -230,7 +236,7 @@ export const COSMOS: Verbete[] = [
       {
         titulo: 'The Warning',
         paragrafos: [
-          `For the pilots who cross [[mar-astral|the void]], the table is not lore — it is a survival document. On the heaviest stretch the moon covers ${MAIOR.distanciaUA.toFixed(2)} UA in ten days and a half, which is roughly ${VELOCIDADE_MAXIMA} kilometres every second. Nothing under way out there is going to see her coming, and nothing she meets is going to survive the meeting.`,
+          `For the pilots who cross [[mar-astral|the void]], the table is not lore — it is a survival document. On the heaviest stretch the moon covers ${numero(MAIOR.distanciaUA)} UA in ten days and a half, which is roughly ${VELOCIDADE_MAXIMA} kilometres every second. Nothing under way out there is going to see her coming, and nothing she meets is going to survive the meeting.`,
         ],
       },
     ],
@@ -362,7 +368,7 @@ export const COSMOS: Verbete[] = [
       'The innermost continent, alone on the only circular orbit — and the land where the Luminífero is hated.',
     brasao: 'sol',
     ficha: [
-      { rotulo: 'Orbit', valor: `[[sistema-de-aion|Short Cycle]] — ${CICLOS.curto.periodo} days, a true circle at ${num(CICLOS.curto.raioUA)} UA` },
+      { rotulo: 'Orbit', valor: `[[sistema-de-aion|Short Cycle]] — ${CICLOS.curto.periodo} days, a true circle at ${numero(CICLOS.curto.raioUA)} UA` },
       { rotulo: 'Distance from Aion', valor: 'The same every day of the year — it has no near side' },
       { rotulo: 'Alone', valor: 'The only continent on its ring' },
       { rotulo: 'Faith', valor: 'Hates [[os-doze|the Luminífero]]; keeps [[o-sofredor|the Sufferer]]' },

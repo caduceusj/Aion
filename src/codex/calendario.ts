@@ -600,6 +600,161 @@ export function posicaoDaLua(dia: number): Ponto {
   };
 }
 
-/** O dia da Corvisseia (0 a 1079) em que um mês começa. */
-export const inicioDoMes = (mesDaCorvisseia: number): number =>
-  ((mesDaCorvisseia - 1) % CORVISSEIA.length) * DIAS_DO_MES;
+// =====================================================================
+// O RELÓGIO: UM CURSOR PARA O ALMANAQUE INTEIRO
+// =====================================================================
+//
+// O calendário tem três escalas que a interface mostra em telas diferentes —
+// o dia (o céu), o mês (a folha) e o trecho (a Corvisseia). Elas não são três
+// assuntos: são três nomes para a mesma posição na linha de 1080 dias. As
+// funções abaixo traduzem entre elas, e é por isso que escolher Lereal numa
+// tela pode levar a lua até o lugar certo em outra.
+//
+// Convenção: `dia` é contínuo, de 0 a 1080 (exclusive). `mesC` é o mês da
+// Corvisseia, de 1 a 36, e o 1 começa no dia 0.
+
+export const MESES_DA_CORVISSEIA = CORVISSEIA.length;
+export const ANOS_DA_CORVISSEIA = DIAS_DA_CORVISSEIA / DIAS_DO_ANO;
+export const VOLTAS_DA_CORVISSEIA = DIAS_DA_CORVISSEIA / DIAS_DA_VOLTA;
+const MESES_POR_VOLTA = DIAS_DA_VOLTA / DIAS_DO_MES;
+
+/** Leva qualquer dia — negativo, ou depois do fim — para dentro de [0, 1080). */
+export const dentroDaCorvisseia = (dia: number): number =>
+  ((dia % DIAS_DA_CORVISSEIA) + DIAS_DA_CORVISSEIA) % DIAS_DA_CORVISSEIA;
+
+/** O mês da Corvisseia (1 a 36) em que um dia cai. */
+export const mesDaCorvisseia = (dia: number): number =>
+  Math.floor(dentroDaCorvisseia(dia) / DIAS_DO_MES) + 1;
+
+/** Em que dia da Corvisseia (0 a 1079) um mês começa. */
+export const inicioDoMes = (mesC: number): number =>
+  ((mesC - 1) % MESES_DA_CORVISSEIA) * DIAS_DO_MES;
+
+/** O dia em que Corvus levanta voo: o fim da estadia, e o instante que o trecho do mês mede. */
+export const diaDaPartida = (mesC: number): number => inicioDoMes(mesC) + DIAS_DE_ESTADIA;
+
+/** O dia em que ela pousa — que é também o primeiro dia do mês seguinte. */
+export const diaDaChegada = (mesC: number): number => inicioDoMes(mesC) + DIAS_DO_MES;
+
+/** O ano valoriano de um mês da Corvisseia, de 1 a 3. */
+export const anoDoMes = (mesC: number): number => Math.ceil(mesC / MESES_DO_ANO);
+
+/** O mês dentro do ano, de 1 (Aquiário) a 12 (Corvinário). */
+export const mesDoAnoDe = (mesC: number): number => ((mesC - 1) % MESES_DO_ANO) + 1;
+
+/** A volta de Corvus pelos seis continentes, de 1 a 6. */
+export const voltaDoMes = (mesC: number): number => Math.ceil(mesC / MESES_POR_VOLTA);
+
+/** O caminho de volta: ano (1 a 3) e mês (1 a 12) para o mês da Corvisseia. */
+export const mesDaCorvisseiaDe = (ano: number, mesDoAno: number): number =>
+  (ano - 1) * MESES_DO_ANO + mesDoAno;
+
+// =====================================================================
+// O PULO, EM NÚMEROS
+// =====================================================================
+
+/** Abaixo disto, em UA, Corvus quase não se move: *sem pulo*. */
+export const LIMITE_DO_PULO_NORMAL = 0.5;
+/** A partir daqui o trecho é *intenso*. */
+export const LIMITE_DO_PULO_INTENSO = 1.5;
+
+export const puloDaDistancia = (ua: number): PuloId =>
+  ua < LIMITE_DO_PULO_NORMAL ? 'sem-pulo' : ua < LIMITE_DO_PULO_INTENSO ? 'normal' : 'intenso';
+
+/** Os mesmos limites, ditos em velocidade — é nela que o piloto pensa. */
+export const VELOCIDADE_DO_PULO_NORMAL = velocidade(LIMITE_DO_PULO_NORMAL);
+export const VELOCIDADE_DO_PULO_INTENSO = velocidade(LIMITE_DO_PULO_INTENSO);
+
+/** A Terra em torno do Sol, em km/s: a única régua que todo leitor tem de cabeça. */
+export const VELOCIDADE_ORBITAL_DA_TERRA = 29.78;
+
+// =====================================================================
+// OS SEIS TRECHOS DA ROTA
+// =====================================================================
+
+const mdc = (a: number, b: number): number => (b === 0 ? a : mdc(b, a % b));
+/** Mínimo múltiplo comum. */
+export const mmc = (a: number, b: number): number => (a / mdc(a, b)) * b;
+
+/**
+ * De quantas em quantas posições uma sequência se repete.
+ *
+ * Devolve o menor `p` que divide o tamanho e para o qual `v[i] === v[i + p]`
+ * em toda a sequência. Uma sequência constante repete a cada 1.
+ */
+export function periodoDeRepeticao(valores: readonly number[]): number {
+  const n = valores.length;
+  for (let p = 1; p < n; p += 1) {
+    if (n % p === 0 && valores.every((v, i) => v === valores[(i + p) % n])) return p;
+  }
+  return n;
+}
+
+export interface TrechoDaRota {
+  /** 0 a 5: a posição na rota. O 0 é o que sai de Yōso. */
+  posicao: number;
+  de: CodigoOrbital;
+  para: CodigoOrbital;
+  /** O mesmo trecho nas seis voltas, em ordem. */
+  porVolta: Trecho[];
+  menor: Trecho;
+  maior: Trecho;
+  /** Quantas vezes o trecho estica entre o seu melhor e o seu pior caso. */
+  variacao: number;
+  /** De quantas em quantas voltas as distâncias se repetem — lido da tabela. */
+  repeteACada: number;
+  /**
+   * O que a física dos dois continentes pede: o mínimo múltiplo comum dos
+   * períodos deles, em voltas. Dois continentes só voltam à mesma posição
+   * relativa quando ambos completam um número inteiro de órbitas.
+   */
+  esperado: number;
+}
+
+const periodoDe = (codigo: CodigoOrbital): number => CICLOS[continentePorCodigo(codigo).ciclo].periodo;
+
+export const TRECHOS_DA_ROTA: TrechoDaRota[] = ROTA.map((de, posicao) => {
+  const para = ROTA[(posicao + 1) % ROTA.length]!;
+  const porVolta = CORVISSEIA.filter((t) => t.de === de);
+  const distancias = porVolta.map((t) => t.distanciaUA);
+  const menor = porVolta.reduce((a, b) => (b.distanciaUA < a.distanciaUA ? b : a));
+  const maior = porVolta.reduce((a, b) => (b.distanciaUA > a.distanciaUA ? b : a));
+  return {
+    posicao,
+    de,
+    para,
+    porVolta,
+    menor,
+    maior,
+    variacao: maior.distanciaUA / menor.distanciaUA,
+    repeteACada: periodoDeRepeticao(distancias),
+    esperado: mmc(periodoDe(de), periodoDe(para)) / DIAS_DA_VOLTA,
+  };
+});
+
+/** O trecho da rota a que um mês da Corvisseia pertence. */
+export const trechoDaRotaDoMes = (mesC: number): TrechoDaRota =>
+  TRECHOS_DA_ROTA[(mesC - 1) % ROTA.length]!;
+
+/** O mês da Corvisseia (1 a 36) de um trecho da rota numa volta. */
+export const mesDoTrecho = (posicao: number, volta: number): number =>
+  (volta - 1) * ROTA.length + posicao + 1;
+
+/** Qual continente recebe Corvus durante um mês da Corvisseia. */
+export const luaSobre = (mesC: number): Continente => continentePorCodigo(trecho(mesC).de);
+
+// --- os extremos, para a interface poder dizer "o mais" sem recalcular ----
+
+export const TRECHO_MAIS_LONGO: Trecho = CORVISSEIA.reduce((a, b) =>
+  b.distanciaUA > a.distanciaUA ? b : a,
+);
+export const TRECHO_MAIS_CURTO: Trecho = CORVISSEIA.reduce((a, b) =>
+  b.distanciaUA < a.distanciaUA ? b : a,
+);
+export const TRECHO_QUE_MAIS_VARIA: TrechoDaRota = TRECHOS_DA_ROTA.reduce((a, b) =>
+  b.variacao > a.variacao ? b : a,
+);
+/** O trecho que não varia nunca. Se algum dia nenhum for constante, é `undefined`. */
+export const TRECHO_CONSTANTE: TrechoDaRota | undefined = TRECHOS_DA_ROTA.find(
+  (t) => t.variacao === 1,
+);

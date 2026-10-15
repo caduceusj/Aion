@@ -13,6 +13,7 @@
 
 import { describe, expect, it } from 'vitest';
 import {
+  ANOS_DA_CORVISSEIA,
   CICLOS,
   CONSTELACOES,
   CONTINENTES,
@@ -28,21 +29,46 @@ import {
   ROTA,
   continente,
   continentePorCodigo,
+  LIMITE_DO_PULO_INTENSO,
+  LIMITE_DO_PULO_NORMAL,
+  MESES_DA_CORVISSEIA,
+  TRECHOS_DA_ROTA,
+  TRECHO_CONSTANTE,
+  TRECHO_MAIS_CURTO,
+  TRECHO_MAIS_LONGO,
+  TRECHO_QUE_MAIS_VARIA,
+  VELOCIDADE_DO_PULO_INTENSO,
+  VELOCIDADE_DO_PULO_NORMAL,
+  VOLTAS_DA_CORVISSEIA,
   afelioUA,
   anguloEm,
+  anoDoMes,
   constelacaoNoAngulo,
   constelacaoVisivel,
+  dentroDaCorvisseia,
+  diaDaChegada,
+  diaDaPartida,
   distanciaEntre,
   estadoDaLua,
   faseDaConstelacao,
   faseDaLua,
+  luaSobre,
   mes,
+  mesDaCorvisseia,
+  mesDaCorvisseiaDe,
+  mesDoAnoDe,
+  mesDoTrecho,
+  mmc,
+  periodoDeRepeticao,
   perielioUA,
   posicaoDaLua,
   posicaoEm,
+  puloDaDistancia,
   raioEm,
   trecho,
+  trechoDaRotaDoMes,
   velocidade,
+  voltaDoMes,
 } from './calendario';
 import { existe } from './corpus';
 
@@ -383,5 +409,156 @@ describe('as doze constelações', () => {
 
     const vrednost = CONTINENTES.find((c) => c.id === 'vrednost')!;
     expect(30 / (360 / CICLOS[vrednost.ciclo].periodo)).toBe(45);
+  });
+});
+
+describe('o relógio do almanaque', () => {
+  it('o mês da Corvisseia é o dia dividido por trinta, e dá a volta no fim', () => {
+    expect(mesDaCorvisseia(0)).toBe(1);
+    expect(mesDaCorvisseia(29.99)).toBe(1);
+    expect(mesDaCorvisseia(30)).toBe(2);
+    expect(mesDaCorvisseia(DIAS_DA_CORVISSEIA - 0.01)).toBe(MESES_DA_CORVISSEIA);
+    expect(mesDaCorvisseia(DIAS_DA_CORVISSEIA)).toBe(1);
+    expect(mesDaCorvisseia(-1)).toBe(MESES_DA_CORVISSEIA);
+    expect(dentroDaCorvisseia(-30)).toBe(DIAS_DA_CORVISSEIA - 30);
+  });
+
+  it('os 36 meses se desdobram em 3 anos, 12 meses e 6 voltas', () => {
+    expect(MESES_DA_CORVISSEIA).toBe(ANOS_DA_CORVISSEIA * 12);
+    expect(MESES_DA_CORVISSEIA).toBe(VOLTAS_DA_CORVISSEIA * 6);
+    for (let m = 1; m <= MESES_DA_CORVISSEIA; m += 1) {
+      expect(mesDaCorvisseiaDe(anoDoMes(m), mesDoAnoDe(m)), `mês ${m}`).toBe(m);
+      expect(trecho(m).volta, `mês ${m}`).toBe(voltaDoMes(m));
+    }
+    expect(anoDoMes(12)).toBe(1);
+    expect(anoDoMes(13)).toBe(2);
+    expect(anoDoMes(36)).toBe(3);
+    expect(mesDoAnoDe(13)).toBe(1);
+    expect(mesDoAnoDe(36)).toBe(12);
+  });
+
+  it('o mesmo mês do ano recebe a lua no mesmo continente nos três anos', () => {
+    for (const m of MESES) {
+      for (let ano = 1; ano <= ANOS_DA_CORVISSEIA; ano += 1) {
+        expect(luaSobre(mesDaCorvisseiaDe(ano, m.numero)).id, `${m.nome}, ano ${ano}`).toBe(m.lua);
+      }
+    }
+  });
+
+  it('Corvus levanta voo no dia em que o relógio diz, rumo ao destino da tabela', () => {
+    for (let m = 1; m <= MESES_DA_CORVISSEIA; m += 1) {
+      const estado = estadoDaLua(diaDaPartida(m));
+      const t = trecho(m);
+      expect(estado.estado, `mês ${m}`).toBe('viagem');
+      expect(estado.progresso, `mês ${m}`).toBeCloseTo(0, 9);
+      expect([estado.em, estado.para], `mês ${m}`).toEqual([t.de, t.para]);
+    }
+  });
+
+  it('e pousa no primeiro dia do mês seguinte, sobre o continente certo', () => {
+    for (let m = 1; m <= MESES_DA_CORVISSEIA; m += 1) {
+      expect(diaDaChegada(m), `mês ${m}`).toBe(mesDaCorvisseia(diaDaChegada(m)) === m ? -1 : diaDaChegada(m));
+      const pousada = estadoDaLua(diaDaChegada(m));
+      expect(pousada.estado, `mês ${m}`).toBe('parada');
+      expect(pousada.em, `mês ${m}`).toBe(trecho(m).para);
+    }
+  });
+});
+
+describe('os seis trechos da rota', () => {
+  it('são seis, cada um com as seis voltas em ordem', () => {
+    expect(TRECHOS_DA_ROTA).toHaveLength(6);
+    for (const t of TRECHOS_DA_ROTA) {
+      expect(t.porVolta, `${t.de} → ${t.para}`).toHaveLength(6);
+      t.porVolta.forEach((item, i) => {
+        expect(item.volta).toBe(i + 1);
+        expect(item.de).toBe(t.de);
+        expect(item.para).toBe(t.para);
+        expect(item.mes).toBe(mesDoTrecho(t.posicao, i + 1));
+      });
+      expect(trechoDaRotaDoMes(t.porVolta[0]!.mes)).toBe(t);
+    }
+  });
+
+  it('cada trecho se repete no mínimo múltiplo comum dos períodos dos seus dois continentes', () => {
+    // É a estrutura da tabela, e ela concorda com a física dos anéis: dois
+    // continentes só voltam à mesma posição relativa quando ambos completam
+    // um número inteiro de órbitas. Por isso A Corvisseia tem seis voltas.
+    for (const t of TRECHOS_DA_ROTA) {
+      const nome = `${continentePorCodigo(t.de).nome} → ${continentePorCodigo(t.para).nome}`;
+      expect(t.esperado % t.repeteACada, nome).toBe(0);
+      if (t !== TRECHO_CONSTANTE) expect(t.repeteACada, nome).toBe(t.esperado);
+    }
+    expect(TRECHOS_DA_ROTA.map((t) => t.repeteACada)).toEqual([2, 3, 6, 6, 6, 1]);
+  });
+
+  it('1080 é o mínimo múltiplo comum dos três períodos do sistema', () => {
+    const periodos = Object.values(CICLOS).map((c) => c.periodo);
+    expect(periodos.reduce(mmc)).toBe(DIAS_DA_CORVISSEIA);
+    expect(mmc(CICLOS.medio.periodo, CICLOS.longo.periodo)).toBe(DIAS_DA_CORVISSEIA);
+  });
+
+  it('periodoDeRepeticao acha o menor período que fecha a sequência', () => {
+    expect(periodoDeRepeticao([1, 1, 1, 1, 1, 1])).toBe(1);
+    expect(periodoDeRepeticao([1, 2, 1, 2, 1, 2])).toBe(2);
+    expect(periodoDeRepeticao([1, 2, 3, 1, 2, 3])).toBe(3);
+    expect(periodoDeRepeticao([1, 2, 3, 4, 5, 6])).toBe(6);
+    expect(periodoDeRepeticao([1, 2, 1, 2, 1, 3])).toBe(6);
+  });
+
+  it('só Valoran → Yōso nunca varia', () => {
+    expect(TRECHO_CONSTANTE).toBeDefined();
+    expect(TRECHO_CONSTANTE!.variacao).toBe(1);
+    expect(continentePorCodigo(TRECHO_CONSTANTE!.de).id).toBe('valoran');
+    expect(continentePorCodigo(TRECHO_CONSTANTE!.para).id).toBe('yoso');
+    expect(TRECHOS_DA_ROTA.filter((t) => t.variacao === 1)).toHaveLength(1);
+  });
+
+  it('os extremos da tabela são os que a lore cita', () => {
+    // A velocidade máxima e a variação de quase dez vezes estão escritas na
+    // prosa de "A Corvisseia". Se a tabela mudar, estes números avisam.
+    expect(TRECHO_MAIS_LONGO.mes).toBe(27);
+    expect(TRECHO_MAIS_LONGO.distanciaUA).toBe(2.49);
+    // 2,49 UA em 10,5 dias dão 410,6 km/s. A prancha do usuário imprime 410: ela
+    // arredonda a distância antes de dividir, e nós dividimos antes de arredondar.
+    expect(Math.round(velocidade(TRECHO_MAIS_LONGO.distanciaUA))).toBe(411);
+    expect(TRECHO_MAIS_CURTO.mes).toBe(11);
+    expect(TRECHO_MAIS_CURTO.distanciaUA).toBe(0.25);
+    expect(continentePorCodigo(TRECHO_QUE_MAIS_VARIA.de).id).toBe('ukanten');
+    expect(TRECHO_QUE_MAIS_VARIA.variacao).toBeCloseTo(9.6, 1);
+  });
+
+  it('a classificação do pulo reproduz a tabela inteira', () => {
+    for (const t of CORVISSEIA) expect(puloDaDistancia(t.distanciaUA), `mês ${t.mes}`).toBe(t.pulo);
+    expect(puloDaDistancia(LIMITE_DO_PULO_NORMAL - 0.001)).toBe('sem-pulo');
+    expect(puloDaDistancia(LIMITE_DO_PULO_NORMAL)).toBe('normal');
+    expect(puloDaDistancia(LIMITE_DO_PULO_INTENSO - 0.001)).toBe('normal');
+    expect(puloDaDistancia(LIMITE_DO_PULO_INTENSO)).toBe('intenso');
+  });
+
+  it('os limites do pulo, em km/s, ficam onde o velocímetro vai marcá-los', () => {
+    expect(Math.round(VELOCIDADE_DO_PULO_NORMAL)).toBe(82);
+    expect(Math.round(VELOCIDADE_DO_PULO_INTENSO)).toBe(247);
+  });
+});
+
+describe('o modelo e a tabela', () => {
+  it('divergem em valor, e a lore diz que divergem', () => {
+    // Este teste existe ao contrário do costume: ele afirma uma discordância.
+    // A prosa de "O Sistema de Aion" (seção "Where the Two Sources Disagree")
+    // diz que o modelo erra a tabela em sete décimos de UA, em média. Se um
+    // dia o modelo ou a tabela forem corrigidos e passarem a concordar, a
+    // prosa fica mentindo — e é este teste que falha para avisar.
+    const erros = CORVISSEIA.map((t) =>
+      Math.abs(
+        distanciaEntre(continentePorCodigo(t.de), continentePorCodigo(t.para), diaDaPartida(t.mes)) -
+          t.distanciaUA,
+      ),
+    );
+    const media = erros.reduce((a, b) => a + b, 0) / erros.length;
+    const acimaDeUmaUA = erros.filter((e) => e > 1).length;
+    expect(media, 'erro médio entre modelo e tabela, em UA').toBeGreaterThan(0.6);
+    expect(media, 'erro médio entre modelo e tabela, em UA').toBeLessThan(0.8);
+    expect(acimaDeUmaUA, 'trechos a mais de uma UA da tabela').toBe(11);
   });
 });
