@@ -1003,6 +1003,14 @@
   border-radius: var(--r-sm);
   background: radial-gradient(120% 90% at 50% 0%, rgba(108, 127, 176, 0.08), transparent 60%), #0a0806;
   cursor: grab;
+  /* Com o mapa inteiro à vista não há o que arrastar, e `none` fazia da moldura
+     uma armadilha de rolagem: o dedo que começava nela não rolava a página.
+     `pan-y` deixa a página rolar e entrega a pinça (dois dedos) ao script. */
+  touch-action: pan-y;
+}
+
+/* Ampliado, o arrasto é do mapa. */
+.atlas__moldura[data-arrastavel='sim'] {
   touch-action: none;
 }
 
@@ -1075,7 +1083,8 @@
 }
 
 .atlas__ponto:hover:not(:disabled) .atlas__marca,
-.atlas__ponto:focus-visible .atlas__marca {
+.atlas__ponto:focus-visible .atlas__marca,
+.atlas__ponto[data-escolhido='sim'] .atlas__marca {
   background: var(--cx-ouro-claro);
   transform: scale(1.25);
 }

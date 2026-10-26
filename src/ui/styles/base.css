@@ -164,3 +164,20 @@ ol {
     scroll-behavior: auto !important;
   }
 }
+
+/* Texto que só faz sentido para um tipo de ponteiro: "passe sobre" não existe
+   no dedo, e "toque" não existe no mouse. Os dois ficam no HTML; o CSS mostra
+   o que serve. */
+.so-toque {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .so-mouse {
+    display: none;
+  }
+
+  .so-toque {
+    display: inline;
+  }
+}

@@ -79,7 +79,9 @@ você mesmo roda, para os aparelhos se acharem.
 - Links de verdade: abrem em aba nova (Ctrl/Cmd+clique), e cada verbete tem
   "Copiar link" para mandar no grupo
 - O índice se organiza em gavetas que abrem e fecham, com a do verbete atual já aberta
-- Atlas com o mapa em duas pranchas alternáveis, zoom, arraste e pontos clicáveis
+- Atlas com o mapa em duas pranchas alternáveis, zoom (roda, botões ou pinça), arraste
+  e pontos clicáveis — no toque, o primeiro toque num ponto diz o que ele é e o
+  segundo abre o verbete; com o mapa inteiro à vista, a página continua rolando
 - Almanaque em três telas que dividem um só cursor de tempo: a folha impressa
   de cada mês (nos três anos da Corvisseia), o céu de Aion andando — seis
   continentes nas elipses reais, as doze constelações, Corvus saltando entre

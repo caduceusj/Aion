@@ -43,8 +43,20 @@ export function CodexAtlas({ aoNavegar }: { aoNavegar: (chave: string) => void }
   const [vista, setVista] = useState<Vista>({ escala: 1, x: 0, y: 0 });
   const [medida, setMedida] = useState({ largura: 0, altura: 0 });
   const [focado, setFocado] = useState<string | null>(null);
+  /**
+   * O ponto "escolhido" por um toque. O mouse tem `focado` (o que está sob o
+   * cursor); o dedo não paira, então precisa de uma escolha que fique depois
+   * que ele sai.
+   */
+  const [escolhido, setEscolhido] = useState<string | null>(null);
 
   const molduraRef = useRef<HTMLDivElement | null>(null);
+  /** Os dedos (ou o mouse) que estão na moldura agora, por identificador. */
+  const ponteiros = useRef(new Map<number, { x: number; y: number }>());
+  /** De que tipo foi o último toque na moldura: 'touch', 'mouse' ou 'pen'. */
+  const tipoDoPonteiro = useRef('mouse');
+  /** Distância entre os dois dedos na última medida, enquanto há pinça. */
+  const pinca = useRef<number | null>(null);
   const arrasto = useRef<{ ativo: boolean; px: number; py: number; x: number; y: number }>({
     ativo: false,
     px: 0,
@@ -125,8 +137,31 @@ export function CodexAtlas({ aoNavegar }: { aoNavegar: (chave: string) => void }
     return () => moldura.removeEventListener('wheel', naRoda);
   }, [ampliar]);
 
+  /** Centro e distância dos dois primeiros dedos na moldura. */
+  const medirPinca = (): { meioX: number; meioY: number; distancia: number } | null => {
+    const [a, b] = [...ponteiros.current.values()];
+    if (!a || !b) return null;
+    return {
+      meioX: (a.x + b.x) / 2,
+      meioY: (a.y + b.y) / 2,
+      distancia: Math.hypot(a.x - b.x, a.y - b.y),
+    };
+  };
+
   const aoPressionar = (evento: React.PointerEvent<HTMLDivElement>): void => {
-    if (evento.button !== 0) return;
+    if (evento.pointerType === 'mouse' && evento.button !== 0) return;
+    tipoDoPonteiro.current = evento.pointerType;
+    ponteiros.current.set(evento.pointerId, { x: evento.clientX, y: evento.clientY });
+    // `?.`: nem todo ambiente (nem os de teste) implementa a captura.
+    evento.currentTarget.setPointerCapture?.(evento.pointerId);
+
+    if (ponteiros.current.size === 2) {
+      // O segundo dedo troca o arrasto pela pinça.
+      arrasto.current.ativo = false;
+      pinca.current = medirPinca()?.distancia ?? null;
+      return;
+    }
+
     arrasto.current = {
       ativo: true,
       px: evento.clientX,
@@ -134,10 +169,29 @@ export function CodexAtlas({ aoNavegar }: { aoNavegar: (chave: string) => void }
       x: vista.x,
       y: vista.y,
     };
-    evento.currentTarget.setPointerCapture(evento.pointerId);
   };
 
   const aoMover = (evento: React.PointerEvent<HTMLDivElement>): void => {
+    if (ponteiros.current.has(evento.pointerId)) {
+      ponteiros.current.set(evento.pointerId, { x: evento.clientX, y: evento.clientY });
+    }
+
+    // Dois dedos: a distância entre eles é o zoom, e o ponto entre eles é a
+    // âncora — o pedaço do mapa sob os dedos fica sob os dedos.
+    if (ponteiros.current.size >= 2 && pinca.current !== null) {
+      const agora = medirPinca();
+      const moldura = molduraRef.current;
+      if (!agora || !moldura || pinca.current === 0) return;
+      const caixa = moldura.getBoundingClientRect();
+      ampliar(
+        agora.distancia / pinca.current,
+        agora.meioX - caixa.left - caixa.width / 2,
+        agora.meioY - caixa.top - caixa.height / 2,
+      );
+      pinca.current = agora.distancia;
+      return;
+    }
+
     if (!arrasto.current.ativo) return;
     const passo = arrasto.current;
     setVista(
@@ -149,15 +203,40 @@ export function CodexAtlas({ aoNavegar }: { aoNavegar: (chave: string) => void }
     );
   };
 
-  const aoSoltar = (): void => {
-    arrasto.current.ativo = false;
+  const aoSoltar = (evento: React.PointerEvent<HTMLDivElement>): void => {
+    ponteiros.current.delete(evento.pointerId);
+    pinca.current = null;
+
+    const restante = [...ponteiros.current.values()][0];
+    if (restante) {
+      // Levantou um dos dedos: o que ficou continua arrastando, a partir de
+      // onde está, sem o mapa dar um salto.
+      arrasto.current = { ativo: true, px: restante.x, py: restante.y, x: vista.x, y: vista.y };
+    } else {
+      arrasto.current.ativo = false;
+    }
   };
 
   const irPara = (ponto: PontoDoMapa): void => {
     if (existe(ponto.chave)) aoNavegar(ponto.chave);
   };
 
-  const destaque = PONTOS_DO_MAPA.find((ponto) => ponto.chave === focado) ?? null;
+  /**
+   * Um marcador do mapa tem 13px. Com o mouse, parar sobre ele já mostra o que
+   * é, e clicar abre o verbete. Com o dedo não há "parar sobre": tocar e abrir
+   * numa só ação faz um toque torto levar a outra página. O primeiro toque diz o
+   * que o ponto é (a gazeta); o segundo, ou o link da gazeta, abre. O teclado
+   * (clique sem coordenadas, `detail === 0`) abre direto, como sempre.
+   */
+  const aoClicarNoPonto = (evento: React.MouseEvent, ponto: PontoDoMapa): void => {
+    if (tipoDoPonteiro.current === 'touch' && evento.detail > 0 && escolhido !== ponto.chave) {
+      setEscolhido(ponto.chave);
+      return;
+    }
+    irPara(ponto);
+  };
+
+  const destaque = PONTOS_DO_MAPA.find((ponto) => ponto.chave === (focado ?? escolhido)) ?? null;
   const destaqueVerbete = destaque ? verbete(destaque.chave) : undefined;
 
   const estiloPalco = {
@@ -247,16 +326,20 @@ export function CodexAtlas({ aoNavegar }: { aoNavegar: (chave: string) => void }
                     // borrão no zoom máximo.
                     transform: `translate(-50%, -50%) scale(${1 / vista.escala})`,
                   }}
-                  onClick={() => irPara(ponto)}
+                  onClick={(evento) => aoClicarNoPonto(evento, ponto)}
                   onFocus={() => setFocado(ponto.chave)}
                   onBlur={() => setFocado(null)}
-                  onPointerEnter={() => setFocado(ponto.chave)}
-                  onPointerLeave={() => setFocado(null)}
+                  onPointerEnter={(evento) => evento.pointerType !== 'touch' && setFocado(ponto.chave)}
+                  onPointerLeave={(evento) => evento.pointerType !== 'touch' && setFocado(null)}
+                  data-escolhido={escolhido === ponto.chave ? 'sim' : undefined}
                   disabled={!conhecido}
                   title={alvo?.resumo ?? ponto.rotulo}
                 >
                   <span className="atlas__marca" aria-hidden="true" />
-                  <span className="atlas__rotulo" data-visivel={focado === ponto.chave ? 'sim' : undefined}>
+                  <span
+                    className="atlas__rotulo"
+                    data-visivel={(focado ?? escolhido) === ponto.chave ? 'sim' : undefined}
+                  >
                     {ponto.rotulo}
                   </span>
                 </button>
@@ -294,7 +377,13 @@ export function CodexAtlas({ aoNavegar }: { aoNavegar: (chave: string) => void }
           </div>
         ) : (
           <p className="gazeta__vazio">
-            Passe sobre um ponto do mapa para ler o que o códice guarda sobre ele.
+            <span className="so-mouse">
+              Passe sobre um ponto do mapa para ler o que o códice guarda sobre ele.
+            </span>
+            <span className="so-toque">
+              Toque num ponto do mapa para ler o que o códice guarda sobre ele; toque de novo
+              para abrir o verbete.
+            </span>
           </p>
         )}
 
@@ -307,10 +396,10 @@ export function CodexAtlas({ aoNavegar }: { aoNavegar: (chave: string) => void }
                   <button
                     type="button"
                     className="gazeta__item"
-                    data-ativo={focado === ponto.chave ? 'sim' : undefined}
+                    data-ativo={(focado ?? escolhido) === ponto.chave ? 'sim' : undefined}
                     onClick={() => irPara(ponto)}
-                    onPointerEnter={() => setFocado(ponto.chave)}
-                    onPointerLeave={() => setFocado(null)}
+                    onPointerEnter={(evento) => evento.pointerType !== 'touch' && setFocado(ponto.chave)}
+                    onPointerLeave={(evento) => evento.pointerType !== 'touch' && setFocado(null)}
                     onFocus={() => setFocado(ponto.chave)}
                     onBlur={() => setFocado(null)}
                   >
@@ -326,8 +415,13 @@ export function CodexAtlas({ aoNavegar }: { aoNavegar: (chave: string) => void }
 
       <p className="atlas__nota">
         Duas pranchas do mesmo desenho: <strong>Regiões</strong> acende os nomes das
-        províncias. Arraste para mover, role para aproximar, clique num ponto para abrir o
-        verbete. O mapa é de 1575 e as Anais fecham em 1570 — o que ele nomeia e o livro
+        províncias. Arraste para mover,{' '}
+        <span className="so-mouse">role para aproximar, clique num ponto para abrir o verbete.</span>
+        <span className="so-toque">
+          use dois dedos (ou os botões + e −) para aproximar, toque num ponto para ler sobre
+          ele.
+        </span>{' '}
+        O mapa é de 1575 e as Anais fecham em 1570 — o que ele nomeia e o livro
         cala está marcado como tal em cada verbete.
       </p>
     </div>

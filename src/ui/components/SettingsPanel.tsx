@@ -98,6 +98,14 @@ export function SettingsPanel() {
   const setActiveCharacter = useAionStore((state) => state.setActiveCharacter);
 
   const [novoNome, setNovoNome] = useState('');
+  // A lista de teclas é longa (vinte linhas) e, num celular, é ruído: ali ela
+  // fica recolhida, a um toque. Com mouse e teclado, já vem aberta.
+  const [teclasAbertas, setTeclasAbertas] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+  );
 
   const aplicarSom = (ligado: boolean): void => {
     updateSettings({ sound: ligado });
@@ -297,7 +305,14 @@ export function SettingsPanel() {
             aoMudar={(valor) => updateSettings({ hotkeys: valor })}
           />
 
-          <ListaDeAtalhos grupos={ATALHOS} nivel={4} />
+          <details
+            className="teclas-detalhes"
+            open={teclasAbertas}
+            onToggle={(evento) => setTeclasAbertas(evento.currentTarget.open)}
+          >
+            <summary>Ver todas as teclas</summary>
+            <ListaDeAtalhos grupos={ATALHOS} nivel={4} />
+          </details>
         </section>
 
         <section className="ajustes__secao">

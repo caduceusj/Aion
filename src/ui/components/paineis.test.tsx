@@ -101,6 +101,14 @@ describe('o ajuste das teclas soltas', () => {
     expect(screen.getByRole('switch', { name: /Atalhos de uma tecla/ }).getAttribute('aria-checked')).toBe('false');
   });
 
+  it('a lista de teclas vem recolhida onde não há mouse, a um toque de distância', () => {
+    // O jsdom não tem `matchMedia`: é o caso "sem ponteiro que paire".
+    render(<SettingsPanel />);
+    const detalhes = screen.getByText('Ver todas as teclas').closest('details') as HTMLDetailsElement;
+
+    expect(detalhes.open).toBe(false);
+  });
+
   it('mostra a lista de teclas inteira, agrupada, logo abaixo', () => {
     render(<SettingsPanel />);
     expect(screen.getByRole('heading', { name: 'Na Mesa' })).toBeTruthy();

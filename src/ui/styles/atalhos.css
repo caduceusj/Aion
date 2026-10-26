@@ -41,3 +41,30 @@
   text-align: center;
   white-space: nowrap;
 }
+
+.teclas-detalhes {
+  margin-top: var(--sp-3);
+}
+
+.teclas-detalhes summary {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  color: var(--ink-dim);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+
+.teclas-detalhes summary:hover {
+  color: var(--amber-300);
+}
+
+.teclas-detalhes[open] summary {
+  margin-bottom: var(--sp-3);
+}
+
+@media (pointer: coarse) {
+  .teclas-detalhes summary {
+    min-height: 44px;
+  }
+}
