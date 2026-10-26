@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { PanelId } from '@/state/types';
 import { useAionStore } from '@/state/store';
 import { SKIN_COLORS } from '@/three/textures';
@@ -30,8 +30,10 @@ import {
   IconPaineis,
 } from '@/ui/components/Icons';
 import '@/ui/styles/app.css';
-// Por último: as regras de toque só ganham das originais pela ordem.
+// Por último: as regras de toque só ganham das originais pela ordem — e as de
+// cores forçadas, que redesenham o que o toque redesenhou, ganham das duas.
 import '@/ui/styles/toque.css';
+import '@/ui/styles/cores-forcadas.css';
 
 type Painel = Exclude<PanelId, null>;
 
@@ -65,6 +67,7 @@ export function App() {
   const desbloqueado = useRef(false);
   const trilhoRef = useRef<HTMLElement | null>(null);
   const rodapeRef = useRef<HTMLDivElement | null>(null);
+  const cabecalhoRef = useRef<HTMLElement | null>(null);
   /** O painel que a pessoa viu por último: é o que o botão do celular reabre. */
   const ultimoPainel = useRef<Painel>('historico');
   /** Abertura feita pelo próprio app (trilho de tela larga): não leva o foco. */
@@ -175,25 +178,37 @@ export function App() {
 
   /**
    * A doca da Mesa tem altura que muda: em celular são três fileiras, e a
-   * mensagem de erro soma mais uma. O que precisa ficar acima dela — o
-   * resultado, a dica de mesa vazia, os avisos — lê a altura real daqui, em
-   * vez de chutar um número que só vale numa tela.
+   * mensagem de erro soma mais uma. O cabeçalho também: com o texto ampliado
+   * ele quebra em duas linhas. O que fica entre os dois — o resultado, a dica
+   * de mesa vazia — e o que fica acima da doca — os avisos — lê as alturas
+   * reais daqui, em vez de chutar números que só valem numa tela.
+   *
+   * Antes da pintura (`useLayoutEffect`): num efeito comum o primeiro quadro
+   * sairia com os valores de reserva e a dica pularia de lugar.
    */
-  useEffect(() => {
+  useLayoutEffect(() => {
     const rodape = rodapeRef.current;
-    if (vista !== 'mesa' || !rodape || typeof ResizeObserver === 'undefined') return undefined;
+    const cabecalho = cabecalhoRef.current;
+    if (vista !== 'mesa' || !rodape || !cabecalho || typeof ResizeObserver === 'undefined') {
+      return undefined;
+    }
 
     const raiz = document.documentElement;
+    const altura = (elemento: HTMLElement): string =>
+      `${Math.ceil(elemento.getBoundingClientRect().height)}px`;
     const medir = (): void => {
-      raiz.style.setProperty('--rodape-h', `${Math.ceil(rodape.getBoundingClientRect().height)}px`);
+      raiz.style.setProperty('--rodape-h', altura(rodape));
+      raiz.style.setProperty('--cabecalho-h', altura(cabecalho));
     };
 
     medir();
     const observador = new ResizeObserver(medir);
     observador.observe(rodape);
+    observador.observe(cabecalho);
     return () => {
       observador.disconnect();
       raiz.style.removeProperty('--rodape-h');
+      raiz.style.removeProperty('--cabecalho-h');
     };
   }, [vista]);
 
@@ -235,7 +250,7 @@ export function App() {
 
     return (
       <div className="app" data-trilho={panel !== null ? 'sim' : undefined}>
-        <header className="cabecalho" inert={fundoInerte}>
+        <header className="cabecalho" ref={cabecalhoRef} inert={fundoInerte}>
           <button
             type="button"
             className="marca marca--botao"

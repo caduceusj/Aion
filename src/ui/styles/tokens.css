@@ -103,7 +103,9 @@
   --z-toast: 60;
 
   /* --- Métricas de layout --- */
-  --rail-w: 320px;
+  /* Em rem: o painel lateral guarda texto, e com o texto ampliado 320px deixam
+     de bastar — os botões da ficha passavam da borda. Em 100% são os mesmos 320. */
+  --rail-w: 20rem;
   --dock-h: 76px;
   --safe-b: env(safe-area-inset-bottom, 0px);
 }

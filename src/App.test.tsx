@@ -143,6 +143,67 @@ describe('a mesa vazia e a primeira rolagem', () => {
   });
 });
 
+describe('as alturas reais do cabeçalho e da doca', () => {
+  const raiz = document.documentElement;
+  const altura = (nome: string): string => raiz.style.getPropertyValue(nome);
+  let alturas: { cabecalho: number; rodape: number };
+  let aoMudar: Array<() => void>;
+
+  beforeEach(() => {
+    alturas = { cabecalho: 68, rodape: 300 };
+    aoMudar = [];
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: () => void) {
+          aoMudar.push(callback);
+        }
+        observe(): void {}
+        unobserve(): void {}
+        disconnect(): void {}
+      },
+    );
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      const height = this.classList.contains('cabecalho')
+        ? alturas.cabecalho
+        : this.classList.contains('rodape-mesa')
+          ? alturas.rodape
+          : 0;
+      return { height } as DOMRect;
+    });
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('a Mesa publica as duas — o que fica entre elas lê daqui, em vez de chutar um número', () => {
+    irParaAMesa();
+
+    expect(altura('--cabecalho-h')).toBe('68px');
+    expect(altura('--rodape-h')).toBe('300px');
+  });
+
+  it('o cabeçalho quebrando em duas linhas (texto ampliado) atualiza a altura sozinho', () => {
+    irParaAMesa();
+
+    alturas.cabecalho = 152;
+    act(() => aoMudar.forEach((callback) => callback()));
+
+    expect(altura('--cabecalho-h')).toBe('152px');
+  });
+
+  it('fora da Mesa não sobra altura de uma doca que não existe', () => {
+    irParaAMesa();
+    fireEvent.keyDown(document.body, { key: 'Escape' });
+
+    expect(useAionStore.getState().vista).toBe('menu');
+    expect(altura('--cabecalho-h')).toBe('');
+    expect(altura('--rodape-h')).toBe('');
+  });
+});
+
 describe('a gaveta num celular', () => {
   it('um botão só abre os painéis — no último que se viu, ou no histórico', () => {
     irParaAMesa();

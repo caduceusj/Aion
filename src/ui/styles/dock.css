@@ -323,10 +323,14 @@
 
   .doca__acoes {
     flex: 1 1 100%;
+    /* Com texto grande (200%) os quatro botões deixam de caber numa linha, e o
+       "Rolar" — o principal — ficava cortado na borda, fora do alcance. Quebra
+       de linha em vez de corte: o "Rolar" desce e ocupa a linha inteira. */
+    flex-wrap: wrap;
   }
 
   .doca__rolar {
-    flex: 1;
+    flex: 1 1 8rem;
     justify-content: center;
   }
 

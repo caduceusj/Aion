@@ -1,0 +1,155 @@
+/* Cores forçadas — o Alto Contraste do Windows e seus equivalentes.
+ *
+ * Nesse modo o navegador troca as cores do site pelas do sistema e descarta o
+ * que for só brilho: sombras, degradês, fundos. O que distinguia "ligado" de
+ * "desligado" por um fundo ou um halo fica igual nos dois estados — interruptor
+ * sem marcador, caixas de estresse marcadas que parecem vazias, deslizante sem
+ * trilho. As regras abaixo dizem o estado com as cores de sistema (`Highlight`,
+ * `ButtonText`…), que o modo respeita, e com forma.
+ *
+ * O foco já se vê: o anel global é um `outline`, que o modo mantém. Só o
+ * seletor de personagem, que o troca por borda e brilho, precisa de um.
+ *
+ * Por último na cascata (App.tsx), depois de toque.css: as regras do toque
+ * redesenham as caixas e este arquivo as redesenha de novo. */
+
+@media (forced-colors: active) {
+  /* ---------------------------------------------------------- interruptor */
+
+  .interruptor {
+    border: 2px solid ButtonText;
+    background: Canvas;
+  }
+
+  .interruptor__marcador {
+    background: ButtonText;
+  }
+
+  /* Ligado: trilho cheio, marcador do outro lado. O lado já diz o estado; a
+     cor só reforça. */
+  .interruptor[aria-checked='true'] {
+    border-color: Highlight;
+    background: Highlight;
+  }
+
+  .interruptor[aria-checked='true'] .interruptor__marcador {
+    background: HighlightText;
+  }
+
+  /* ---------------------------------------------------------- deslizante */
+
+  .deslizante::-webkit-slider-runnable-track {
+    background: ButtonText;
+  }
+
+  .deslizante::-moz-range-track {
+    background: ButtonText;
+  }
+
+  .deslizante::-webkit-slider-thumb {
+    border: 2px solid ButtonText;
+    background: Highlight;
+  }
+
+  .deslizante::-moz-range-thumb {
+    border: 2px solid ButtonText;
+    background: Highlight;
+  }
+
+  /* --------------------------------------------- caixas e pontos da ficha */
+
+  .trilha__caixa,
+  .esperanca__ponto {
+    border-color: ButtonText;
+  }
+
+  .trilha__caixa[data-marcada='sim'],
+  .esperanca__ponto[data-cheio='sim'] {
+    border-color: Highlight;
+    background: Highlight;
+  }
+
+  /* No toque a caixa é um botão de 44px com o desenho dentro (toque.css): o
+     fundo cheio vai para o desenho, e o botão fica sem. */
+  @media (pointer: coarse) {
+    .trilha__caixa::before,
+    .esperanca__ponto::before {
+      border-color: ButtonText;
+    }
+
+    .trilha__caixa[data-marcada='sim'],
+    .esperanca__ponto[data-cheio='sim'] {
+      background: transparent;
+    }
+
+    .trilha__caixa[data-marcada='sim']::before,
+    .esperanca__ponto[data-cheio='sim']::before {
+      border-color: Highlight;
+      background: Highlight;
+    }
+  }
+
+  /* -------------------------------------------------------- amostras de cor */
+
+  /* A cor É o conteúdo: sem isto as oito peles viram oito quadrados iguais. */
+  .skin {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+
+  /* A escolhida ganha um anel — de sombra, não de contorno: o contorno é do foco,
+     e uma amostra escolhida e focada ao mesmo tempo tem de mostrar as duas
+     coisas. A sombra sobrevive porque a amostra saiu do ajuste de cores. */
+  .skin[data-ativo='sim'] {
+    border-color: CanvasText;
+    box-shadow:
+      0 0 0 2px Canvas,
+      0 0 0 5px Highlight;
+  }
+
+  .seletor-personagem__cor {
+    forced-color-adjust: none;
+    border: 1px solid CanvasText;
+  }
+
+  /* ------------------------------------------------------------------ foco */
+
+  .seletor-personagem:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* -------------------------------------------------------- estado ativo */
+
+  /* Botões, abas e links "ligados" mostravam-se por um fundo âmbar que o modo
+     apaga: o painel aberto, a vantagem escolhida, a aba atual ficavam iguais
+     aos vizinhos. Fundo e texto de seleção do sistema.
+
+     `!important` de propósito: são uns quarenta controles em quinze folhas,
+     cada um com a sua especificidade (`.almanaque__abas button[…]` ganha de
+     qualquer seletor genérico), e o que se quer aqui é justamente que esta
+     regra valha sobre todas elas — só existe neste modo. */
+  :is(button, a, [role='tab'])[data-ativo='sim'],
+  :is(button, a, [role='tab'])[data-selecionado='sim'],
+  :is(button, a)[aria-pressed='true'],
+  :is(button, a, [role='tab'])[aria-selected='true'],
+  a[aria-current='page'] {
+    /* Sem isto o navegador põe um fundo claro atrás do texto sempre que o
+       controle está sobre uma textura (a do Códice), e o texto de seleção —
+       claro também — some em cima dele. */
+    forced-color-adjust: none;
+    border-color: Highlight !important;
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
+  /* O que está dentro (ícone, rótulo) herda o texto de seleção, em vez de
+     voltar à cor que o autor lhe deu sobre o fundo de seleção. */
+  :is(button, a, [role='tab'])[data-ativo='sim'] *,
+  :is(button, a, [role='tab'])[data-selecionado='sim'] *,
+  :is(button, a)[aria-pressed='true'] *,
+  :is(button, a, [role='tab'])[aria-selected='true'] *,
+  a[aria-current='page'] * {
+    color: inherit !important;
+  }
+}

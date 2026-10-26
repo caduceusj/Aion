@@ -190,6 +190,9 @@
   color: var(--cx-pergaminho);
   font-family: var(--cx-corpo);
   font-size: var(--fs-sm);
+  /* Campo estreito (celular, texto ampliado): a dica termina em reticências em
+     vez de ser cortada no meio da palavra. */
+  text-overflow: ellipsis;
 }
 
 .codice__busca input::placeholder {
@@ -1394,6 +1397,9 @@
 /* A procedência, ao lado da gaveta: de qual documento este verbete saiu. */
 .verbete__fonte {
   margin-left: var(--sp-3);
+  /* Com o texto ampliado a gaveta quebra de linha; o selo vai inteiro para a
+     seguinte em vez de ser cortado ao meio, com a borda partida. */
+  white-space: nowrap;
   padding: 2px var(--sp-3);
   border: 1px solid var(--cx-linha-fraca);
   border-radius: var(--r-pill);

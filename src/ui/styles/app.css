@@ -12,10 +12,15 @@
   left: 0;
   right: 0;
   z-index: var(--z-hud);
+  /* Para a marca perguntar quanto espaço tem (ver `@container` abaixo). */
+  container: cabecalho / inline-size;
   display: flex;
+  /* Com texto ampliado a marca e os controles não cabem lado a lado e se
+     sobrepunham; quebrar a linha é melhor que cobrir um com o outro. */
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--sp-4);
+  gap: var(--sp-2) var(--sp-4);
   padding: var(--sp-3) var(--sp-4);
   padding-top: max(var(--sp-3), env(safe-area-inset-top, 0px));
   background: linear-gradient(to bottom, rgba(6, 8, 15, 0.86), rgba(6, 8, 15, 0));
@@ -53,6 +58,11 @@
   /* Deixa o seletor de personagem encolher em vez de empurrar os botões para
      fora da tela: sem isto, num celular, Mesa e Ajustes nem apareciam. */
   min-width: 0;
+  /* A base é o mínimo que os controles aceitam: o seletor encolhe até aí e,
+     passando disso — texto ampliado —, o cabeçalho quebra a linha e eles
+     descem inteiros, em vez de se espremerem contra a marca. Em rem de
+     propósito: cresce junto com o texto, que é o que os aperta. */
+  flex: 1 1 10rem;
 }
 
 .seletor-personagem {
@@ -376,13 +386,23 @@
 
 .mesa-vazia {
   position: fixed;
-  inset: 0;
-  /* Centrada na parte da mesa que ficou livre, entre o cabeçalho e a doca. */
-  padding: 64px var(--sp-5) calc(var(--rodape-h, var(--dock-h)) + var(--sp-4));
+  /* A caixa é a própria faixa livre da mesa, entre o cabeçalho e a doca — as
+     alturas reais, que o App mede. Assim o que não cabe nela é detectável (ver
+     MesaVazia.tsx) em vez de vazar por cima de um dos dois. */
+  top: calc(var(--cabecalho-h, 64px) + var(--sp-2));
+  right: 0;
+  bottom: calc(var(--rodape-h, var(--dock-h)) + var(--sp-4));
+  left: 0;
+  padding-inline: var(--sp-5);
   z-index: var(--z-hud);
   display: grid;
   place-content: center;
+  /* `safe`: se mesmo assim passar, começa no topo da faixa em vez de vazar
+     pelos dois lados. Navegador que não conhece a palavra fica com a linha de
+     cima. */
+  place-content: safe center;
   justify-items: center;
+  overflow: hidden;
   gap: var(--sp-2);
   text-align: center;
   pointer-events: none;
@@ -440,6 +460,18 @@
   .mesa-vazia__teclado {
     display: inline;
   }
+}
+
+/* O que sai quando a faixa livre não comporta o aviso inteiro (MesaVazia.tsx
+   escolhe o nível): primeiro a dica, depois o título, por fim tudo. */
+.mesa-vazia[data-nivel='1'] .mesa-vazia__dica,
+.mesa-vazia[data-nivel='2'] .mesa-vazia__dica,
+.mesa-vazia[data-nivel='2'] .mesa-vazia__titulo {
+  display: none;
+}
+
+.mesa-vazia[data-nivel='3'] {
+  visibility: hidden;
 }
 
 @media (min-width: 1100px) {
@@ -508,10 +540,22 @@
 }
 
 /* Em 320px o seletor de personagem ficava com 52px e o nome virava "Avent…".
-   O glifo da marca basta (o botão se chama "Voltar ao menu" para quem lê). */
-@media (max-width: 359px) {
+   O glifo da marca basta (o botão se chama "Voltar ao menu" para quem lê).
+   A medida é o espaço do cabeçalho em rem, não em pixels: com o texto maior os
+   controles crescem e o mesmo aperto chega numa tela que, em pixels, sobrava.
+   (20,4rem de 16px são os 326px de um celular de 358px.) */
+@container cabecalho (max-width: 20.4rem) {
   .marca__nome {
     display: none;
+  }
+}
+
+/* Sem suporte a consultas de contêiner, fica a medida em pixels. */
+@supports not (container-type: inline-size) {
+  @media (max-width: 359px) {
+    .marca__nome {
+      display: none;
+    }
   }
 }
 
@@ -524,10 +568,6 @@
   .cabecalho {
     padding-top: max(var(--sp-1), env(safe-area-inset-top, 0px));
     padding-bottom: var(--sp-1);
-  }
-
-  .mesa-vazia {
-    padding-top: 52px;
   }
 
   .mesa-vazia__texto,

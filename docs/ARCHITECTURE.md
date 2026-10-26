@@ -332,9 +332,31 @@ abre o Códice no verbete certo. Para leitores de tela, são "links", não
 "botões". Cada verbete tem ainda um "Copiar link" que confirma num aviso, e os
 homônimos ("Firen", a lâmina e o reino) dizem a gaveta a que pertencem.
 
-**A doca tem altura que muda.** O App mede a doca da Mesa (`--rodape-h`) e o que
-precisa ficar acima dela — o resultado, a dica de mesa vazia, os avisos — se
-posiciona por essa medida, não por um número que só valia numa tela.
+**A doca e o cabeçalho têm altura que muda.** O App mede os dois (`--rodape-h`,
+`--cabecalho-h`, antes da pintura, num `ResizeObserver`): em celular a doca são
+três fileiras, e com o texto ampliado o cabeçalho quebra em duas. O que fica
+entre eles — o resultado, a dica de mesa vazia — e o que fica acima da doca — os
+avisos — se posiciona por essas medidas, não por números que só valiam numa tela.
+
+**O aviso cabe na faixa que sobrou** (`src/ui/hooks/useNivelQueCabe.ts`). A faixa
+entre o cabeçalho e a doca encolhe com texto ampliado, tela deitada e celular
+pequeno; um texto escrito para o caso comum passa por cima de um dos dois. O hook
+mede e escreve em `data-nivel` o nível mais completo que cabe, e o CSS decide o
+que cada nível esconde: a dica de mesa vazia perde primeiro o gesto, depois o
+título; o painel do resultado, os dados e o título — o total nunca sai. Para que
+a medida valha, a faixa é uma caixa posicionada pelas bordas, não um recuo.
+
+**Texto ampliado, não só zoom.** Tudo que guarda texto dimensiona em `rem`
+(inclusive o painel lateral, `--rail-w`), e o que não cabe quebra de linha em vez
+de sobrepor: o cabeçalho (a marca perde o nome por uma consulta de contêiner em
+`rem`), a doca, o selo de procedência dos verbetes. Conferido até 200%.
+
+**Cores forçadas** (`src/ui/styles/cores-forcadas.css`, o Alto Contraste do
+Windows). O modo descarta fundos, degradês e sombras; o que distinguia "ligado" de
+"desligado" só por eles ficava igual — interruptor sem marcador, caixas de
+estresse marcadas que pareciam vazias, deslizante sem trilho. A folha diz o
+estado com cores de sistema (`Highlight`, `ButtonText`) e com forma. O foco já
+aparece: o anel global é um `outline`, que o modo mantém.
 
 **Contraste**: os três degraus de tinta (`--ink`, `--ink-dim`, `--ink-faint`) e
 os tons de texto do Códice passam de 4,5:1 sobre as superfícies onde são usados.

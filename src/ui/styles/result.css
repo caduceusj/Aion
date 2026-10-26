@@ -2,11 +2,23 @@
   position: fixed;
   inset: 0;
   z-index: var(--z-hud);
+  pointer-events: none;
+}
+
+/* A parte livre da mesa — entre o cabeçalho e a doca, cujas alturas reais o
+   App mede; um número fixo só acertava numa tela. É uma caixa e não um recuo
+   para que o painel possa ser medido contra ela (ResultOverlay.tsx). */
+.resultado__faixa {
+  position: absolute;
+  top: calc(var(--cabecalho-h, 56px) + var(--sp-1));
+  right: var(--sp-4);
+  bottom: calc(var(--rodape-h, var(--dock-h)) + var(--sp-2));
+  left: var(--sp-4);
   display: grid;
   place-items: center;
-  /* Centrado na parte livre da mesa — entre o cabeçalho e a doca, cuja
-     altura real o App mede. Um número fixo só acertava numa tela. */
-  padding: 56px var(--sp-4) calc(var(--rodape-h, var(--dock-h)) + var(--sp-2));
+  /* Se nem o nível mais enxuto couber, começa pelo topo da faixa em vez de
+     vazar pelos dois lados. */
+  place-items: safe center;
   pointer-events: none;
 }
 
@@ -80,6 +92,22 @@
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(4, 6, 11, 0.62), rgba(4, 6, 11, 0));
   pointer-events: none;
+}
+
+/* O que sai quando o painel não cabe na faixa (ResultOverlay.tsx escolhe o
+   nível): primeiro os dados e quem rolou, depois o título — e o respiro de
+   cima e de baixo encolhe, porque a faixa é justamente o que falta. */
+.resultado__painel[data-nivel='1'],
+.resultado__painel[data-nivel='2'] {
+  padding-block: var(--sp-2);
+}
+
+.resultado__painel[data-nivel='1'] .resultado__dados,
+.resultado__painel[data-nivel='1'] .resultado__personagem,
+.resultado__painel[data-nivel='2'] .resultado__dados,
+.resultado__painel[data-nivel='2'] .resultado__personagem,
+.resultado__painel[data-nivel='2'] .resultado__titulo {
+  display: none;
 }
 
 .resultado__fechar {

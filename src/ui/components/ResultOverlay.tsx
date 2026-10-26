@@ -1,11 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAionStore } from '@/state/store';
+import { useNivelQueCabe } from '@/ui/hooks/useNivelQueCabe';
 import { CriticalFx } from './CriticalFx';
 import { IconFechar, IconOlho } from './Icons';
 import '@/ui/styles/result.css';
 
 const AUTO_HIDE_MS = 7000;
 const COUNT_MS = 450;
+
+/**
+ * Quanto do painel cabe na faixa livre: 0 tudo · 1 sem os dados e quem rolou ·
+ * 2 também sem o título. O total e o selo de crítico ficam sempre — é isso que
+ * a pessoa veio ler, e não há nível sem eles.
+ */
+const NIVEL_MAIS_ENXUTO = 2;
+
+const painelCabe = (faixa: HTMLElement, painel: HTMLElement): boolean =>
+  painel.offsetHeight <= faixa.clientHeight;
 
 /** Contagem animada até o total. Curta o bastante para não atrasar a mesa. */
 function useContagem(target: number, active: boolean, animate: boolean): number {
@@ -49,6 +60,8 @@ export function ResultOverlay() {
   const [dismissed, setDismissed] = useState(false);
   /** Ponteiro ou foco em cima do resultado: quem está lendo não é interrompido. */
   const [pausado, setPausado] = useState(false);
+  const faixa = useRef<HTMLDivElement>(null);
+  const painel = useRef<HTMLDivElement>(null);
 
   const entry = history.find((item) => item.id === lastEntryId) ?? null;
   const revealed = phase === 'revelado' && result !== null && !dismissed;
@@ -57,6 +70,10 @@ export function ResultOverlay() {
   const critical = result?.critical ?? null;
   const total = result?.total ?? 0;
   const counted = useContagem(total, revealed && !hidden, !reducedMotion);
+
+  // O painel é outro conteúdo quando o mestre revela a rolagem oculta, sem que
+  // ele deixe de existir: a medição recomeça nos dois casos.
+  useNivelQueCabe(faixa, painel, NIVEL_MAIS_ENXUTO, painelCabe, `${revealed}-${hidden}`);
 
   useEffect(() => {
     setDismissed(false);
@@ -118,79 +135,82 @@ export function ResultOverlay() {
       ) : null}
 
       {revealed ? (
-        <div
-          className="resultado__painel"
-          onClick={() => setDismissed(true)}
-          onPointerEnter={() => setPausado(true)}
-          onPointerLeave={() => setPausado(false)}
-          onFocus={() => setPausado(true)}
-          onBlur={() => setPausado(false)}
-          data-critico={critical ?? undefined}
-        >
-          <button
-            type="button"
-            className="resultado__fechar"
-            onClick={(event) => {
-              event.stopPropagation();
-              setDismissed(true);
-            }}
-            aria-label="Dispensar o resultado"
+        <div className="resultado__faixa" ref={faixa}>
+          <div
+            className="resultado__painel"
+            ref={painel}
+            onClick={() => setDismissed(true)}
+            onPointerEnter={() => setPausado(true)}
+            onPointerLeave={() => setPausado(false)}
+            onFocus={() => setPausado(true)}
+            onBlur={() => setPausado(false)}
+            data-critico={critical ?? undefined}
           >
-            <IconFechar size={18} />
-          </button>
+            <button
+              type="button"
+              className="resultado__fechar"
+              onClick={(event) => {
+                event.stopPropagation();
+                setDismissed(true);
+              }}
+              aria-label="Dispensar o resultado"
+            >
+              <IconFechar size={18} />
+            </button>
 
-          {critical === 'max' ? <span className="resultado__selo">Crítico</span> : null}
-          {critical === 'min' ? <span className="resultado__selo">Falha crítica</span> : null}
+            {critical === 'max' ? <span className="resultado__selo">Crítico</span> : null}
+            {critical === 'min' ? <span className="resultado__selo">Falha crítica</span> : null}
 
-          <span className="resultado__titulo">{titulo}</span>
+            <span className="resultado__titulo">{titulo}</span>
 
-          {hidden ? (
-            <span className="resultado__oculto">
-              <IconOlho size={22} />
-              <span>Rolagem do Mestre</span>
-              <button
-                type="button"
-                className="resultado__revelar"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  if (entry) revealEntry(entry.id);
-                }}
-              >
-                Revelar
-              </button>
-            </span>
-          ) : (
-            <>
-              <span className="resultado__total mono">{counted}</span>
-              {result.isSuccessPool ? (
-                <span className="resultado__unidade">
-                  {Math.abs(total) === 1 ? 'sucesso' : 'sucessos'}
-                </span>
-              ) : null}
-
-              <span className="resultado__dados">
-                {result.dice.slice(0, 24).map((die) => (
-                  <span
-                    key={die.id}
-                    className="resultado__pastilha mono"
-                    data-descartado={die.dropped ? 'sim' : undefined}
-                    data-critico={die.critical ?? undefined}
-                  >
-                    {die.value}
-                  </span>
-                ))}
-                {result.dice.length > 24 ? (
-                  <span className="resultado__pastilha resultado__pastilha--mais">
-                    +{result.dice.length - 24}
+            {hidden ? (
+              <span className="resultado__oculto">
+                <IconOlho size={22} />
+                <span>Rolagem do Mestre</span>
+                <button
+                  type="button"
+                  className="resultado__revelar"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (entry) revealEntry(entry.id);
+                  }}
+                >
+                  Revelar
+                </button>
+              </span>
+            ) : (
+              <>
+                <span className="resultado__total mono">{counted}</span>
+                {result.isSuccessPool ? (
+                  <span className="resultado__unidade">
+                    {Math.abs(total) === 1 ? 'sucesso' : 'sucessos'}
                   </span>
                 ) : null}
-              </span>
 
-              {character ? (
-                <span className="resultado__personagem">{character.name}</span>
-              ) : null}
-            </>
-          )}
+                <span className="resultado__dados">
+                  {result.dice.slice(0, 24).map((die) => (
+                    <span
+                      key={die.id}
+                      className="resultado__pastilha mono"
+                      data-descartado={die.dropped ? 'sim' : undefined}
+                      data-critico={die.critical ?? undefined}
+                    >
+                      {die.value}
+                    </span>
+                  ))}
+                  {result.dice.length > 24 ? (
+                    <span className="resultado__pastilha resultado__pastilha--mais">
+                      +{result.dice.length - 24}
+                    </span>
+                  ) : null}
+                </span>
+
+                {character ? (
+                  <span className="resultado__personagem">{character.name}</span>
+                ) : null}
+              </>
+            )}
+          </div>
         </div>
       ) : null}
     </div>

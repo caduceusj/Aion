@@ -37,6 +37,8 @@ export function CodexVerbete({
         ) : null}
         <p className="verbete__gaveta">
           {categoria?.singular ?? ''}
+          {/* Onde a linha pode quebrar: o selo, que não se parte, desce inteiro. */}
+          <wbr />
           <span className="verbete__fonte" data-camada={fonte.camada} title={fonte.nota}>
             {fonte.rotulo}
           </span>
