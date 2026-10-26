@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { DiceSkin } from '@/state/types';
 import { useAionStore } from '@/state/store';
-import { SKIN_COLORS, SKIN_ORDER } from '@/three/textures';
+import { SKIN_COLORS, SKIN_ORDER } from '@/three/skins';
 import { audio } from '@/audio/sfx';
 import { ATALHOS } from '@/ui/atalhos';
 import { limparHistorico, removerPersonagem } from '@/ui/remocoes';

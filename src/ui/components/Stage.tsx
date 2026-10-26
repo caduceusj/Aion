@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import type { DiceStage } from '@/state/types';
-import { createDiceStage } from '@/three/stage';
+import { createInertStage } from '@/three/inerte';
 import { audio } from '@/audio/sfx';
 import { useAionStore } from '@/state/store';
 import { avisar } from '@/ui/avisos';
+import { carregarPalco } from '@/ui/carregamento';
 import '@/ui/styles/stage.css';
 
 /**
@@ -21,6 +22,11 @@ export function Stage() {
   const handledRef = useRef<string | null>(null);
   /** O aparelho não abriu WebGL: a mesa vira feltro pintado, e a pessoa é avisada. */
   const [semWebgl, setSemWebgl] = useState(false);
+  /**
+   * O palco existe (ou é o inerte). O pacote do 3D vem sob demanda, então há um
+   * intervalo em que a mesa está de pé e o palco não: quem rolou nele espera.
+   */
+  const [pronto, setPronto] = useState(false);
 
   // Mesma regra que o store usa para decidir se enfileira uma requisição.
   const physics3d = useAionStore(
@@ -62,32 +68,65 @@ export function Stage() {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
 
-    const stage = createDiceStage(canvas, {
-      onImpact(intensity, shape) {
-        if (soundRef.current) audio.impact(intensity, shape);
-      },
-    });
+    let cancelado = false;
+    let stage: DiceStage | null = null;
+    let semPacote = false;
 
-    stageRef.current = stage;
-    stage.resize();
+    // O three e a física não vêm no pacote do menu (ver carregamento.ts). Se
+    // não chegarem — sem rede, ou cache velho de um deploy antigo —, a mesa cai
+    // no palco inerte, como num aparelho sem WebGL: as rolagens valem do mesmo
+    // jeito, só não há dado a ver.
+    void carregarPalco()
+      .then(({ createDiceStage }): DiceStage | null => {
+        // A pessoa já saiu da mesa (ou desligou o 3D) enquanto o pacote vinha:
+        // nem se cria o palco, para não haver dois sobre o mesmo canvas.
+        if (cancelado) return null;
+        return createDiceStage(canvas, {
+          onImpact(intensity, shape) {
+            if (soundRef.current) audio.impact(intensity, shape);
+          },
+        });
+      })
+      .catch((erro: unknown): DiceStage => {
+        semPacote = true;
+        console.warn('Aion: o palco 3D não carregou.', erro);
+        return createInertStage();
+      })
+      .then((criado) => {
+        if (!criado) return;
+        if (cancelado) {
+          criado.dispose();
+          return;
+        }
 
-    if (stage.inerte) {
-      // Sem isto, o canvas ficava vazio e preto, e quem jogava achava que o
-      // app tinha quebrado. As rolagens seguem valendo — só não há dado a ver.
-      setSemWebgl(true);
-      avisar(
-        'Este aparelho não abriu os dados 3D, então a mesa ficou simples. As rolagens valem do mesmo jeito.',
-      );
-    }
+        stage = criado;
+        stageRef.current = criado;
+        criado.resize();
+
+        if (criado.inerte) {
+          // Sem isto, o canvas ficava vazio e preto, e quem jogava achava que o
+          // app tinha quebrado. As rolagens seguem valendo — só não há dado a ver.
+          setSemWebgl(true);
+          avisar(
+            semPacote
+              ? 'Os dados 3D não carregaram, então a mesa ficou simples. Recarregar a página pode resolver; as rolagens valem do mesmo jeito.'
+              : 'Este aparelho não abriu os dados 3D, então a mesa ficou simples. As rolagens valem do mesmo jeito.',
+          );
+        }
+
+        setPronto(true);
+      });
 
     const container = containerRef.current;
-    const observer = new ResizeObserver(() => stage.resize());
+    const observer = new ResizeObserver(() => stage?.resize());
     if (container) observer.observe(container);
 
     return () => {
+      cancelado = true;
       observer.disconnect();
-      stage.dispose();
+      stage?.dispose();
       stageRef.current = null;
+      setPronto(false);
     };
   }, [physics3d]);
 
@@ -114,7 +153,9 @@ export function Stage() {
       if (descartados.length > 0) stage.esmaecer(descartados);
       anunciar();
     });
-  }, [pendingRequest]);
+    // `pronto`: uma rolagem feita enquanto o pacote do 3D ainda vinha espera por
+    // ele aqui, e sai quando o palco aparece.
+  }, [pendingRequest, pronto]);
 
   // ------------------------------------------ rolagem de outro aparelho
   useEffect(() => {
@@ -132,12 +173,26 @@ export function Stage() {
       store.onStageSettled();
       anunciar();
     });
-  }, [pendingExibicao]);
+  }, [pendingExibicao, pronto]);
 
   return (
     <div className="palco" ref={containerRef}>
       {physics3d && !semWebgl ? (
-        <canvas className="palco__canvas" ref={canvasRef} aria-hidden="true" />
+        <>
+          {/* O feltro pintado cobre o intervalo até o 3D chegar: sem ele a mesa
+              abriria num preto que muda de repente. Quando o palco aparece, os
+              dois se cruzam — o feltro some enquanto o canvas surge. */}
+          <div
+            className={`palco__estatico palco__estatico--espera${pronto ? ' palco__estatico--saindo' : ''}`}
+            aria-hidden="true"
+          />
+          <canvas
+            className="palco__canvas"
+            ref={canvasRef}
+            data-pronto={pronto ? 'sim' : undefined}
+            aria-hidden="true"
+          />
+        </>
       ) : (
         <div className="palco__estatico" aria-hidden="true" />
       )}

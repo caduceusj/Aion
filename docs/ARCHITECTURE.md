@@ -351,6 +351,25 @@ a medida valha, a faixa é uma caixa posicionada pelas bordas, não um recuo.
 de sobrepor: o cabeçalho (a marca perde o nome por uma consulta de contêiner em
 `rem`), a doca, o selo de procedência dos verbetes. Conferido até 200%.
 
+**O menu abre leve** (`src/ui/carregamento.ts`). O pacote principal tem só o que
+o menu e a Mesa pedem (105 KB gzip; era 232 KB). O palco 3D (three + física,
+~155 KB) e o Códice (acervo, atlas, almanaque: ~135 KB, mais as folhas de estilo
+dele) vêm em pacotes à parte, pedidos quando a tela abre — ou antes, no ócio do
+navegador (primeiro o palco, depois o Códice), salvo se o aparelho pediu para
+poupar dados ou a rede é 2G. Numa 4G lenta simulada o menu passou de 3,2 s para
+1,2 s. Para a interface não importar o que quer deixar de fora: as peles dos
+dados moram em `three/skins.ts`, o palco inerte em `three/inerte.ts` e a
+contagem de verbetes do menu em `codex/contagem.ts` (com um teste que falha
+quando o acervo muda e o número fica para trás). Se um pacote não chega, a
+Mesa cai no palco inerte e avisa (as rolagens valem do mesmo jeito) e o Códice
+mostra a tela de erro com "Recarregar" — o caso de quem tem a página aberta
+desde antes de um deploy. O Códice sabe se esperar: `VistaDoCodice` mostra
+"Abrindo o Códice…" (com "Voltar"), mas só depois de 220 ms — o pacote
+pré-carregado chega antes, e uma tela que pisca e some é pior que nenhuma — e
+decide uma vez, ao entrar, para não remontar no meio da leitura. As folhas do
+Códice chegam depois de `toque.css`; por isso as regras de toque delas moram no
+fim das próprias folhas, não lá.
+
 **Cores forçadas** (`src/ui/styles/cores-forcadas.css`, o Alto Contraste do
 Windows). O modo descarta fundos, degradês e sombras; o que distinguia "ligado" de
 "desligado" só por eles ficava igual — interruptor sem marcador, caixas de

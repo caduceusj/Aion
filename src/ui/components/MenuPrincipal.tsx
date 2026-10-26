@@ -1,4 +1,4 @@
-import { VERBETES } from '@/codex/corpus';
+import { TOTAL_DE_VERBETES } from '@/codex/contagem';
 import { useAionStore } from '@/state/store';
 import { IconDado, IconLivro } from '@/ui/components/Icons';
 import '@/ui/styles/menu.css';
@@ -82,7 +82,7 @@ export function MenuPrincipal() {
             atlas de 1575 e o almanaque do céu — tudo cruzado por links.
           </span>
           <span className="porta__rodape" id="porta-codice-rodape">
-            {VERBETES.length} verbetes · atlas em duas pranchas · calendário de Aion
+            {TOTAL_DE_VERBETES} verbetes · atlas em duas pranchas · calendário de Aion
           </span>
           <span className="porta__eco">
             <em>“Recovered from the Imperial Archives”</em>

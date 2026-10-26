@@ -18,6 +18,16 @@
   width: 100%;
   height: 100%;
   display: block;
+  /* Acima do feltro de espera, que é posicionado e portanto pintaria por cima. */
+  position: relative;
+  /* Invisível até o palco existir, e então surge: o feltro pintado e a mesa 3D
+     não têm o mesmo tom, e trocar um pelo outro de repente salta aos olhos. */
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+.palco__canvas[data-pronto='sim'] {
+  opacity: 1;
 }
 
 /** Sem física 3D, a mesa continua sendo uma mesa — só que pintada. */
@@ -27,6 +37,18 @@
   background:
     radial-gradient(ellipse 70% 55% at 50% 42%, var(--felt-light) 0%, var(--felt) 42%, var(--felt-deep) 100%),
     var(--sf-void);
+}
+
+/* O feltro que cobre o intervalo até o pacote do 3D chegar. Atrás do canvas,
+   que sai da frente dele quando começa a desenhar. */
+.palco__estatico--espera {
+  position: absolute;
+  inset: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+.palco__estatico--saindo {
+  opacity: 0;
 }
 
 /** Vinheta: fecha as bordas e empurra o olhar para o centro da mesa. */

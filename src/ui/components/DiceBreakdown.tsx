@@ -24,7 +24,7 @@ export function DiceBreakdown({ result }: { result: RollResult }) {
   };
 
   return (
-    <div className="detalhe">
+    <div className="detalhe-da-rolagem">
       {result.groups.map((group) => {
         const dice = result.dice.filter((die) => die.groupIndex === group.index);
         return (

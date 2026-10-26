@@ -1,9 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { PanelId } from '@/state/types';
 import { useAionStore } from '@/state/store';
-import { SKIN_COLORS } from '@/three/textures';
+import { SKIN_COLORS } from '@/three/skins';
 import { audio } from '@/audio/sfx';
 import { useAtalhosGlobais } from '@/ui/hooks/useAtalhosGlobais';
+import { precarregarNoOcio } from '@/ui/carregamento';
 import { useMediaQuery } from '@/ui/hooks/useMediaQuery';
 import { Stage } from '@/ui/components/Stage';
 import { Dock } from '@/ui/components/Dock';
@@ -16,7 +17,7 @@ import { MesaPanel } from '@/ui/components/MesaPanel';
 import { MesaVazia } from '@/ui/components/MesaVazia';
 import { Avisos } from '@/ui/components/Avisos';
 import { AtalhosDeTeclado } from '@/ui/components/AtalhosDeTeclado';
-import { Codex } from '@/ui/components/Codex';
+import { VistaDoCodice } from '@/ui/components/VistaDoCodice';
 import { MenuPrincipal } from '@/ui/components/MenuPrincipal';
 import {
   IconAjustes,
@@ -81,6 +82,11 @@ export function App() {
   // aberta. Em tela larga o trilho é só uma coluna ao lado, e a mesa segue viva.
   const gavetaSobreposta = useMediaQuery(`(max-width: ${LARGURA_TRILHO_FIXO - 1}px)`);
   const fundoInerte = panel !== null && gavetaSobreposta;
+
+  // O palco 3D e o Códice vêm em pacotes à parte, para o menu abrir leve. Com o
+  // navegador ocioso e a pessoa ainda lendo a primeira tela, o App os pede: no
+  // clique, o mais comum é já estarem aqui.
+  useEffect(() => precarregarNoOcio(), []);
 
   // O navegador só deixa criar som dentro de um gesto do usuário.
   useEffect(() => {
@@ -246,7 +252,7 @@ export function App() {
 
   const conteudo = ((): React.ReactNode => {
     if (vista === 'menu') return <MenuPrincipal />;
-    if (vista === 'codice') return <Codex />;
+    if (vista === 'codice') return <VistaDoCodice />;
 
     return (
       <div className="app" data-trilho={panel !== null ? 'sim' : undefined}>

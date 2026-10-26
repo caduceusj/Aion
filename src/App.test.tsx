@@ -10,7 +10,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { App } from './App';
 import { useAionStore } from '@/state/store';
 import { DEFAULT_SETTINGS } from '@/state/seed';
@@ -120,14 +120,15 @@ describe('cada tela diz onde está', () => {
     expect(document.activeElement).toBe(principal);
   });
 
-  it('o Códice tem o dele, e voltar ao menu restaura o do site', () => {
+  it('o Códice tem o dele, e voltar ao menu restaura o do site', async () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /O Códice/ }));
-    expect(document.title).toBe('O Códice · Aion');
+    // O Códice vem em pacote próprio: o título chega com ele.
+    await waitFor(() => expect(document.title).toBe('O Códice · Aion'), { timeout: 10_000 });
 
     fireEvent.click(screen.getByRole('button', { name: 'Menu principal' }));
     expect(document.title).toBe('Aion — Mesa de Dados');
-  });
+  }, 15_000);
 });
 
 describe('a mesa vazia e a primeira rolagem', () => {

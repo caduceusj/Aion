@@ -24,6 +24,7 @@ import type {
   StageEvents,
 } from '@/state/types';
 import type { DieShape } from './types';
+import { createInertStage } from './inerte';
 import { createShapeLibrary } from './shapes';
 import { SKIN_COLORS, createFaceTexture, needsUnderline } from './textures';
 
@@ -52,21 +53,6 @@ function faceLabel(kind: PolyhedronKind, value: number): string {
   if (kind === 'dF') return value > 0 ? '+' : value < 0 ? '−' : '';
   if (kind === 'd100') return value === 0 ? '00' : String(value);
   return String(value);
-}
-
-/** Palco inerte: usado quando não há WebGL, para o app seguir funcionando. */
-function createInertStage(): DiceStage {
-  return {
-    // Sem mesa não há face para ler: devolve vazio e o store cai no gerador.
-    arremessar: () => Promise.resolve([]),
-    exibir: () => Promise.resolve(),
-    esmaecer: () => {},
-    clear: () => {},
-    setSpeed: () => {},
-    dispose: () => {},
-    resize: () => {},
-    inerte: true,
-  };
 }
 
 export function createDiceStage(

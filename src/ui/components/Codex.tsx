@@ -165,6 +165,10 @@ export function Codex() {
     leitura?.scrollTo?.({ top: 0, behavior: 'auto' });
     if (!montado.current) {
       montado.current = true;
+      // O Códice chega num pacote à parte (carregamento.ts) e monta depois da
+      // troca de tela: o foco que o App leva ao conteúdo novo achava só a tela
+      // de espera, que acabou de sair. Quem entra aqui começa na leitura.
+      leitura?.focus({ preventScroll: true });
       return;
     }
     const ativo = document.activeElement;

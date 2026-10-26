@@ -1,0 +1,58 @@
+/* A espera do Códice: o pacote dele vem sob demanda (ver VistaDoCodice.tsx). */
+
+.abrindo {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--sp-3);
+  background: var(--sf-void);
+  color: var(--ink-dim);
+  /* Invisível nos primeiros instantes: com o pacote em cache a espera acaba
+     antes de ser vista, e um quadro que pisca e some é pior que nenhum. */
+  animation: abrindo-aparece var(--dur-mid) var(--ease-out) 220ms both;
+}
+
+.abrindo:focus {
+  outline: none;
+}
+
+.abrindo__glifo {
+  color: var(--amber-300);
+  animation: abrindo-respira 1.6s ease-in-out infinite;
+}
+
+.abrindo__texto {
+  font-size: var(--fs-sm);
+  letter-spacing: var(--tracking-wide);
+}
+
+.abrindo__voltar {
+  min-height: 44px;
+  margin-top: var(--sp-3);
+  padding: 0 var(--sp-5);
+  border: 1px solid var(--sf-hairline);
+  border-radius: var(--r-pill);
+  color: var(--ink-dim);
+  font-size: var(--fs-sm);
+}
+
+@media (hover: hover) {
+  .abrindo__voltar:hover {
+    border-color: var(--sf-hairline-strong);
+    color: var(--amber-300);
+  }
+}
+
+@keyframes abrindo-aparece {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes abrindo-respira {
+  50% {
+    opacity: 0.45;
+  }
+}

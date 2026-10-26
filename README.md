@@ -105,6 +105,8 @@ você mesmo roda, para os aparelhos se acharem.
 - Navegação completa por teclado, com atalhos que se desligam; o foco acompanha
   a troca de tela e a abertura de painéis e diálogos
 - Alvos de toque de 44px no celular, zoom por pinça liberado, texto com contraste AA
+- Abre leve em celular: o menu carrega ~120 KB; o 3D e o Códice vêm sob demanda
+  (e adiantados quando o navegador fica ocioso, salvo em modo de economia de dados)
 - Texto ampliado (até 200%) sem sobreposição: cabeçalho, doca e painéis quebram
   de linha, e o aviso de mesa vazia e o resultado encolhem para caber na faixa
   que sobrou entre os dois

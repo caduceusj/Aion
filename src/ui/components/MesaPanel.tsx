@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useAionStore } from '@/state/store';
-import { SKIN_COLORS } from '@/three/textures';
+import { SKIN_COLORS } from '@/three/skins';
 import { gerarCodigoDeSala, normalizarCodigo } from '@/net/types';
 import { IconCheck, IconCopiar, IconMais } from './Icons';
 import '@/ui/styles/mesa.css';

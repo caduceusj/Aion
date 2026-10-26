@@ -2789,3 +2789,33 @@
     animation: none;
   }
 }
+
+/* ---------------------------------------- alvos de toque: o almanaque */
+
+/* Ver o aviso em codex.css: o almanaque também chega depois de toque.css, e por
+   isso as regras de toque dele ficam aqui, no fim da própria folha. */
+@media (pointer: coarse) {
+  .almanaque__abas button,
+  .almanaque__ponto-chips button,
+  .mes__acoes .mes__botao,
+  .ceu__botao,
+  .ceu__botao--pequeno,
+  .detalhe__botao,
+  .ciclo__moradores button,
+  .almanaque__meses .pastilha-mes {
+    min-height: 44px;
+  }
+
+  .mes__anos button {
+    width: 44px;
+    min-height: 44px;
+  }
+
+  .ceu__verbete {
+    width: 44px;
+  }
+
+  .folha__dia {
+    min-height: 44px;
+  }
+}
