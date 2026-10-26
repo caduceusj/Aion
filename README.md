@@ -74,7 +74,11 @@ você mesmo roda, para os aparelhos se acharem.
 - Wiki de verdade: toda menção na prosa é um link, e cada verbete mostra quem cita ele
 - Cada verbete diz de onde veio: As Anais, a Gazeta, a Biblioteca de Andari, o
   Almanaque, a wiki da mesa ou as notas de sessão
-- Busca por nome, epíteto ou texto — sem acento e sem caixa
+- Busca por nome, epíteto ou texto — sem acento e sem caixa; no celular os
+  resultados abrem na própria gaveta do índice
+- Links de verdade: abrem em aba nova (Ctrl/Cmd+clique), e cada verbete tem
+  "Copiar link" para mandar no grupo
+- O índice se organiza em gavetas que abrem e fecham, com a do verbete atual já aberta
 - Atlas com o mapa em duas pranchas alternáveis, zoom, arraste e pontos clicáveis
 - Almanaque em três telas que dividem um só cursor de tempo: a folha impressa
   de cada mês (nos três anos da Corvisseia), o céu de Aion andando — seis

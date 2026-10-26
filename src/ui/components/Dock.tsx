@@ -48,6 +48,7 @@ export function Dock() {
   const phase = useAionStore((state) => state.phase);
   const history = useAionStore((state) => state.history);
   const sound = useAionStore((state) => state.settings.sound);
+  const reducedMotion = useAionStore((state) => state.settings.reducedMotion);
 
   const setInput = useAionStore((state) => state.setInput);
   const rollFromInput = useAionStore((state) => state.rollFromInput);
@@ -89,8 +90,11 @@ export function Dock() {
     return out;
   }, [history]);
 
-  // Placeholder rotativo: ensina a notação sem ocupar espaço na tela.
+  // Placeholder rotativo: ensina a notação sem ocupar espaço na tela. Texto que
+  // troca sozinho para sempre é movimento que não se pode parar (WCAG 2.2.2),
+  // então quem pediu movimento reduzido fica com o primeiro exemplo, parado.
   useEffect(() => {
+    if (reducedMotion) return undefined;
     const timer = setInterval(() => {
       setPlaceholder((current) => {
         const index = PLACEHOLDERS.indexOf(current);
@@ -98,7 +102,7 @@ export function Dock() {
       });
     }, 4200);
     return () => clearInterval(timer);
-  }, []);
+  }, [reducedMotion]);
 
   useEffect(() => {
     const focus = () => inputRef.current?.focus();

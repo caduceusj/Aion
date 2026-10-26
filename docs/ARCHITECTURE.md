@@ -324,6 +324,14 @@ pequeno, sem nome acessível, sem `<main>`/`<h1>`, ou rolando de lado.
 Códice · Aion`), um `<main>` e um `<h1>`, e o foco vai ao conteúdo novo quando a
 tela troca — senão cairia no `<body>` e um leitor de tela recomeçaria do topo.
 
+**Links do Códice são links** (`src/codex/LinkDeVerbete.tsx`, endereços em
+`src/codex/enderecos.ts`). Eram botões; agora são `<a href="#codice/<chave>">`.
+O clique comum navega dentro do app pela pilha de navegação, sem recarregar; com
+Ctrl/Cmd/Shift ou o botão do meio, o navegador abre uma aba nova — e o endereço
+abre o Códice no verbete certo. Para leitores de tela, são "links", não
+"botões". Cada verbete tem ainda um "Copiar link" que confirma num aviso, e os
+homônimos ("Firen", a lâmina e o reino) dizem a gaveta a que pertencem.
+
 **A doca tem altura que muda.** O App mede a doca da Mesa (`--rodape-h`) e o que
 precisa ficar acima dela — o resultado, a dica de mesa vazia, os avisos — se
 posiciona por essa medida, não por um número que só valia numa tela.

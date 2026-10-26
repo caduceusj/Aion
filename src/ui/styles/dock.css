@@ -53,9 +53,14 @@
     color var(--dur-fast) var(--ease-out);
 }
 
-.dado-rapido:hover {
-  color: var(--amber-300);
-  border-color: var(--sf-hairline-strong);
+/* O `:hover` só vale onde existe ponteiro que paire. No toque ele "gruda": o
+   dado tocado ficava aceso até a pessoa tocar em outro lugar, parecendo um
+   estado selecionado que não existe. */
+@media (hover: hover) {
+  .dado-rapido:hover {
+    color: var(--amber-300);
+    border-color: var(--sf-hairline-strong);
+  }
 }
 
 .dado-rapido:active {
@@ -154,9 +159,11 @@
   right: calc(var(--sp-2) + 34px);
 }
 
-.doca__ajuda:hover,
-.doca__limpar:hover {
-  color: var(--amber-300);
+@media (hover: hover) {
+  .doca__ajuda:hover,
+  .doca__limpar:hover {
+    color: var(--amber-300);
+  }
 }
 
 /* ------------------------------------------------------------------ ações */
@@ -186,9 +193,11 @@
     border-color var(--dur-fast) var(--ease-out);
 }
 
-.doca__botao:hover:not(:disabled) {
-  color: var(--amber-300);
-  border-color: var(--sf-hairline-strong);
+@media (hover: hover) {
+  .doca__botao:hover:not(:disabled) {
+    color: var(--amber-300);
+    border-color: var(--sf-hairline-strong);
+  }
 }
 
 .doca__botao:active:not(:disabled) {
@@ -231,8 +240,10 @@
     filter var(--dur-fast) var(--ease-out);
 }
 
-.doca__rolar:hover:not([aria-disabled='true']) {
-  filter: brightness(1.08);
+@media (hover: hover) {
+  .doca__rolar:hover:not([aria-disabled='true']) {
+    filter: brightness(1.08);
+  }
 }
 
 .doca__rolar:active:not([aria-disabled='true']) {
@@ -367,4 +378,20 @@
   .doca__rolar {
     min-height: 44px;
   }
+}
+
+/* Em tela muito larga a doca esticava oito dados por 1600px — o olho e o mouse
+   viajavam o dobro para nada. O conteúdo ganha uma medida e se centra; o fundo
+   em degradê continua de borda a borda. */
+.doca__dados,
+.doca__linha {
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+}
+
+.rodape-mesa .faixa-atalhos {
+  width: 100%;
+  max-width: calc(1100px + 2 * var(--sp-4));
+  margin-inline: auto;
 }

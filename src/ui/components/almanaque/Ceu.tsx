@@ -24,6 +24,7 @@ import {
   velocidade,
 } from '@/codex/calendario';
 import { numero } from '@/codex/formato';
+import { LinkDeVerbete } from '@/codex/LinkDeVerbete';
 import { Cena } from './cena';
 import { COR_DO_PULO, GLIFO_DO_PULO, dataValoriana } from './comum';
 import { Regua } from './Regua';
@@ -202,15 +203,15 @@ function Continentes({ a }: { a: Almanaque }) {
                   {Math.round(anguloEm(corpo, a.dia))}°
                 </small>
               </button>
-              <button
-                type="button"
+              <LinkDeVerbete
                 className="ceu__verbete"
-                onClick={() => a.aoNavegar(corpo.chave)}
+                chave={corpo.chave}
+                aoNavegar={(chave) => chave !== null && a.aoNavegar(chave)}
                 aria-label={`Abrir o verbete de ${corpo.nome}`}
                 title={`Abrir o verbete de ${corpo.nome}`}
               >
                 ↗
-              </button>
+              </LinkDeVerbete>
             </div>
           );
         })}
@@ -253,9 +254,13 @@ function Orbitas({ a }: { a: Almanaque }) {
       <p className="almanaque__nota">
         A rota de Corvus atravessa as três a cada volta:{' '}
         {ROTA.map((codigo) => continentePorCodigo(codigo).nome).join(' → ')} → …{' '}
-        <button type="button" className="codice-elo" onClick={() => a.aoNavegar('as-constelacoes')}>
+        <LinkDeVerbete
+          className="codice-elo"
+          chave="as-constelacoes"
+          aoNavegar={(chave) => chave !== null && a.aoNavegar(chave)}
+        >
           As doze constelações
-        </button>{' '}
+        </LinkDeVerbete>{' '}
         explicam por que os meses se chamam o que se chamam.
       </p>
     </section>

@@ -66,7 +66,7 @@ for (const vp of [
   if ((await gavetaDosPersonagens.getAttribute('aria-expanded')) !== 'true') await gavetaDosPersonagens.click();
 
   // Um verbete de personagem — o pedido central do usuário.
-  await page.getByRole('button', { name: 'Ayren Herrys IV', exact: true }).first().click();
+  await page.getByRole('link', { name: 'Ayren Herrys IV', exact: true }).first().click();
   await page.waitForSelector('.verbete', { timeout: 8000 });
   await page.waitForTimeout(700);
   await page.screenshot({ path: `screenshots/codice-${vp.nome}-verbete.png` });
@@ -94,7 +94,7 @@ for (const vp of [
 
   // O atlas.
   if (await abrirIndice.isVisible().catch(() => false)) await abrirIndice.click();
-  await page.getByRole('button', { name: /O Atlas/ }).first().click();
+  await page.getByRole('link', { name: /O Atlas/ }).first().click();
   await page.waitForSelector('.atlas', { timeout: 8000 });
   await page.waitForTimeout(1600);
   await page.screenshot({ path: `screenshots/codice-${vp.nome}-atlas.png` });

@@ -248,9 +248,11 @@
   transition: all var(--dur-fast) var(--ease-out);
 }
 
-.faixa-atalhos__item:hover {
-  color: var(--amber-300);
-  border-color: var(--sf-hairline-strong);
+@media (hover: hover) {
+  .faixa-atalhos__item:hover {
+    color: var(--amber-300);
+    border-color: var(--sf-hairline-strong);
+  }
 }
 
 .faixa-atalhos__item:active {

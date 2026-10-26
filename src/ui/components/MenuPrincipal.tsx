@@ -28,16 +28,27 @@ export function MenuPrincipal() {
       </header>
 
       <nav className="menu__portas" aria-label="Escolha um destino">
-        <button type="button" className="porta porta--mesa" onClick={() => irPara('mesa')}>
+        {/* O nome do botão é o nome da porta; a nota e o rodapé vão como
+            descrição. Sem isso, o leitor de tela dizia o cartão inteiro como se
+            fosse o nome — três linhas antes de saber qual botão era. */}
+        <button
+          type="button"
+          className="porta porta--mesa"
+          onClick={() => irPara('mesa')}
+          aria-labelledby="porta-mesa-nome"
+          aria-describedby="porta-mesa-nota porta-mesa-rodape"
+        >
           <span className="porta__glifo" aria-hidden="true">
             <IconDado size={40} />
           </span>
-          <span className="porta__nome">A Mesa</span>
-          <span className="porta__nota">
+          <span className="porta__nome" id="porta-mesa-nome">
+            A Mesa
+          </span>
+          <span className="porta__nota" id="porta-mesa-nota">
             Dados de verdade, com física. Ficha de Daggerheart, atalhos e mesa
             compartilhada entre aparelhos.
           </span>
-          <span className="porta__rodape">
+          <span className="porta__rodape" id="porta-mesa-rodape">
             {historico > 0
               ? `${historico} ${historico === 1 ? 'rolagem guardada' : 'rolagens guardadas'}`
               : 'Nenhuma rolagem ainda'}
@@ -53,16 +64,24 @@ export function MenuPrincipal() {
           ) : null}
         </button>
 
-        <button type="button" className="porta porta--codice" onClick={() => irPara('codice')}>
+        <button
+          type="button"
+          className="porta porta--codice"
+          onClick={() => irPara('codice')}
+          aria-labelledby="porta-codice-nome"
+          aria-describedby="porta-codice-nota porta-codice-rodape"
+        >
           <span className="porta__glifo" aria-hidden="true">
             <IconLivro size={40} />
           </span>
-          <span className="porta__nome">O Códice</span>
-          <span className="porta__nota">
+          <span className="porta__nome" id="porta-codice-nome">
+            O Códice
+          </span>
+          <span className="porta__nota" id="porta-codice-nota">
             As Anais de Valoran e a mesa de hoje: as eras, as casas, o elenco, o
             atlas de 1575 e o almanaque do céu — tudo cruzado por links.
           </span>
-          <span className="porta__rodape">
+          <span className="porta__rodape" id="porta-codice-rodape">
             {VERBETES.length} verbetes · atlas em duas pranchas · calendário de Aion
           </span>
           <span className="porta__eco">

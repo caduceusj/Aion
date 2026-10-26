@@ -99,6 +99,17 @@ describe('cada tela diz onde está', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Aion' })).toBeTruthy();
   });
 
+  it('as portas do menu têm nome curto; o resto do cartão é descrição', () => {
+    render(<App />);
+
+    const mesa = screen.getByRole('button', { name: 'A Mesa' });
+    expect(mesa.getAttribute('aria-describedby')).toBe('porta-mesa-nota porta-mesa-rodape');
+    expect(document.getElementById('porta-mesa-nota')?.textContent).toMatch(/Dados de verdade/);
+
+    const codice = screen.getByRole('button', { name: 'O Códice' });
+    expect(codice.getAttribute('aria-describedby')).toBe('porta-codice-nota porta-codice-rodape');
+  });
+
   it('a Mesa troca o título, ganha o seu <main> e leva o foco até ele', () => {
     irParaAMesa();
 

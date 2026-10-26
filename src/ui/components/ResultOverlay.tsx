@@ -85,7 +85,16 @@ export function ResultOverlay() {
     };
   }, [revealed, hidden, critical, reducedMotion]);
 
-  if (!result || phase === 'ocioso') return <div className="resultado" aria-hidden="true" />;
+  // A região de leitura existe desde o primeiro desenho, vazia, e só o texto
+  // dela muda. Um leitor de tela só anuncia mudanças numa região que já estava
+  // na página: criada junto com o texto, a primeira rolagem passava calada.
+  if (!result || phase === 'ocioso') {
+    return (
+      <div className="resultado">
+        <p className="sr-only" role="status" aria-live="polite" />
+      </div>
+    );
+  }
 
   const character = characters.find((item) => item.id === entry?.characterId) ?? null;
   const titulo = entry?.macroName ?? result.expression;

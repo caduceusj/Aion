@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { PONTOS_DO_MAPA, type PontoDoMapa } from '@/codex/mundo/cartografia';
 import { existe, verbete } from '@/codex/corpus';
+import { LinkDeVerbete } from '@/codex/LinkDeVerbete';
 import { IconMais, IconMenos, IconAlvo } from '@/ui/components/Icons';
 import mapaLimpo from '@/assets/valoran-mapa.webp';
 import mapaComRegioes from '@/assets/valoran-mapa-regioes.webp';
@@ -279,13 +280,13 @@ export function CodexAtlas({ aoNavegar }: { aoNavegar: (chave: string) => void }
             {destaqueVerbete ? (
               <>
                 <p className="gazeta__resumo">{destaqueVerbete.resumo}</p>
-                <button
-                  type="button"
+                <LinkDeVerbete
                   className="gazeta__abrir"
-                  onClick={() => aoNavegar(destaque.chave)}
+                  chave={destaque.chave}
+                  aoNavegar={(chave) => chave !== null && aoNavegar(chave)}
                 >
                   Abrir o verbete <span aria-hidden="true">→</span>
-                </button>
+                </LinkDeVerbete>
               </>
             ) : (
               <p className="gazeta__resumo">Sem verbete no códice.</p>

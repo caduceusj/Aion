@@ -19,6 +19,7 @@ import {
   type Mes as MesDoAno,
 } from '@/codex/calendario';
 import { numero } from '@/codex/formato';
+import { LinkDeVerbete } from '@/codex/LinkDeVerbete';
 import { Cena } from './cena';
 import { COR_DO_PULO, GLIFO_DO_PULO, dataValoriana } from './comum';
 import type { Almanaque } from './tipos';
@@ -175,9 +176,13 @@ function CartaoDoMes({ a, mesC }: { a: Almanaque; mesC: number }) {
       <p className="mes__nota">
         O desenho segue o modelo orbital; a distância é a da tabela da Corvisseia. As duas fontes não
         coincidem em todo trecho —{' '}
-        <button type="button" className="codice-elo" onClick={() => a.aoNavegar('sistema-de-aion')}>
+        <LinkDeVerbete
+          className="codice-elo"
+          chave="sistema-de-aion"
+          aoNavegar={(chave) => chave !== null && a.aoNavegar(chave)}
+        >
           o verbete explica
-        </button>
+        </LinkDeVerbete>
         .
       </p>
     </aside>

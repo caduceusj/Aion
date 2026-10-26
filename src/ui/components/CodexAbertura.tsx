@@ -1,6 +1,7 @@
 import { CATEGORIAS } from '@/codex/tipos';
 import { LINHA_DO_TEMPO, porCategoria } from '@/codex/corpus';
 import { Brasao } from '@/codex/heraldica';
+import { LinkDeVerbete } from '@/codex/LinkDeVerbete';
 import { IconMapa, IconOrbita } from '@/ui/components/Icons';
 
 /**
@@ -13,6 +14,10 @@ import { IconMapa, IconOrbita } from '@/ui/components/Icons';
  * O emblema é o mesmo do documento original do usuário, traço por traço.
  */
 export function CodexAbertura({ aoNavegar }: { aoNavegar: (chave: string) => void }) {
+  const ir = (chave: string | null): void => {
+    if (chave !== null) aoNavegar(chave);
+  };
+
   return (
     <div className="abertura">
       {/* A crônica é em inglês, como no documento original; o resto da tela,
@@ -65,12 +70,12 @@ export function CodexAbertura({ aoNavegar }: { aoNavegar: (chave: string) => voi
         <ol className="linha-do-tempo" lang="en">
           {LINHA_DO_TEMPO.map((era) => (
             <li key={era.chave}>
-              <button type="button" className="era-item" onClick={() => aoNavegar(era.chave)}>
+              <LinkDeVerbete className="era-item" chave={era.chave} aoNavegar={ir}>
                 {era.brasao ? <Brasao id={era.brasao} size={26} className="era-item__glifo" /> : null}
                 <span className="era-item__nome">{era.titulo}</span>
                 <span className="era-item__anos">{era.periodo}</span>
                 <span className="era-item__nota">{era.resumo}</span>
-              </button>
+              </LinkDeVerbete>
             </li>
           ))}
         </ol>
@@ -79,22 +84,22 @@ export function CodexAbertura({ aoNavegar }: { aoNavegar: (chave: string) => voi
       <section className="abertura__instrumentos" aria-label="Os instrumentos">
         <p className="verbete__rubrica">Os Instrumentos</p>
         <div className="instrumentos">
-          <button type="button" className="instrumento" onClick={() => aoNavegar('@atlas')}>
+          <LinkDeVerbete className="instrumento" chave="@atlas" aoNavegar={ir}>
             <IconMapa size={26} />
             <strong>O Atlas</strong>
             <small>
               O mapa de 1575 em duas pranchas — a limpa e a das regiões —, com os domínios
               clicáveis.
             </small>
-          </button>
-          <button type="button" className="instrumento" onClick={() => aoNavegar('@calendario')}>
+          </LinkDeVerbete>
+          <LinkDeVerbete className="instrumento" chave="@calendario" aoNavegar={ir}>
             <IconOrbita size={26} />
             <strong>O Almanaque</strong>
             <small>
               O sistema de Aion andando: três órbitas, doze constelações, a folha do mês e a
               rota de Corvus pelos seis continentes.
             </small>
-          </button>
+          </LinkDeVerbete>
         </div>
       </section>
 
@@ -112,15 +117,15 @@ export function CodexAbertura({ aoNavegar }: { aoNavegar: (chave: string) => voi
                 <p className="gaveta__nota">{categoria.nota}</p>
                 <div className="gaveta__itens">
                   {itens.map((item) => (
-                    <button
-                      type="button"
+                    <LinkDeVerbete
                       className="pastilha-verbete"
                       key={item.chave}
-                      onClick={() => aoNavegar(item.chave)}
+                      chave={item.chave}
+                      aoNavegar={ir}
                       title={item.resumo}
                     >
                       {item.titulo}
-                    </button>
+                    </LinkDeVerbete>
                   ))}
                 </div>
               </div>

@@ -123,8 +123,10 @@
   transition: all var(--dur-fast) var(--ease-out);
 }
 
-.cabecalho__botao:hover {
-  color: var(--ink-bright);
+@media (hover: hover) {
+  .cabecalho__botao:hover {
+    color: var(--ink-bright);
+  }
 }
 
 .cabecalho__botao[data-ativo='sim'] {
@@ -195,8 +197,10 @@
   color: var(--ink-faint);
 }
 
-.trilho__fechar:hover {
-  color: var(--amber-300);
+@media (hover: hover) {
+  .trilho__fechar:hover {
+    color: var(--amber-300);
+  }
 }
 
 .trilho-fundo {
@@ -269,8 +273,10 @@
   transition: all var(--dur-fast) var(--ease-out);
 }
 
-.trilho__aba:hover {
-  color: var(--ink-bright);
+@media (hover: hover) {
+  .trilho__aba:hover {
+    color: var(--ink-bright);
+  }
 }
 
 .trilho__aba[data-ativo='sim'] {
@@ -290,8 +296,10 @@
   transition: opacity var(--dur-fast) var(--ease-out);
 }
 
-.marca--botao:hover {
-  opacity: 0.78;
+@media (hover: hover) {
+  .marca--botao:hover {
+    opacity: 0.78;
+  }
 }
 
 /* Atalho para o Códice, ao lado dos painéis da mesa. */
@@ -312,9 +320,11 @@
   transition: all var(--dur-fast) var(--ease-out);
 }
 
-.cabecalho__codice:hover {
-  color: #f0cd80;
-  border-color: rgba(201, 162, 75, 0.5);
+@media (hover: hover) {
+  .cabecalho__codice:hover {
+    color: #f0cd80;
+    border-color: rgba(201, 162, 75, 0.5);
+  }
 }
 
 @media (max-width: 640px) {
@@ -345,9 +355,11 @@
   transition: all var(--dur-fast) var(--ease-out);
 }
 
-.cabecalho__paineis:hover {
-  color: var(--amber-300);
-  border-color: var(--sf-hairline-strong);
+@media (hover: hover) {
+  .cabecalho__paineis:hover {
+    color: var(--amber-300);
+    border-color: var(--sf-hairline-strong);
+  }
 }
 
 @media (max-width: 640px) {

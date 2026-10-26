@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CATEGORIAS } from '@/codex/tipos';
 import { VERBETES, buscar, porCategoria, tituloAmbiguo, verbete } from '@/codex/corpus';
 import { Brasao } from '@/codex/heraldica';
+import { CHAVE_ATLAS, CHAVE_CALENDARIO, PREFIXO_HASH, enderecoDaPagina } from '@/codex/enderecos';
+import { LinkDeVerbete } from '@/codex/LinkDeVerbete';
 import { useAionStore } from '@/state/store';
 import { useCamada } from '@/ui/camadas';
 import {
@@ -21,18 +23,8 @@ import { CodexAtlas } from '@/ui/components/CodexAtlas';
 import { CodexCalendario } from '@/ui/components/CodexCalendario';
 import '@/ui/styles/codex.css';
 
-/** Endereço de um verbete na barra do navegador: #codice/casa-keaton. */
-const PREFIXO_HASH = '#codice/';
-
-/**
- * Duas vistas que não são verbetes, e por isso têm endereço próprio.
- *
- * O Atlas é o mapa; o Almanaque é o calendário. Nenhum dos dois cabe em
- * parágrafos — são instrumentos, não leitura — mas os dois precisam de link
- * que se possa colar no grupo, como qualquer verbete.
- */
-const ATLAS = '@atlas';
-const CALENDARIO = '@calendario';
+const ATLAS = CHAVE_ATLAS;
+const CALENDARIO = CHAVE_CALENDARIO;
 const VISTAS: string[] = [ATLAS, CALENDARIO];
 
 /** Largura abaixo da qual o índice não cabe ao lado da leitura e vira gaveta. */
@@ -123,7 +115,7 @@ export function Codex() {
   // O hash acompanha o verbete aberto, e não o contrário: quem chega por um
   // link cai no verbete certo, e daí em diante quem manda é a pilha.
   useEffect(() => {
-    const alvo = atual ? PREFIXO_HASH + encodeURIComponent(atual) : '';
+    const alvo = atual ? enderecoDaPagina(atual) : '';
     if (window.location.hash === alvo) return;
     const url = window.location.pathname + window.location.search + alvo;
     window.history.replaceState(null, '', url);
@@ -284,7 +276,7 @@ export function Codex() {
             // Quem abre a gaveta pelo teclado precisa entrar nela.
             if (abrir) {
               requestAnimationFrame(() =>
-                indiceRef.current?.querySelector<HTMLElement>('button')?.focus(),
+                indiceRef.current?.querySelector<HTMLElement>('a[href], button')?.focus(),
               );
             }
           }}
@@ -372,47 +364,47 @@ export function Codex() {
               grandes empurrando-a para fora da primeira tela do celular. */}
           {buscando ? null : (
             <>
-            <button
-              type="button"
+            <LinkDeVerbete
               className="indice__atlas"
+              chave={null}
+              aoNavegar={navegar}
               data-ativo={atual === null ? 'sim' : undefined}
               {...(atual === null ? { 'aria-current': 'page' as const } : {})}
-              onClick={() => navegar(null)}
             >
               <IconLivro size={17} />
               <span>
                 <strong>A Capa</strong>
                 <small>A crônica em cinco eras e o acervo</small>
               </span>
-            </button>
+            </LinkDeVerbete>
 
-            <button
-              type="button"
+            <LinkDeVerbete
               className="indice__atlas"
+              chave={ATLAS}
+              aoNavegar={navegar}
               data-ativo={atual === ATLAS ? 'sim' : undefined}
               {...(atual === ATLAS ? { 'aria-current': 'page' as const } : {})}
-              onClick={() => navegar(ATLAS)}
             >
               <IconMapa size={17} />
               <span>
                 <strong>O Atlas</strong>
                 <small>O mapa de 1575, em duas pranchas</small>
               </span>
-            </button>
+            </LinkDeVerbete>
 
-            <button
-              type="button"
+            <LinkDeVerbete
               className="indice__atlas"
+              chave={CALENDARIO}
+              aoNavegar={navegar}
               data-ativo={atual === CALENDARIO ? 'sim' : undefined}
               {...(atual === CALENDARIO ? { 'aria-current': 'page' as const } : {})}
-              onClick={() => navegar(CALENDARIO)}
             >
               <IconOrbita size={17} />
               <span>
                 <strong>O Almanaque</strong>
                 <small>O céu vivo, os doze meses e a rota de Corvus</small>
               </span>
-            </button>
+            </LinkDeVerbete>
             </>
           )}
 
@@ -424,13 +416,13 @@ export function Codex() {
                   : `${achados.length} ${achados.length === 1 ? 'verbete' : 'verbetes'}`}
               </p>
               {achados.map(({ verbete: achado, origem }) => (
-                <button
-                  type="button"
+                <LinkDeVerbete
                   className="indice__item"
                   key={achado.chave}
+                  chave={achado.chave}
+                  aoNavegar={navegar}
                   data-ativo={achado.chave === atual ? 'sim' : undefined}
                   {...(achado.chave === atual ? { 'aria-current': 'page' as const } : {})}
-                  onClick={() => navegar(achado.chave)}
                 >
                   <span>{achado.titulo}</span>
                   {tituloAmbiguo(achado.titulo) ? (
@@ -440,7 +432,7 @@ export function Codex() {
                   ) : origem === 'alcunha' ? (
                     <small>{achado.epiteto}</small>
                   ) : null}
-                </button>
+                </LinkDeVerbete>
               ))}
               {achados.length === 0 ? (
                 <p className="indice__vazio">
@@ -478,18 +470,18 @@ export function Codex() {
                     {aberto ? (
                       <div id={`indice-gaveta-${categoria.id}`}>
                         {itens.map((item) => (
-                          <button
-                            type="button"
+                          <LinkDeVerbete
                             className="indice__item"
                             key={item.chave}
+                            chave={item.chave}
+                            aoNavegar={navegar}
                             data-ativo={item.chave === atual ? 'sim' : undefined}
                             {...(item.chave === atual ? { 'aria-current': 'page' as const } : {})}
-                            onClick={() => navegar(item.chave)}
                           >
                             {item.brasao ? <Brasao id={item.brasao} size={16} /> : null}
                             <span>{item.titulo}</span>
                             {tituloAmbiguo(item.titulo) ? <small>{categoria.singular}</small> : null}
-                          </button>
+                          </LinkDeVerbete>
                         ))}
                       </div>
                     ) : null}

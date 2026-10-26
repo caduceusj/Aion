@@ -194,6 +194,20 @@ describe('o editor de atalho', () => {
 });
 
 describe('o resultado na mesa', () => {
+  it('a região de leitura já existe antes da primeira rolagem — senão ela passa calada', () => {
+    render(<ResultOverlay />);
+    const regiao = screen.getByRole('status');
+    expect(regiao.textContent).toBe('');
+
+    act(() => {
+      useAionStore.getState().rollExpression('1d6');
+    });
+
+    // É a MESMA região, agora com texto: é isso que o leitor de tela anuncia.
+    expect(screen.getByRole('status')).toBe(regiao);
+    expect(regiao.textContent).toMatch(/1d6: \d/);
+  });
+
   const rolar = (expr = '1d6') => {
     act(() => {
       useAionStore.getState().rollExpression(expr);

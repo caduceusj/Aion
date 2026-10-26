@@ -1,8 +1,9 @@
 import type { VerbeteNoAcervo } from '@/codex/tipos';
 import { CATEGORIAS, FONTES } from '@/codex/tipos';
-import { referenciam, verbete as buscarVerbete } from '@/codex/corpus';
+import { referenciam, tituloAmbiguo, verbete as buscarVerbete } from '@/codex/corpus';
 import { Prosa } from '@/codex/prosa';
 import { Brasao } from '@/codex/heraldica';
+import { LinkDeVerbete } from '@/codex/LinkDeVerbete';
 import { copiarLink } from '@/ui/compartilhar';
 import { IconCopiar } from '@/ui/components/Icons';
 
@@ -20,6 +21,10 @@ export function CodexVerbete({
   entrada: VerbeteNoAcervo;
   aoNavegar: (chave: string) => void;
 }) {
+  // O link só leva a verbetes; a capa (`null`) tem os seus próprios botões.
+  const ir = (chave: string | null): void => {
+    if (chave !== null) aoNavegar(chave);
+  };
   const categoria = CATEGORIAS.find((c) => c.id === entrada.categoria);
   const fonte = FONTES[entrada.fonte];
   const citam = referenciam(entrada.chave);
@@ -36,14 +41,6 @@ export function CodexVerbete({
             {fonte.rotulo}
           </span>
         </p>
-        <button
-          type="button"
-          className="verbete__copiar"
-          onClick={() => void copiarLink(entrada.titulo)}
-        >
-          <IconCopiar size={14} />
-          <span>Copiar link</span>
-        </button>
         {entrada.epiteto ? (
           <p className="verbete__epiteto" lang="en">
             {entrada.epiteto}
@@ -57,6 +54,14 @@ export function CodexVerbete({
             {entrada.periodo}
           </p>
         ) : null}
+        <button
+          type="button"
+          className="verbete__copiar"
+          onClick={() => void copiarLink(entrada.titulo)}
+        >
+          <IconCopiar size={14} />
+          <span>Copiar link</span>
+        </button>
       </header>
 
       {entrada.epigrafe ? (
@@ -91,9 +96,9 @@ export function CodexVerbete({
                   if (!era) return null;
                   return (
                     <li key={chave}>
-                      <button type="button" className="codice-elo" onClick={() => aoNavegar(chave)}>
+                      <LinkDeVerbete className="codice-elo" chave={chave} aoNavegar={ir}>
                         {era.titulo}
-                      </button>
+                      </LinkDeVerbete>
                     </li>
                   );
                 })}
@@ -125,18 +130,13 @@ export function CodexVerbete({
                 const alvo = buscarVerbete(chave);
                 if (!alvo) return null;
                 return (
-                  <button
-                    type="button"
-                    className="cartao-verbete"
-                    key={chave}
-                    onClick={() => aoNavegar(chave)}
-                  >
+                  <LinkDeVerbete className="cartao-verbete" key={chave} chave={chave} aoNavegar={ir}>
                     {alvo.brasao ? <Brasao id={alvo.brasao} size={30} /> : null}
                     <span>
                       <strong>{alvo.titulo}</strong>
                       <small>{alvo.resumo}</small>
                     </span>
-                  </button>
+                  </LinkDeVerbete>
                 );
               })}
             </div>
@@ -148,14 +148,21 @@ export function CodexVerbete({
             <p className="verbete__rubrica">Citado em</p>
             <div className="verbete__pastilhas">
               {citam.map((quem) => (
-                <button
-                  type="button"
+                <LinkDeVerbete
                   className="pastilha-verbete"
                   key={quem.chave}
-                  onClick={() => aoNavegar(quem.chave)}
+                  chave={quem.chave}
+                  aoNavegar={ir}
                 >
                   {quem.titulo}
-                </button>
+                  {/* Dois verbetes com o mesmo nome ("Firen": a lâmina e o reino)
+                      eram duas pastilhas idênticas. A gaveta de cada um resolve. */}
+                  {tituloAmbiguo(quem.titulo) ? (
+                    <small className="pastilha-verbete__gaveta">
+                      {CATEGORIAS.find((c) => c.id === quem.categoria)?.singular}
+                    </small>
+                  ) : null}
+                </LinkDeVerbete>
               ))}
             </div>
           </div>

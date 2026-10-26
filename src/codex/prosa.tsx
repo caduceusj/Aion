@@ -15,6 +15,7 @@
 
 import type { ReactNode } from 'react';
 import { verbete } from './corpus';
+import { LinkDeVerbete } from './LinkDeVerbete';
 
 const MARCACAO = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]|\*([^*]+)\*/g;
 
@@ -55,15 +56,15 @@ export function Prosa({ texto, aoNavegar }: ProsaProps) {
     }
 
     partes.push(
-      <button
-        type="button"
+      <LinkDeVerbete
         className="codice-elo"
         key={(n += 1)}
-        onClick={() => aoNavegar(chave)}
+        chave={chave}
+        aoNavegar={(destino) => destino !== null && aoNavegar(destino)}
         title={alvo.resumo}
       >
         {rotulo}
-      </button>,
+      </LinkDeVerbete>,
     );
   }
 

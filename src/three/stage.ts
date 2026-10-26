@@ -87,7 +87,9 @@ export function createDiceStage(
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // PCFSoftShadowMap foi descontinuado no three e já caía em PCFShadowMap sozinho,
+  // com um aviso a cada carga; pedir o que se recebe tira o aviso do console.
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
 

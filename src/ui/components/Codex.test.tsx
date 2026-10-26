@@ -42,7 +42,7 @@ const barraDeVoltar = (): HTMLElement | null => document.querySelector('.codice_
 /** Abre um verbete pelo índice, como o leitor: a gaveta primeiro, depois o nome. */
 const abrirVerbete = (gavetaNome: RegExp, nome: string): void => {
   if (gaveta(gavetaNome).getAttribute('aria-expanded') !== 'true') fireEvent.click(gaveta(gavetaNome));
-  fireEvent.click(indice().getByRole('button', { name: new RegExp(`^${nome}`) }));
+  fireEvent.click(indice().getByRole('link', { name: new RegExp(`^${nome}`) }));
 };
 
 beforeEach(reset);
@@ -55,7 +55,7 @@ describe('o índice não é uma parede', () => {
 
     expect(personagens.getAttribute('aria-expanded')).toBe('false');
     expect(personagens.textContent).toMatch(/\d+$/);
-    expect(indice().queryByRole('button', { name: 'Arran Herrys' })).toBeNull();
+    expect(indice().queryByRole('link', { name: 'Arran Herrys' })).toBeNull();
   });
 
   it('abrir uma gaveta mostra o que há nela; abrir de novo a fecha', () => {
@@ -63,10 +63,10 @@ describe('o índice não é uma parede', () => {
     fireEvent.click(gaveta(/^Personagens/));
 
     expect(gaveta(/^Personagens/).getAttribute('aria-expanded')).toBe('true');
-    expect(indice().getByRole('button', { name: 'Arran Herrys' })).toBeTruthy();
+    expect(indice().getByRole('link', { name: 'Arran Herrys' })).toBeTruthy();
 
     fireEvent.click(gaveta(/^Personagens/));
-    expect(indice().queryByRole('button', { name: 'Arran Herrys' })).toBeNull();
+    expect(indice().queryByRole('link', { name: 'Arran Herrys' })).toBeNull();
   });
 
   it('"Abrir todas" abre tudo e vira "Fechar todas"', () => {
@@ -86,7 +86,7 @@ describe('o índice não é uma parede', () => {
     render(<Pagina />);
 
     expect(gaveta(/^Personagens/).getAttribute('aria-expanded')).toBe('true');
-    const atual = indice().getByRole('button', { name: 'Arran Herrys' });
+    const atual = indice().getByRole('link', { name: 'Arran Herrys' });
     expect(atual.getAttribute('aria-current')).toBe('page');
   });
 });
@@ -100,7 +100,7 @@ describe('a aba diz onde se está', () => {
     abrirVerbete(/^Personagens/, 'Althos Deios');
     expect(document.title).toBe('Althos Deios · O Códice · Aion');
 
-    fireEvent.click(indice().getByRole('button', { name: /^A Capa/ }));
+    fireEvent.click(indice().getByRole('link', { name: /^A Capa/ }));
     expect(document.title).toBe('O Códice · Aion');
   });
 });
@@ -108,13 +108,13 @@ describe('a aba diz onde se está', () => {
 describe('a busca', () => {
   it('só os resultados ficam à vista — os atalhos grandes saem da frente', () => {
     render(<Pagina />);
-    expect(indice().getByRole('button', { name: /^O Atlas/ })).toBeTruthy();
+    expect(indice().getByRole('link', { name: /^O Atlas/ })).toBeTruthy();
 
     fireEvent.change(busca(), { target: { value: 'beatrix' } });
 
-    expect(indice().queryByRole('button', { name: /^O Atlas/ })).toBeNull();
+    expect(indice().queryByRole('link', { name: /^O Atlas/ })).toBeNull();
     expect(indice().getByRole('status').textContent).toMatch(/\d+ verbetes?/);
-    expect(indice().getByRole('button', { name: /^Beatrix/ })).toBeTruthy();
+    expect(indice().getByRole('link', { name: /^Beatrix/ })).toBeTruthy();
   });
 
   it('o Enter abre o primeiro resultado', () => {
@@ -204,7 +204,7 @@ describe('voltar', () => {
   it('a capa é um destino como outro qualquer na pilha', () => {
     window.history.replaceState(null, '', '/#codice/arran-herrys');
     render(<Pagina />);
-    fireEvent.click(indice().getByRole('button', { name: /^A Capa/ }));
+    fireEvent.click(indice().getByRole('link', { name: /^A Capa/ }));
 
     expect(barraDeVoltar()?.textContent).toBe('VoltarArran Herrys');
 
@@ -216,7 +216,7 @@ describe('voltar', () => {
     window.history.replaceState(null, '', '/#codice/arran-herrys');
     render(<Pagina />);
     const leitura = screen.getByRole('main');
-    const elo = within(leitura).getAllByRole('button').find((b) => b.className.includes('codice-elo')) as HTMLElement;
+    const elo = within(leitura).getAllByRole('link').find((b) => b.className.includes('codice-elo')) as HTMLElement;
     elo.focus();
 
     fireEvent.click(elo);
@@ -291,5 +291,74 @@ describe('compartilhar um verbete', () => {
   it('a capa não tem link a copiar: não há verbete aberto', () => {
     render(<Pagina />);
     expect(screen.queryByRole('button', { name: /Copiar link/ })).toBeNull();
+  });
+});
+
+describe('links de verdade', () => {
+  const elo = () => {
+    window.history.replaceState(null, '', '/#codice/arran-herrys');
+    render(<Pagina />);
+    return within(screen.getByRole('main'))
+      .getAllByRole('link')
+      .find((a) => a.className.includes('codice-elo')) as HTMLAnchorElement;
+  };
+
+  it('um elo na prosa é um link com o endereço do verbete — dá para abrir em outra aba', () => {
+    const link = elo();
+
+    expect(link.tagName).toBe('A');
+    expect(link.getAttribute('href')).toMatch(/^#codice\/[a-z0-9-]+$/);
+  });
+
+  it('o clique comum navega dentro do app, sem deixar o navegador mudar o endereço sozinho', () => {
+    const link = elo();
+    const antes = document.title;
+
+    const naoCancelado = fireEvent.click(link);
+
+    // `preventDefault`: quem navega é a pilha do Códice, não o hash do navegador.
+    expect(naoCancelado).toBe(false);
+    expect(document.title).not.toBe(antes);
+  });
+
+  it('com Ctrl, Cmd, Shift ou o botão do meio, o navegador cuida — abre aba nova', () => {
+    const link = elo();
+    const antes = document.title;
+
+    for (const teclas of [{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { button: 1 }]) {
+      const naoCancelado = fireEvent.click(link, teclas);
+      expect(naoCancelado).toBe(true);
+    }
+    expect(document.title).toBe(antes);
+  });
+
+  it('os resultados da busca e os itens do índice também são links', () => {
+    render(<Pagina />);
+    fireEvent.change(busca(), { target: { value: 'beatrix' } });
+
+    const resultado = indice().getByRole('link', { name: /^Beatrix/ });
+    expect(resultado.getAttribute('href')).toContain('#codice/');
+  });
+
+  it('a capa tem endereço próprio, e o Atlas e o Almanaque também', () => {
+    render(<Pagina />);
+    expect(indice().getByRole('link', { name: /^A Capa/ }).getAttribute('href')).toBe('#codice/');
+    expect(indice().getByRole('link', { name: /^O Atlas/ }).getAttribute('href')).toBe('#codice/%40atlas');
+    expect(indice().getByRole('link', { name: /^O Almanaque/ }).getAttribute('href')).toBe('#codice/%40calendario');
+  });
+});
+
+describe('verbetes com o mesmo nome', () => {
+  it('em "Citado em", cada homônimo diz a gaveta a que pertence', () => {
+    // "Firen" é a lâmina sagrada e o reino que ela nomeou — e o Arran cita os dois.
+    window.history.replaceState(null, '', '/#codice/arran-herrys');
+    render(<Pagina />);
+
+    const citado = document.querySelector('.verbete__pastilhas') as HTMLElement;
+    const firens = within(citado).getAllByRole('link', { name: /^Firen/ });
+
+    expect(firens.length).toBeGreaterThan(1);
+    const rotulos = firens.map((a) => a.textContent);
+    expect(new Set(rotulos).size).toBe(rotulos.length);
   });
 });

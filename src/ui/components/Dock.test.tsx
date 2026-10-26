@@ -237,3 +237,32 @@ describe('a ajuda de notação', () => {
     }
   });
 });
+
+describe('o exemplo que troca sozinho no campo', () => {
+  const exemplo = () => campo().getAttribute('placeholder');
+
+  it('gira entre exemplos de notação, para ensinar sem ocupar a tela', () => {
+    render(<Dock />);
+    const primeiro = exemplo();
+
+    act(() => {
+      vi.advanceTimersByTime(4300);
+    });
+
+    expect(exemplo()).not.toBe(primeiro);
+  });
+
+  it('com movimento reduzido, fica parado no primeiro exemplo', () => {
+    useAionStore.setState({
+      settings: { ...DEFAULT_SETTINGS, physics3d: false, sound: false, reducedMotion: true },
+    });
+    render(<Dock />);
+    const primeiro = exemplo();
+
+    act(() => {
+      vi.advanceTimersByTime(30_000);
+    });
+
+    expect(exemplo()).toBe(primeiro);
+  });
+});

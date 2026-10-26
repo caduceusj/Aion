@@ -1738,3 +1738,30 @@
     min-height: 44px;
   }
 }
+
+
+/* ============================================================ links reais */
+
+/* Os links do Códice são <a>, e uma âncora vem com cor e sublinhado de
+   navegador. `:where` zera a especificidade: o reset vale só onde a classe do
+   componente não diz nada, e nunca briga com ela. */
+:where(.codice) a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Um botão é inline-block de nascença e centra o texto na própria altura; uma
+   âncora é inline e não faz nenhuma das duas. Onde a classe conta com padding
+   e altura, o display e o alinhamento têm de ser ditos. */
+.pastilha-verbete,
+.gazeta__abrir {
+  display: inline-flex;
+  align-items: center;
+}
+
+.pastilha-verbete__gaveta {
+  margin-left: var(--sp-2);
+  color: var(--cx-apagado);
+  font-size: var(--fs-micro);
+  font-style: italic;
+}
