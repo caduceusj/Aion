@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAionStore } from '@/state/store';
 import { SKIN_COLORS } from '@/three/textures';
 import { gerarCodigoDeSala, normalizarCodigo } from '@/net/types';
@@ -23,6 +23,14 @@ export function MesaPanel() {
   const [url, setUrl] = useState(mesa.url);
   const [mestre, setMestre] = useState(mesa.souMestre);
   const [copiado, setCopiado] = useState(false);
+  /** Tentou entrar com algo faltando: aí o painel diz o que falta. */
+  const [tentou, setTentou] = useState(false);
+  const codigoRef = useRef<HTMLInputElement | null>(null);
+  const urlRef = useRef<HTMLInputElement | null>(null);
+
+  const faltaCodigo = codigo.trim().length < 3;
+  const faltaUrl = url.trim().length === 0;
+  const incompleto = faltaCodigo || faltaUrl;
 
   const conectado = mesa.estado === 'conectado';
   const ocupado = mesa.estado === 'conectando' || mesa.estado === 'reconectando';
@@ -39,11 +47,23 @@ export function MesaPanel() {
       .catch(() => undefined);
   };
 
+  const entrar = (): void => {
+    if (ocupado) return;
+    if (incompleto) {
+      // Um botão que não faz nada e não diz por quê é pior que um que reclama:
+      // leva ao campo que falta e mostra o que escrever nele.
+      setTentou(true);
+      (faltaCodigo ? codigoRef : urlRef).current?.focus();
+      return;
+    }
+    conectarMesa({ codigo, url, mestre });
+  };
+
   return (
     <div className="mesa">
       <header className="mesa__topo">
         <h2 className="mesa__titulo">Mesa</h2>
-        <span className="mesa__estado" data-estado={mesa.estado}>
+        <span className="mesa__estado" data-estado={mesa.estado} role="status">
           {ROTULO_DO_ESTADO[mesa.estado] ?? mesa.estado}
         </span>
       </header>
@@ -62,9 +82,14 @@ export function MesaPanel() {
               <span className="rotulo">Código da sala</span>
               <div className="mesa__codigo-linha">
                 <input
+                  ref={codigoRef}
                   className="mesa__codigo mono"
                   value={codigo}
-                  onChange={(evento) => setCodigo(normalizarCodigo(evento.target.value))}
+                  onChange={(evento) => {
+                    setCodigo(normalizarCodigo(evento.target.value));
+                    setTentou(false);
+                  }}
+                  aria-invalid={tentou && faltaCodigo}
                   placeholder="XKQ7"
                   maxLength={8}
                   autoCapitalize="characters"
@@ -87,22 +112,33 @@ export function MesaPanel() {
             <label className="mesa__campo">
               <span className="rotulo">Endereço do relay</span>
               <input
+                ref={urlRef}
                 className="mesa__url mono"
                 value={url}
-                onChange={(evento) => setUrl(evento.target.value)}
+                onChange={(evento) => {
+                  setUrl(evento.target.value);
+                  setTentou(false);
+                }}
+                aria-invalid={tentou && faltaUrl}
                 placeholder="ws://192.168.0.10:8787"
                 autoComplete="off"
                 spellCheck={false}
                 aria-label="Endereço do relay"
               />
-              <span className="mesa__dica">
+            </label>
+
+            {/* O texto longo sobre o relay só interessa a quem ainda não montou
+                um. Os demais ganhavam cinco linhas de rolagem por nada. */}
+            <details className="mesa__ajuda">
+              <summary>Como achar o endereço do relay?</summary>
+              <p className="mesa__dica">
                 Rode <code className="mono">npm run relay</code> em um computador da rede
                 e use o IP dele aqui — <code className="mono">ws://192.168.0.10:8787</code>,
                 não <code className="mono">localhost</code>, senão os outros aparelhos não
                 acham. A mesa compartilhada precisa desse processo em algum lugar; o resto
                 do Aion funciona sem ele.
-              </span>
-            </label>
+              </p>
+            </details>
 
             <label className="mesa__interruptor">
               <input
@@ -116,13 +152,25 @@ export function MesaPanel() {
             <button
               type="button"
               className="mesa__entrar"
-              disabled={codigo.trim().length < 3 || url.trim().length === 0 || ocupado}
-              onClick={() => conectarMesa({ codigo, url, mestre })}
+              aria-disabled={incompleto || ocupado ? 'true' : undefined}
+              onClick={entrar}
             >
               {ocupado ? 'Entrando…' : 'Entrar na mesa'}
             </button>
 
-            {mesa.erro ? <p className="mesa__erro">{mesa.erro}</p> : null}
+            {tentou && incompleto ? (
+              <p className="mesa__erro" role="alert">
+                {faltaCodigo
+                  ? 'Escreva o código da sala — pelo menos 3 letras ou números — ou toque em “Criar” para gerar um.'
+                  : 'Escreva o endereço do relay.'}
+              </p>
+            ) : null}
+
+            {mesa.erro ? (
+              <p className="mesa__erro" role="alert">
+                {mesa.erro}
+              </p>
+            ) : null}
           </section>
         ) : (
           <>

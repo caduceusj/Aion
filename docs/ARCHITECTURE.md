@@ -288,9 +288,51 @@ que qualquer um na mesa viu e pode somar na mão. `rollComValores(expr, faces,
 seed)` refaz a conta a partir delas. A semente só cobre o que não rolou na
 mesa: explosões e rerolagens.
 
-## Acessibilidade
+## Uso e acessibilidade
+
+O que vale para o app inteiro, e onde mora no código.
+
+**O Esc fecha uma coisa por vez** (`src/ui/camadas.ts`). Cada diálogo, gaveta ou
+busca com texto se registra numa pilha; o Esc fecha o do topo. Só quando a pilha
+está vazia ele solta o campo de texto em foco, e só então navega (sai do Códice,
+fecha o painel, volta ao menu). Antes, cada um escutava o teclado por conta
+própria e o App fechava tudo junto: Esc na ajuda de notação saía da Mesa.
+`useDialogo` junta o resto do que um diálogo deve ao teclado — foco preso dentro
+dele e devolvido ao botão que o abriu.
+
+**Um só lugar para o teclado** (`src/ui/hooks/useAtalhosGlobais.ts`). As teclas
+soltas obedecem ao ajuste `hotkeys` (WCAG 2.1.4); o Esc e as combinações com
+Ctrl/Alt não. O Enter só é do app quando nenhum botão o quer — tomá-lo de um
+botão em foco tirava o clique de todo o teclado. A lista que o usuário lê
+(`src/ui/atalhos.ts`) é a mesma que `atalhos.test.tsx` executa, tecla por tecla.
+
+**Apagar sem medo** (`src/ui/remocoes.ts`, `src/ui/avisos.ts`). Toda remoção age
+na hora e deixa "Desfazer" por 9 segundos (e Ctrl+Z). Confirmar antes ("tem
+certeza?") treina a pessoa a clicar em "sim" sem ler; desfazer depois protege de
+fato. O desfazer devolve **só o que saiu, no lugar em que estava**, e não uma
+foto do estado de antes — quem apaga uma arma, edita outra e desfaz não perde a
+edição. Uma trava de 450ms impede que um clique duplo remova também o vizinho
+que sobe para o mesmo ponto da tela.
+
+**Alvos de toque** (`src/ui/styles/toque.css`). O desenho é fino de propósito,
+e só onde o ponteiro é grosso (`pointer: coarse`) os controles crescem para
+44px. O arquivo é importado por último e ganha pela ordem. `npm run verifica:uso`
+percorre as telas em celular, tablet e desktop e lista o que ainda ficou
+pequeno, sem nome acessível, sem `<main>`/`<h1>`, ou rolando de lado.
+
+**Cada tela diz onde está**: título da aba (`A Mesa · Aion`, `Arran Herrys · O
+Códice · Aion`), um `<main>` e um `<h1>`, e o foco vai ao conteúdo novo quando a
+tela troca — senão cairia no `<body>` e um leitor de tela recomeçaria do topo.
+
+**A doca tem altura que muda.** O App mede a doca da Mesa (`--rodape-h`) e o que
+precisa ficar acima dela — o resultado, a dica de mesa vazia, os avisos — se
+posiciona por essa medida, não por um número que só valia numa tela.
+
+**Contraste**: os três degraus de tinta (`--ink`, `--ink-dim`, `--ink-faint`) e
+os tons de texto do Códice passam de 4,5:1 sobre as superfícies onde são usados.
 
 - `prefers-reduced-motion` desliga física e flashes; o resultado aparece direto.
 - Todo controle é alcançável por teclado; foco sempre visível.
 - Resultados nunca dependem só de cor: crítico traz rótulo textual.
-- Alvo de toque mínimo de 44px na doca inferior.
+- Zoom por pinça liberado (WCAG 1.4.4); `touch-action: manipulation` tira o
+  atraso do toque duplo sem tirar o zoom.

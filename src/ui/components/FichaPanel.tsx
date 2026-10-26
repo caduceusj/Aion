@@ -411,6 +411,8 @@ export function FichaPanel() {
               <button
                 type="button"
                 className="ficha__mini"
+                aria-label="Adicionar arma"
+                title="Adicionar arma"
                 onClick={() =>
                   patch({
                     armas: [
@@ -650,6 +652,8 @@ export function FichaPanel() {
               <button
                 type="button"
                 className="ficha__mini"
+                aria-label="Adicionar experiência"
+                title="Adicionar experiência"
                 onClick={() =>
                   patch({
                     experiencias: [

@@ -134,6 +134,12 @@ export interface DiceStage {
   dispose(): void;
   /** Reage a resize do container. */
   resize(): void;
+  /**
+   * Verdadeiro quando o aparelho não abriu WebGL: não há mesa, nenhuma face a
+   * ler, e as rolagens caem no gerador. A interface usa isto para mostrar o
+   * feltro pintado e avisar — em vez de um campo preto sem explicação.
+   */
+  readonly inerte?: boolean;
 }
 
 /**

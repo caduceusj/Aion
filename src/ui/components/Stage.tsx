@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DiceStage } from '@/state/types';
 import { createDiceStage } from '@/three/stage';
 import { audio } from '@/audio/sfx';
 import { useAionStore } from '@/state/store';
+import { avisar } from '@/ui/avisos';
 import '@/ui/styles/stage.css';
 
 /**
@@ -18,6 +19,8 @@ export function Stage() {
   const stageRef = useRef<DiceStage | null>(null);
   /** Últimos pedidos já executados — o StrictMode monta duas vezes em dev. */
   const handledRef = useRef<string | null>(null);
+  /** O aparelho não abriu WebGL: a mesa vira feltro pintado, e a pessoa é avisada. */
+  const [semWebgl, setSemWebgl] = useState(false);
 
   // Mesma regra que o store usa para decidir se enfileira uma requisição.
   const physics3d = useAionStore(
@@ -67,6 +70,15 @@ export function Stage() {
 
     stageRef.current = stage;
     stage.resize();
+
+    if (stage.inerte) {
+      // Sem isto, o canvas ficava vazio e preto, e quem jogava achava que o
+      // app tinha quebrado. As rolagens seguem valendo — só não há dado a ver.
+      setSemWebgl(true);
+      avisar(
+        'Este aparelho não abriu os dados 3D, então a mesa ficou simples. As rolagens valem do mesmo jeito.',
+      );
+    }
 
     const container = containerRef.current;
     const observer = new ResizeObserver(() => stage.resize());
@@ -124,7 +136,7 @@ export function Stage() {
 
   return (
     <div className="palco" ref={containerRef}>
-      {physics3d ? (
+      {physics3d && !semWebgl ? (
         <canvas className="palco__canvas" ref={canvasRef} aria-hidden="true" />
       ) : (
         <div className="palco__estatico" aria-hidden="true" />

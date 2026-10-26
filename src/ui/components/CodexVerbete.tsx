@@ -3,6 +3,8 @@ import { CATEGORIAS, FONTES } from '@/codex/tipos';
 import { referenciam, verbete as buscarVerbete } from '@/codex/corpus';
 import { Prosa } from '@/codex/prosa';
 import { Brasao } from '@/codex/heraldica';
+import { copiarLink } from '@/ui/compartilhar';
+import { IconCopiar } from '@/ui/components/Icons';
 
 /**
  * Um verbete aberto.
@@ -34,18 +36,38 @@ export function CodexVerbete({
             {fonte.rotulo}
           </span>
         </p>
-        {entrada.epiteto ? <p className="verbete__epiteto">{entrada.epiteto}</p> : null}
-        <h1 className="verbete__titulo">{entrada.titulo}</h1>
-        {entrada.periodo ? <p className="verbete__periodo">{entrada.periodo}</p> : null}
+        <button
+          type="button"
+          className="verbete__copiar"
+          onClick={() => void copiarLink(entrada.titulo)}
+        >
+          <IconCopiar size={14} />
+          <span>Copiar link</span>
+        </button>
+        {entrada.epiteto ? (
+          <p className="verbete__epiteto" lang="en">
+            {entrada.epiteto}
+          </p>
+        ) : null}
+        <h1 className="verbete__titulo" lang="en">
+          {entrada.titulo}
+        </h1>
+        {entrada.periodo ? (
+          <p className="verbete__periodo" lang="en">
+            {entrada.periodo}
+          </p>
+        ) : null}
       </header>
 
       {entrada.epigrafe ? (
-        <blockquote className="verbete__epigrafe">{entrada.epigrafe}</blockquote>
+        <blockquote className="verbete__epigrafe" lang="en">
+          {entrada.epigrafe}
+        </blockquote>
       ) : null}
 
       <div className="verbete__corpo">
         <aside className="verbete__ficha" aria-label="Ficha do verbete">
-          <dl>
+          <dl lang="en">
             {entrada.ficha.map((fato) => (
               <div
                 className="verbete__fato"
@@ -61,7 +83,7 @@ export function CodexVerbete({
           </dl>
 
           {entrada.eras.length > 0 && entrada.categoria !== 'era' ? (
-            <div className="verbete__eras">
+            <div className="verbete__eras" lang="en">
               <p className="verbete__rubrica">Ages</p>
               <ul>
                 {entrada.eras.map((chave) => {
@@ -80,7 +102,7 @@ export function CodexVerbete({
           ) : null}
         </aside>
 
-        <div className="verbete__prosa">
+        <div className="verbete__prosa" lang="en">
           {entrada.secoes.map((secao, i) => (
             <section className="verbete__secao" key={secao.titulo ?? `secao-${i}`}>
               {secao.titulo ? <h2>{secao.titulo}</h2> : null}

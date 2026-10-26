@@ -122,12 +122,26 @@
 
 .deslizante {
   width: 100%;
-  height: 4px;
+  /* O elemento é alto e o trilho, desenhado abaixo, é fino: antes o próprio
+     <input> tinha 4px de altura, e era essa a área que o dedo precisava
+     acertar. */
+  height: 28px;
   appearance: none;
   -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.deslizante::-webkit-slider-runnable-track {
+  height: 4px;
   border-radius: var(--r-pill);
   background: var(--sf-overlay);
-  cursor: pointer;
+}
+
+.deslizante::-moz-range-track {
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--sf-overlay);
 }
 
 .deslizante::-webkit-slider-thumb {
@@ -135,6 +149,8 @@
   -webkit-appearance: none;
   width: 18px;
   height: 18px;
+  /* Centra o polegar de 18px no trilho de 4px. */
+  margin-top: -7px;
   border-radius: 50%;
   background: var(--amber-300);
   border: none;
@@ -149,6 +165,23 @@
   background: var(--amber-300);
   border: none;
   cursor: grab;
+}
+
+@media (pointer: coarse) {
+  .deslizante {
+    height: 44px;
+  }
+
+  .deslizante::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+    margin-top: -12px;
+  }
+
+  .deslizante::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 /* --------------------------------------------------------------- skins */
@@ -205,8 +238,8 @@
 
 .personagem__ativar {
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: var(--r-sm);
   border: 2px solid transparent;
   box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.35);

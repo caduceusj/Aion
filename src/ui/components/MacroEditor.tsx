@@ -3,7 +3,7 @@ import { tryRoll, validate } from '@/engine';
 import type { Macro } from '@/state/types';
 import { useAionStore } from '@/state/store';
 import { useDialogo } from '@/ui/hooks/useDialogo';
-import { IconCheck, IconFechar, IconRolar } from './Icons';
+import { IconBaixo, IconCheck, IconCima, IconFechar, IconRolar } from './Icons';
 
 const GLYPHS = [
   '⚔️', '🗡️', '🏹', '🪄', '🔥', '❄️', '⚡', '🛡️',
@@ -20,8 +20,10 @@ interface Props {
 export function MacroEditor({ macro, onClose }: Props) {
   const characters = useAionStore((state) => state.characters);
   const activeCharacterId = useAionStore((state) => state.activeCharacterId);
+  const macros = useAionStore((state) => state.macros);
   const addMacro = useAionStore((state) => state.addMacro);
   const updateMacro = useAionStore((state) => state.updateMacro);
+  const moveMacro = useAionStore((state) => state.moveMacro);
 
   const [name, setName] = useState(macro?.name ?? '');
   const [expression, setExpression] = useState(macro?.expression ?? '');
@@ -39,6 +41,13 @@ export function MacroEditor({ macro, onClose }: Props) {
     [expression],
   );
   const valido = name.trim().length > 0 && expression.trim().length > 0 && erro === null;
+
+  // Posição dentro do grupo do dono (os que o painel lista juntos), para saber
+  // se ainda dá para subir ou descer.
+  const irmaos = macro
+    ? macros.filter((item) => item.characterId === macro.characterId).sort((a, b) => a.order - b.order)
+    : [];
+  const posicao = macro ? irmaos.findIndex((item) => item.id === macro.id) : -1;
 
   useEffect(() => {
     nameRef.current?.focus();
@@ -157,6 +166,32 @@ export function MacroEditor({ macro, onClose }: Props) {
               ))}
             </div>
           </fieldset>
+
+          {macro ? (
+            <div className="editor__campo">
+              <span className="rotulo">Posição na lista</span>
+              <div className="editor__ordem">
+                <button
+                  type="button"
+                  className="editor__testar"
+                  onClick={() => moveMacro(macro.id, -1)}
+                  disabled={posicao <= 0}
+                >
+                  <IconCima size={14} />
+                  <span>Subir</span>
+                </button>
+                <button
+                  type="button"
+                  className="editor__testar"
+                  onClick={() => moveMacro(macro.id, 1)}
+                  disabled={posicao < 0 || posicao >= irmaos.length - 1}
+                >
+                  <IconBaixo size={14} />
+                  <span>Descer</span>
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           <label className="editor__campo">
             <span className="rotulo">Dono</span>

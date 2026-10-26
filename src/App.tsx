@@ -4,6 +4,7 @@ import { useAionStore } from '@/state/store';
 import { SKIN_COLORS } from '@/three/textures';
 import { audio } from '@/audio/sfx';
 import { useAtalhosGlobais } from '@/ui/hooks/useAtalhosGlobais';
+import { useMediaQuery } from '@/ui/hooks/useMediaQuery';
 import { Stage } from '@/ui/components/Stage';
 import { Dock } from '@/ui/components/Dock';
 import { ResultOverlay } from '@/ui/components/ResultOverlay';
@@ -29,6 +30,8 @@ import {
   IconPaineis,
 } from '@/ui/components/Icons';
 import '@/ui/styles/app.css';
+// Por último: as regras de toque só ganham das originais pela ordem.
+import '@/ui/styles/toque.css';
 
 type Painel = Exclude<PanelId, null>;
 
@@ -68,6 +71,13 @@ export function App() {
   const aberturaAutomatica = useRef(false);
 
   useAtalhosGlobais(() => setAjudaTeclado(true));
+
+  // Abaixo de 1100px o painel é uma gaveta por cima da mesa, com cortina. Por
+  // trás da cortina nada deve receber tabulação nem ser lido: `inert` tira a
+  // mesa da ordem de foco e da árvore de acessibilidade enquanto a gaveta está
+  // aberta. Em tela larga o trilho é só uma coluna ao lado, e a mesa segue viva.
+  const gavetaSobreposta = useMediaQuery(`(max-width: ${LARGURA_TRILHO_FIXO - 1}px)`);
+  const fundoInerte = panel !== null && gavetaSobreposta;
 
   // O navegador só deixa criar som dentro de um gesto do usuário.
   useEffect(() => {
@@ -225,7 +235,7 @@ export function App() {
 
     return (
       <div className="app" data-trilho={panel !== null ? 'sim' : undefined}>
-        <header className="cabecalho">
+        <header className="cabecalho" inert={fundoInerte}>
           <button
             type="button"
             className="marca marca--botao"
@@ -304,7 +314,14 @@ export function App() {
           </div>
         </header>
 
-        <main className="mesa" id="mesa" tabIndex={-1} aria-labelledby="mesa-titulo" data-foco-da-vista>
+        <main
+          className="mesa-principal"
+          id="mesa"
+          tabIndex={-1}
+          aria-labelledby="mesa-titulo"
+          data-foco-da-vista
+          inert={fundoInerte}
+        >
           <h1 className="sr-only" id="mesa-titulo">
             A Mesa
           </h1>

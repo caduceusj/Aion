@@ -14,7 +14,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: var(--sp-7);
   padding: var(--sp-6) var(--sp-5);
   padding-top: max(var(--sp-6), env(safe-area-inset-top, 0px));
@@ -44,11 +43,21 @@
   }
 }
 
+/* O conteúdo se centra pelas margens automáticas das pontas, não por
+   `justify-content: center`: num celular deitado a tela é mais baixa que o
+   menu, e com `center` a sobra negativa corta o topo — o título ficava fora
+   da área rolável, inalcançável. Margem automática vira zero quando falta
+   lugar, e o menu simplesmente rola. */
 .menu__topo {
   position: relative;
   display: grid;
   justify-items: center;
   gap: var(--sp-2);
+  margin-top: auto;
+}
+
+.menu__dica {
+  margin-bottom: auto;
 }
 
 .menu__glifo {
@@ -237,9 +246,12 @@
 
 @media (max-width: 720px) {
   .menu {
-    justify-content: flex-start;
     gap: var(--sp-6);
     padding-top: var(--sp-7);
+  }
+
+  .menu__topo {
+    margin-top: 0;
   }
 
   .menu__portas {

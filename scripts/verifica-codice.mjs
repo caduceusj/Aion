@@ -53,12 +53,17 @@ for (const vp of [
     problemas.push(`[${vp.nome}] estoura a viewport (${estouro.vw}px): ${estouro.fora.join(', ')}`);
   }
 
-  const verbetes = await page.locator('.indice__contagem').innerText();
+  const verbetes = await page.locator('.indice__contagem').textContent();
   console.log(`[${vp.nome}] ${verbetes.trim()}`);
 
   // Em tela estreita o índice é gaveta.
   const abrirIndice = page.getByRole('button', { name: 'Índice' });
   if (await abrirIndice.isVisible().catch(() => false)) await abrirIndice.click();
+
+  // As gavetas do índice chegam fechadas (176 nomes numa lista só era uma
+  // parede): abre a dos personagens, como o leitor faria.
+  const gavetaDosPersonagens = page.getByRole('button', { name: /^Personagens/ });
+  if ((await gavetaDosPersonagens.getAttribute('aria-expanded')) !== 'true') await gavetaDosPersonagens.click();
 
   // Um verbete de personagem — o pedido central do usuário.
   await page.getByRole('button', { name: 'Ayren Herrys IV', exact: true }).first().click();

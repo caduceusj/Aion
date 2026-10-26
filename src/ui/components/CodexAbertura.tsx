@@ -15,7 +15,10 @@ import { IconMapa, IconOrbita } from '@/ui/components/Icons';
 export function CodexAbertura({ aoNavegar }: { aoNavegar: (chave: string) => void }) {
   return (
     <div className="abertura">
-      <header className="abertura__capa">
+      {/* A crônica é em inglês, como no documento original; o resto da tela,
+          que é do Aion, é em português. Marcar a língua de cada parte deixa o
+          leitor de tela trocar de voz em vez de ler inglês com sotaque. */}
+      <header className="abertura__capa" lang="en">
         <svg className="abertura__emblema" viewBox="0 0 200 200" fill="none" stroke="currentColor" aria-hidden="true">
         <g strokeWidth="2" opacity=".65">
         <circle cx="100" cy="86" r="46"/>
@@ -56,8 +59,10 @@ export function CodexAbertura({ aoNavegar }: { aoNavegar: (chave: string) => voi
 
       <section className="abertura__cronica" aria-label="Linha do tempo">
         <p className="verbete__rubrica">A Crônica</p>
-        <h2 className="abertura__secao">Five Ages of the Continent</h2>
-        <ol className="linha-do-tempo">
+        <h2 className="abertura__secao" lang="en">
+          Five Ages of the Continent
+        </h2>
+        <ol className="linha-do-tempo" lang="en">
           {LINHA_DO_TEMPO.map((era) => (
             <li key={era.chave}>
               <button type="button" className="era-item" onClick={() => aoNavegar(era.chave)}>

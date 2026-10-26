@@ -107,7 +107,7 @@ export function CodexCalendario({ aoNavegar }: { aoNavegar: (chave: string) => v
       <header className="almanaque__topo">
         <div>
           <p className="almanaque__eyebrow">O Almanaque dos Viajantes</p>
-          <h2 className="almanaque__titulo">O Calendário de Aion</h2>
+          <h1 className="almanaque__titulo">O Calendário de Aion</h1>
         </div>
         <div className="almanaque__abas" role="tablist" aria-label="O almanaque" onKeyDown={teclasDasAbas}>
           {ABAS.map((x) => (

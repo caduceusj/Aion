@@ -346,3 +346,25 @@
     padding-right: 94px;
   }
 }
+
+/* Celular deitado: a doca ocupava 245px de 390. Dados em fileira de uma linha
+   só, folgas menores — continuam com 44px de alvo. */
+@media (max-height: 520px) {
+  .doca {
+    gap: var(--sp-1);
+    padding-top: var(--sp-2);
+    padding-bottom: calc(var(--sp-2) + var(--safe-b));
+  }
+
+  .dado-rapido {
+    min-height: 44px;
+    flex-direction: row;
+    gap: var(--sp-2);
+  }
+
+  .doca__input,
+  .doca__botao,
+  .doca__rolar {
+    min-height: 44px;
+  }
+}

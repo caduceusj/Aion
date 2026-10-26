@@ -525,26 +525,30 @@ export const useAionStore = create<AionState>((set, get) => ({
 
   moveMacro(id, delta) {
     const state = get();
-    const ordered = [...state.macros].sort((a, b) => a.order - b.order);
-    const index = ordered.findIndex((macro) => macro.id === id);
-    if (index < 0) return;
+    const alvo = state.macros.find((macro) => macro.id === id);
+    if (!alvo) return;
+
+    // A ordem que a pessoa vê é a do grupo do dono — "da mesa" e de cada
+    // personagem são listas separadas. Trocar com o vizinho global podia trocar
+    // com um atalho de outra seção, e o botão parecia não fazer nada.
+    const grupo = state.macros
+      .filter((macro) => macro.characterId === alvo.characterId)
+      .sort((a, b) => a.order - b.order);
+    const index = grupo.findIndex((macro) => macro.id === id);
 
     const target = index + delta;
-    if (target < 0 || target >= ordered.length) return;
+    if (target < 0 || target >= grupo.length) return;
 
-    const moved = ordered[index];
-    const displaced = ordered[target];
-    if (!moved || !displaced) return;
+    const movido = grupo[index];
+    const deslocado = grupo[target];
+    if (!movido || !deslocado) return;
 
-    ordered[index] = displaced;
-    ordered[target] = moved;
-
-    const orderById = new Map(ordered.map((macro, position) => [macro.id, position]));
     set({
-      macros: state.macros.map((macro) => ({
-        ...macro,
-        order: orderById.get(macro.id) ?? macro.order,
-      })),
+      macros: state.macros.map((macro) => {
+        if (macro.id === movido.id) return { ...macro, order: deslocado.order };
+        if (macro.id === deslocado.id) return { ...macro, order: movido.order };
+        return macro;
+      }),
     });
   },
 

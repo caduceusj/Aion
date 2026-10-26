@@ -467,6 +467,46 @@ describe('atalhos', () => {
   });
 });
 
+describe('ordem dos atalhos', () => {
+  const nomes = (characterId: string | null): string[] =>
+    useAionStore
+      .getState()
+      .macros.filter((m) => m.characterId === characterId)
+      .sort((a, b) => a.order - b.order)
+      .map((m) => m.name);
+
+  it('subir troca com o vizinho da mesma lista, não com um atalho de outra seção', () => {
+    const { addMacro } = useAionStore.getState();
+    // Intercalados de propósito: a ordem global é M1 P1 M2 P2, mas quem olha o
+    // painel vê duas listas — a da mesa (M1, M2) e a do personagem (P1, P2).
+    addMacro({ name: 'M1', expression: '1d6', glyph: '🎲', characterId: null });
+    addMacro({ name: 'P1', expression: '1d6', glyph: '🎲', characterId: 'chr_a' });
+    addMacro({ name: 'M2', expression: '1d6', glyph: '🎲', characterId: null });
+    addMacro({ name: 'P2', expression: '1d6', glyph: '🎲', characterId: 'chr_a' });
+
+    const m2 = useAionStore.getState().macros.find((m) => m.name === 'M2')?.id ?? '';
+    useAionStore.getState().moveMacro(m2, -1);
+
+    // Antes, M2 trocava com P1 e a lista da mesa continuava M1, M2.
+    expect(nomes(null)).toEqual(['M2', 'M1']);
+    expect(nomes('chr_a')).toEqual(['P1', 'P2']);
+  });
+
+  it('não ultrapassa o primeiro nem o último da própria lista', () => {
+    const { addMacro } = useAionStore.getState();
+    addMacro({ name: 'A', expression: '1d6', glyph: '🎲', characterId: null });
+    addMacro({ name: 'B', expression: '1d6', glyph: '🎲', characterId: 'chr_a' });
+    addMacro({ name: 'C', expression: '1d6', glyph: '🎲', characterId: null });
+
+    const a = useAionStore.getState().macros.find((m) => m.name === 'A')?.id ?? '';
+    const c = useAionStore.getState().macros.find((m) => m.name === 'C')?.id ?? '';
+    useAionStore.getState().moveMacro(a, -1);
+    useAionStore.getState().moveMacro(c, 1);
+
+    expect(nomes(null)).toEqual(['A', 'C']);
+  });
+});
+
 describe('personagens', () => {
   it('cria e ativa', () => {
     useAionStore.getState().addCharacter('Thalia', 'esmeralda');

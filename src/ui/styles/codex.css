@@ -92,6 +92,9 @@
   gap: var(--sp-2);
   color: var(--cx-ouro);
   min-width: 0;
+  /* O respiro é padding, não min-height: com os itens alinhados pela linha de
+     base, uma altura mínima os empurra para o topo da caixa. */
+  padding-block: 6px;
 }
 
 .codice__marca svg {
@@ -1475,6 +1478,7 @@
 }
 
 .indice__alternar-todas {
+  min-height: 28px;
   padding: 2px var(--sp-1);
   border-radius: var(--r-sm);
   color: var(--cx-apagado);
@@ -1636,12 +1640,12 @@
   }
 
   .codice__historico button {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
   }
 
   .codice__marca {
-    min-height: 44px;
+    padding-block: 12px;
     min-width: 44px;
   }
 
@@ -1691,4 +1695,46 @@
 
 .codice__voltar-titulo::before {
   content: '· ';
+}
+
+
+/* ----------------------------------------------------------- tela baixa */
+
+/* Celular deitado: 390px de altura, dos quais o cabeçalho de 76px comia quase
+   um quinto. O cabeçalho encolhe; a leitura ganha o espaço. */
+@media (max-height: 520px) {
+  .codice__topo {
+    padding-top: max(var(--sp-1), env(safe-area-inset-top, 0px));
+    padding-bottom: var(--sp-1);
+  }
+}
+
+
+/* Copiar o link do verbete: o Códice existe para ser mandado no grupo. */
+.verbete__copiar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  min-height: 28px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--cx-linha-fraca);
+  border-radius: var(--r-pill);
+  color: var(--cx-apagado);
+  font-family: var(--cx-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.verbete__copiar:hover {
+  color: var(--cx-ouro-claro);
+  border-color: var(--cx-linha);
+}
+
+@media (pointer: coarse) {
+  .verbete__copiar {
+    min-height: 44px;
+  }
 }

@@ -266,6 +266,15 @@
 
 /* -------------------------------------------------------------- editor */
 
+.editor__ordem {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.editor__ordem button:disabled {
+  opacity: 0.4;
+}
+
 .editor-fundo {
   position: fixed;
   inset: 0;

@@ -270,3 +270,27 @@
     animation: none;
   }
 }
+
+/* Celular deitado: o número de 112px mais as pastilhas não cabiam na faixa que
+   a doca deixa. O total encolhe com a altura da tela, não com a largura. */
+@media (max-height: 520px) {
+  .resultado {
+    padding-top: 48px;
+  }
+
+  .resultado__painel {
+    padding: var(--sp-1) var(--sp-4);
+  }
+
+  .resultado__total {
+    font-size: clamp(2.4rem, 22vh, 4.25rem);
+  }
+
+  .resultado__dados {
+    margin-top: var(--sp-1);
+  }
+
+  .resultado__personagem {
+    display: none;
+  }
+}

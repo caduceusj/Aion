@@ -8,11 +8,12 @@
  * já confere.
  */
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { useAionStore } from '@/state/store';
 import { DEFAULT_SETTINGS } from '@/state/seed';
 import { useAtalhosGlobais } from '@/ui/hooks/useAtalhosGlobais';
+import { useAvisos } from '@/ui/avisos';
 import { Codex } from './Codex';
 
 const reset = (): void => {
@@ -252,5 +253,43 @@ describe('a estrutura da página', () => {
 
     expect(screen.getByRole('button', { name: 'Índice' }).getAttribute('aria-expanded')).toBe('false');
     expect(useAionStore.getState().vista).toBe('codice');
+  });
+});
+
+describe('compartilhar um verbete', () => {
+  beforeEach(() => useAvisos.setState({ aviso: null }));
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('copia o endereço — que já aponta para o verbete — e confirma num aviso', async () => {
+    const escrever = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText: escrever } });
+    window.history.replaceState(null, '', '/#codice/arran-herrys');
+    render(<Pagina />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Copiar link/ }));
+    });
+
+    expect(escrever).toHaveBeenCalledTimes(1);
+    expect(escrever.mock.calls[0]?.[0]).toContain('#codice/arran-herrys');
+    expect(useAvisos.getState().aviso?.texto).toBe('Link de “Arran Herrys” copiado.');
+  });
+
+  it('se o navegador não deixa copiar, diz onde o endereço está', async () => {
+    const recusar = vi.fn().mockRejectedValue(new Error('negado'));
+    vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText: recusar } });
+    window.history.replaceState(null, '', '/#codice/arran-herrys');
+    render(<Pagina />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Copiar link/ }));
+    });
+
+    expect(useAvisos.getState().aviso?.texto).toMatch(/barra do navegador/);
+  });
+
+  it('a capa não tem link a copiar: não há verbete aberto', () => {
+    render(<Pagina />);
+    expect(screen.queryByRole('button', { name: /Copiar link/ })).toBeNull();
   });
 });

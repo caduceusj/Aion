@@ -95,6 +95,13 @@
   outline: none;
 }
 
+/* O seletor tira o próprio contorno (o comprimido é quem tem forma); o
+   comprimido, então, é quem mostra o foco. */
+.seletor-personagem:focus-within {
+  border-color: var(--amber-500);
+  box-shadow: var(--glow-amber);
+}
+
 .cabecalho__nav {
   display: flex;
   gap: var(--sp-1);
@@ -443,6 +450,8 @@
 @media (pointer: coarse) {
   .marca--botao {
     min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
   }
 
   .seletor-personagem,
@@ -458,7 +467,7 @@
 
   .cabecalho__botao {
     width: 44px;
-    height: 38px;
+    height: 44px;
   }
 
   .trilho__fechar {
@@ -483,5 +492,38 @@
 
   .trilho__aba {
     min-height: 44px;
+  }
+}
+
+/* Em 320px o seletor de personagem ficava com 52px e o nome virava "Avent…".
+   O glifo da marca basta (o botão se chama "Voltar ao menu" para quem lê). */
+@media (max-width: 359px) {
+  .marca__nome {
+    display: none;
+  }
+}
+
+/* ----------------------------------------------------------- tela baixa */
+
+/* Celular deitado: 360–430px de altura. A doca, o cabeçalho e o aviso de mesa
+   vazia disputavam o que sobrava, e a mesa — que é a razão do app — ficava com
+   uma faixa de 120px. Tudo encolhe o que dá sem perder alvo de toque. */
+@media (max-height: 520px) {
+  .cabecalho {
+    padding-top: max(var(--sp-1), env(safe-area-inset-top, 0px));
+    padding-bottom: var(--sp-1);
+  }
+
+  .mesa-vazia {
+    padding-top: 52px;
+  }
+
+  .mesa-vazia__texto,
+  .mesa-vazia__dica {
+    display: none;
+  }
+
+  .mesa-vazia__titulo {
+    font-size: var(--fs-md);
   }
 }

@@ -94,9 +94,14 @@ você mesmo roda, para os aparelhos se acharem.
 - Semente por rolagem para auditoria e replay
 - Vários personagens, cada um com sua cor de dado
 
-**Acessibilidade**
+**Acessibilidade e uso**
 - `prefers-reduced-motion` desliga física, flashes e partículas
-- Navegação completa por teclado, com atalhos
+- Navegação completa por teclado, com atalhos que se desligam; o foco acompanha
+  a troca de tela e a abertura de painéis e diálogos
+- Alvos de toque de 44px no celular, zoom por pinça liberado, texto com contraste AA
+- Remover é desfazível: ficha, personagem, atalho, arma, experiência e rolagem
+  somem na hora e deixam um "Desfazer" — em vez de apagar sem aviso ou pedir
+  "tem certeza?"
 - Críticos sempre trazem rótulo textual, nunca só cor
 
 ## Rodando
@@ -112,6 +117,7 @@ npm run dev        # desenvolvimento
 npm test           # testes
 npm run build      # typecheck + build de produção
 npm run preview    # serve o build
+npm run verifica:uso   # com o preview no ar: alvos de toque, nomes, landmarks, rolagem de lado
 ```
 
 Requer Node 20+.
@@ -127,27 +133,7 @@ PORT=9000 npm run relay
 npm run verifica:mesa         # confere a mesa de ponta a ponta
 ```
 
-No app, abra **O Códice**
-- A lore da campanha por cima da mesa, em uma aba própria (tecla `C`)
-- 176 verbetes navegáveis: eras, personagens, casas, lugares, o céu, relíquias,
-  eventos e potências
-- Wiki de verdade: toda menção na prosa é um link, e cada verbete mostra quem cita ele
-- Cada verbete diz de onde veio: As Anais, a Gazeta, a Biblioteca de Andari, o
-  Almanaque, a wiki da mesa ou as notas de sessão
-- Busca por nome, epíteto ou texto — sem acento e sem caixa
-- Atlas com o mapa em duas pranchas alternáveis, zoom, arraste e pontos clicáveis
-- Almanaque em três telas que dividem um só cursor de tempo: a folha impressa
-  de cada mês (nos três anos da Corvisseia), o céu de Aion andando — seis
-  continentes nas elipses reais, as doze constelações, Corvus saltando entre
-  eles — e A Corvisseia, os 1080 dias em que o padrão de distâncias fecha,
-  lido como ritmo, matriz trecho × volta e detalhe com velocímetro
-- "Olhando de" é um controle global: decide a faixa da lua na folha, a
-  constelação acesa no céu e os trechos em destaque na Corvisseia
-- O almanaque se usa no celular e no teclado: espaço roda o céu, setas andam um
-  dia (com Shift, um mês), e a matriz da Corvisseia se navega pelas setas
-- Onde a crônica cala, o verbete diz que ela cala — nada de lore inventada
-
-**Mesa**, aponte o endereço para o IP dessa máquina
+No app, abra **Mesa**, aponte o endereço para o IP dessa máquina
 (`ws://192.168.0.10:8787`), escolha um código de sala e mande o link de convite.
 O relay não guarda histórico nem calcula nada: as rolagens viajam como
 expressão + faces lidas, e cada aparelho refaz a soma e mostra os mesmos dados
@@ -155,15 +141,26 @@ nas mesmas faces.
 
 ## Atalhos de teclado
 
+`?` abre esta lista dentro do app, em qualquer tela.
+
 | Tecla | Ação |
 |---|---|
-| `Enter` | Foca o campo de notação |
+| `Enter` | Vai para o campo de rolagem (quando nada mais está em foco) |
 | `1`–`8` | Rola d4, d6, d8, d10, d12, d20, d100, dF |
 | `r` | Repete a última rolagem |
 | `v` / `d` | Vantagem / desvantagem |
-| `h` / `a` / `,` | Histórico / atalhos / ajustes |
+| `h` / `a` / `,` | Histórico / atalhos de rolagem / ajustes |
 | `f` / `m` | Ficha de Daggerheart / mesa compartilhada |
-| `Esc` | Fecha o painel aberto |
+| `c` | Abre e fecha o Códice |
+| `/` | No Códice: vai para a busca |
+| `Alt` + `←` / `→` | No Códice: voltar / avançar |
+| `Ctrl` + `Z` | Desfaz a última remoção (ficha, atalho, rolagem…) |
+| `Esc` | Fecha o que estiver aberto — uma coisa por vez; sem nada aberto, volta ao menu |
+
+As teclas soltas (letras, números, vírgula, `/`) podem ser desligadas em
+**Ajustes → Teclado**: quem usa ditado ou leitor de voz não quer que uma palavra
+falada vire uma rajada de rolagens. `Esc`, `Enter` num botão e os atalhos com
+`Ctrl`/`Alt` continuam valendo.
 
 ## Notação
 

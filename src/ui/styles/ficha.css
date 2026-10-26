@@ -37,10 +37,6 @@
   max-width: 100%;
 }
 
-.ficha__seletor:focus {
-  outline: none;
-}
-
 .ficha__linha-classe {
   font-size: var(--fs-micro);
   color: var(--ink-faint);
@@ -262,6 +258,7 @@
 
 .atributo__reacao {
   align-self: flex-start;
+  min-height: 24px;
   padding: 1px var(--sp-2);
   border-radius: var(--r-sm);
   color: var(--ink-faint);
@@ -455,8 +452,8 @@
 }
 
 .esperanca__ponto {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: 2px solid var(--amber-700);
   background: transparent;
@@ -491,8 +488,8 @@
 }
 
 .trilha__caixa {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border: 1px solid var(--sf-hairline-strong);
   border-radius: var(--r-sm);
   background: transparent;

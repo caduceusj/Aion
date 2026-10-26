@@ -65,6 +65,7 @@ function createInertStage(): DiceStage {
     setSpeed: () => {},
     dispose: () => {},
     resize: () => {},
+    inerte: true,
   };
 }
 

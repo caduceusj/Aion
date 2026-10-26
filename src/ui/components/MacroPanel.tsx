@@ -46,7 +46,7 @@ function MacroCard({ macro, onEdit }: { macro: Macro; onEdit: (macro: Macro) => 
       <div className="atalho__acoes">
         <button
           type="button"
-          className="atalho__acao"
+          className="atalho__acao atalho__acao--ordem"
           onClick={() => moveMacro(macro.id, -1)}
           aria-label={`Subir ${macro.name}`}
           title="Subir"
@@ -55,7 +55,7 @@ function MacroCard({ macro, onEdit }: { macro: Macro; onEdit: (macro: Macro) => 
         </button>
         <button
           type="button"
-          className="atalho__acao"
+          className="atalho__acao atalho__acao--ordem"
           onClick={() => moveMacro(macro.id, 1)}
           aria-label={`Descer ${macro.name}`}
           title="Descer"
@@ -97,8 +97,13 @@ export function MacroPanel() {
   const ordenar = (list: Macro[]): Macro[] =>
     [...list].sort((a, b) => (porUso ? b.uses - a.uses : a.order - b.order));
 
+  // Sem personagem ativo não há seção "do personagem": `null === null` fazia os
+  // atalhos da mesa aparecerem duas vezes, uma em cada seção.
   const doPersonagem = useMemo(
-    () => ordenar(macros.filter((macro) => macro.characterId === activeCharacterId)),
+    () =>
+      activeCharacterId === null
+        ? []
+        : ordenar(macros.filter((macro) => macro.characterId === activeCharacterId)),
     [macros, activeCharacterId, porUso],
   );
 

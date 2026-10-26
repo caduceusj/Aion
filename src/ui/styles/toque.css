@@ -1,0 +1,315 @@
+/**
+ * Alvos de toque.
+ *
+ * O desenho do Aion é fino de propósito — ícones de 14px, caixas de 22px, uma
+ * trilha de 4px — e com o mouse isso é elegância. Com o dedo é erro: a
+ * WCAG 2.5.5 pede 44×44 px, e Apple e Material pedem 44–48. Aqui, e só onde o
+ * ponteiro é grosso (`pointer: coarse`), os controles crescem; o desenho
+ * continua o mesmo.
+ *
+ * Este arquivo vem por último de propósito (`App.tsx` o importa depois de todos
+ * os componentes): as regras têm a mesma especificidade das originais e só
+ * ganham pela ordem. O que já nasceu com 44px nos próprios arquivos (cabeçalho,
+ * doca, Códice) não se repete aqui.
+ *
+ * `scripts/auditoria-de-uso.mjs` percorre as telas num celular simulado e lista
+ * o que ainda ficou abaixo de 44px — é a prova de que esta lista está completa.
+ */
+
+@media (pointer: coarse) {
+  /* ------------------------------------------------------------ histórico */
+
+  .historico__filtro,
+  .historico__limpar,
+  .entrada__acao {
+    min-height: 44px;
+  }
+
+  .entrada__acao {
+    min-width: 44px;
+    justify-content: center;
+  }
+
+  .detalhe__copiar {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* ------------------------------------------------------------- atalhos */
+
+  .atalhos__novo,
+  .atalhos__ordenar,
+  .editor__testar {
+    min-height: 44px;
+  }
+
+  .atalho__acao {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Quatro ícones de 44px não cabem ao lado do nome numa gaveta de 320px.
+     Subir e descer — a ação mais rara — passam para dentro do editor, onde
+     há lugar para elas; no cartão ficam editar e remover. */
+  .atalho__acao--ordem {
+    display: none;
+  }
+
+  .editor__fechar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .editor__cancelar,
+  .editor__salvar {
+    min-height: 44px;
+  }
+
+  .editor__glifo {
+    min-height: 44px;
+  }
+
+  /* ------------------------------------------------------------- ficha */
+
+  .ficha__mini {
+    min-width: 44px;
+    justify-content: center;
+  }
+
+  .ficha__editar,
+  .ficha__mini,
+  .situacao__botao,
+  .situacao__chip,
+  .atributo__reacao,
+  .arma__acao,
+  .srd__aplicar,
+  .srd__cabecalho,
+  .carta__rolar {
+    min-height: 44px;
+  }
+
+  .atributo__reacao {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .dificuldade {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .limiares__campo,
+  .campo-texto__input,
+  .atributo__editor,
+  .arma-editor__campo,
+  .arma-editor__nome,
+  .exp-editor__nome,
+  .exp-editor__bonus,
+  .srd__campo select,
+  .cartas__busca {
+    min-height: 44px;
+  }
+
+  .carta__pegar {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Pontos de vida, estresse, armadura e esperança são marcados a toque, um a
+     um, lado a lado. O botão passa a ter 44px e o desenho — a caixa, o círculo
+     — encolhe para dentro dele: a área de toque cresce sem sobrepor a do
+     vizinho, e a ficha não vira uma parede de quadrados grandes. */
+  .trilha__caixas,
+  .esperanca__pontos {
+    gap: 0;
+  }
+
+  .trilha__caixa,
+  .esperanca__ponto {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .trilha__caixa::before,
+  .esperanca__ponto::before {
+    content: '';
+    position: absolute;
+    transition: all var(--dur-fast) var(--ease-out);
+  }
+
+  .trilha__caixa::before {
+    inset: 6px;
+    border: 1px solid var(--sf-hairline-strong);
+    border-radius: var(--r-sm);
+  }
+
+  .trilha__caixa[data-marcada='sim'] {
+    background: transparent;
+  }
+
+  .trilha__caixa[data-marcada='sim']::before {
+    background: var(--cor-trilha);
+    border-color: var(--cor-trilha);
+  }
+
+  .esperanca {
+    flex-wrap: wrap;
+  }
+
+  .esperanca__ponto::before {
+    inset: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--amber-700);
+  }
+
+  .esperanca__ponto[data-cheio='sim'] {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .esperanca__ponto[data-cheio='sim']::before {
+    background: var(--amber-300);
+    box-shadow: 0 0 10px var(--amber-glow);
+  }
+
+  /* ----------------------------------------------------------------- mesa */
+
+  .mesa__url,
+  .mesa__copiar,
+  .mesa__sair,
+  .mesa__gerar {
+    min-height: 44px;
+  }
+
+  .medo__botao {
+    width: 44px;
+    height: 44px;
+  }
+
+  .mesa__interruptor,
+  .mesa__ajuda summary {
+    min-height: 44px;
+  }
+
+  .mesa__interruptor input {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* -------------------------------------------------------------- ajustes */
+
+  .skin {
+    width: 44px;
+    height: 44px;
+  }
+
+  .personagem {
+    flex-wrap: wrap;
+  }
+
+  /* A linha do personagem tem trocador de cor, nome, cor dos dados e lixeira.
+     A 44px cada, não cabem lado a lado: a cor dos dados desce para a segunda
+     linha, inteira. */
+  .personagem__skin {
+    order: 5;
+    flex: 1 1 100%;
+  }
+
+  .personagem__ativar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .personagem__nome,
+  .personagem__skin,
+  .personagem-novo__campo,
+  .personagem-novo__botao,
+  .ajustes__perigo {
+    min-height: 44px;
+  }
+
+  .personagem__remover {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Tocar no nome do ajuste liga o interruptor (o <label> repassa o clique).
+     O nome, então, também é alvo — e precisa ter 44px de altura mesmo quando a
+     descrição cabe numa linha só. */
+  .ajuste__rotulo {
+    min-height: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* O interruptor é um comprimido de 44×26; o toque vale a linha toda do
+     ajuste, mas o botão em si precisa de uma altura que se acerte. */
+  .interruptor {
+    height: 32px;
+    width: 52px;
+  }
+
+  .interruptor__marcador {
+    width: 26px;
+    height: 26px;
+  }
+
+  .interruptor[aria-checked='true'] .interruptor__marcador {
+    transform: translateX(20px);
+  }
+
+  /* --------------------------------------------------------------- atlas */
+
+  .gazeta__item {
+    min-height: 44px;
+  }
+
+  .atlas__alternar {
+    min-height: 44px;
+  }
+
+  .atlas__zoom button {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Os pontos do mapa são marcas de 13px, e há quarenta delas. Cada uma ganha
+     uma área de toque de 32px — não 44: com tantas juntas, áreas maiores se
+     comeriam umas às outras. A lista de lugares ao lado do mapa é o caminho
+     para quem precisa de mais folga. */
+  .atlas__ponto {
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  /* ------------------------------------------------------------ almanaque */
+
+  .almanaque__abas button,
+  .almanaque__ponto-chips button,
+  .mes__acoes .mes__botao,
+  .ceu__botao,
+  .ceu__botao--pequeno,
+  .detalhe__botao,
+  .ciclo__moradores button,
+  .almanaque__meses .pastilha-mes {
+    min-height: 44px;
+  }
+
+  .mes__anos button {
+    width: 44px;
+    min-height: 44px;
+  }
+
+  .ceu__verbete {
+    width: 44px;
+  }
+
+  .folha__dia {
+    min-height: 44px;
+  }
+}
