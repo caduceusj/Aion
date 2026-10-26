@@ -150,6 +150,19 @@
   font-weight: 600;
 }
 
+/* As duas portas têm textos de alturas diferentes. Com a grade comum, o título
+   de uma ficava sete pixels abaixo do da outra, e o rodapé idem. A subgrade
+   faz as duas dividirem as mesmas linhas: glifo, nome, nota, rodapé e eco
+   alinham de um cartão ao outro. */
+@supports (grid-template-rows: subgrid) {
+  .porta {
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    row-gap: var(--sp-2);
+    align-content: start;
+  }
+}
+
 /* --- a porta da mesa: feltro e âmbar --- */
 
 .porta--mesa .porta__glifo {
@@ -211,6 +224,13 @@
   color: var(--ink-dim);
   font-family: var(--font-mono);
   font-size: 0.9em;
+}
+
+/* Sem teclado físico a dica das teclas é ruído. */
+@media (hover: none) and (pointer: coarse) {
+  .menu__dica-teclado {
+    display: none;
+  }
 }
 
 /* ------------------------------------------------------------- estreito */

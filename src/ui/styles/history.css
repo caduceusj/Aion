@@ -54,12 +54,6 @@
   border-color: var(--danger);
 }
 
-.historico__limpar--confirma {
-  color: var(--danger);
-  border-color: var(--danger);
-  background: rgba(224, 82, 63, 0.12);
-}
-
 .historico__filtros {
   display: flex;
   gap: var(--sp-1);

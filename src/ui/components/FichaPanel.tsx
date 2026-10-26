@@ -29,6 +29,7 @@ import {
 import { selectFichaAtiva, useAionStore } from '@/state/store';
 import { audio } from '@/audio/sfx';
 import { uid } from '@/state/ids';
+import { removerArma, removerExperiencia, removerFicha } from '@/ui/remocoes';
 import {
   IconAlerta,
   IconDesvantagem,
@@ -117,7 +118,6 @@ export function FichaPanel() {
   const fichas = useAionStore((s) => s.fichas);
   const atualizarFicha = useAionStore((s) => s.atualizarFicha);
   const adicionarFicha = useAionStore((s) => s.adicionarFicha);
-  const removerFicha = useAionStore((s) => s.removerFicha);
   const definirFichaAtiva = useAionStore((s) => s.definirFichaAtiva);
   const rolarDaFicha = useAionStore((s) => s.rolarDaFicha);
   const som = useAionStore((s) => s.settings.sound);
@@ -455,9 +455,7 @@ export function FichaPanel() {
                           ),
                         })
                       }
-                      aoRemover={() =>
-                        patch({ armas: ficha.armas.filter((item) => item.id !== arma.id) })
-                      }
+                      aoRemover={() => removerArma(ficha.id, arma.id)}
                     />
                   ) : (
                     <>
@@ -697,11 +695,7 @@ export function FichaPanel() {
                 <button
                   type="button"
                   className="ficha__mini ficha__mini--perigo"
-                  onClick={() =>
-                    patch({
-                      experiencias: ficha.experiencias.filter((item) => item.id !== exp.id),
-                    })
-                  }
+                  onClick={() => removerExperiencia(ficha.id, exp.id)}
                   aria-label={`Remover ${exp.nome}`}
                 >
                   <IconLixeira size={14} />

@@ -1,0 +1,96 @@
+/* O aviso fica acima da doca (a altura real dela é medida pelo App e vira
+   `--rodape-h`); fora da Mesa, que não tem doca, o fallback é só a borda. */
+.avisos {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--rodape-h, 0px) + var(--sp-4) + var(--safe-b));
+  z-index: var(--z-toast);
+  width: min(440px, calc(100vw - var(--sp-5)));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.aviso {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4);
+  border: 1px solid var(--sf-hairline-strong);
+  border-radius: var(--r-lg);
+  background: var(--sf-overlay);
+  box-shadow: var(--shadow-lg);
+  animation: aviso-entra var(--dur-mid) var(--ease-out);
+}
+
+@keyframes aviso-entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.aviso__texto {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink-bright);
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+}
+
+.aviso__desfazer {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 var(--sp-3);
+  border-radius: var(--r-pill);
+  background: var(--amber-300);
+  color: #2a1c05;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.aviso__desfazer:hover {
+  filter: brightness(1.08);
+}
+
+.aviso__fechar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  color: var(--ink-dim);
+}
+
+.aviso__fechar:hover {
+  color: var(--ink-bright);
+}
+
+@media (pointer: coarse) {
+  .aviso__desfazer,
+  .aviso__fechar {
+    min-height: 44px;
+  }
+
+  .aviso__fechar {
+    width: 44px;
+  }
+}
+
+/* Com a gaveta aberta ela cobre a doca (até 1100px): o aviso desce para a
+   borda da tela. Em tela larga o trilho fica ao lado e a doca continua
+   visível, então o aviso fica acima dela e centrado no que sobrou da mesa. */
+@media (max-width: 1099px) {
+  .avisos[data-painel='sim'] {
+    bottom: calc(var(--sp-4) + var(--safe-b));
+  }
+}
+
+@media (min-width: 1100px) {
+  .avisos[data-painel='sim'] {
+    left: calc((100vw - var(--rail-w)) / 2);
+  }
+}

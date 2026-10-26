@@ -27,11 +27,11 @@
 
   --cx-ouro: #c9a24b;
   --cx-ouro-claro: #f0cd80;
-  --cx-ouro-fundo: #7f6329;
+  --cx-ouro-fundo: #a48440;
   --cx-pergaminho: #ece0c6;
   --cx-pergaminho-2: #cdbc98;
   --cx-apagado: #948468;
-  --cx-carmim: #cb4a4c;
+  --cx-carmim: #d65a5b;
   --cx-astral: #6c7fb0;
   --cx-linha: rgba(201, 162, 75, 0.26);
   --cx-linha-fraca: rgba(201, 162, 75, 0.12);
@@ -181,6 +181,7 @@
 .codice__busca input {
   flex: 1;
   min-width: 0;
+  align-self: stretch;
   border: none;
   background: transparent;
   color: var(--cx-pergaminho);
@@ -762,6 +763,9 @@
   font-family: var(--cx-display);
   font-size: var(--fs-xl);
   font-weight: 600;
+  /* Título não leva a entrelinha do texto corrido: a 1,5 herdada, duas
+     linhas de 32px ficavam a 48px uma da outra e liam-se como dois títulos. */
+  line-height: 1.15;
   color: var(--cx-pergaminho);
 }
 
@@ -770,6 +774,9 @@
 .linha-do-tempo {
   list-style: none;
   display: grid;
+  /* Sem isto a coluna implícita é `auto` e cresce até o `nowrap` dos anos —
+     no celular a linha do tempo inteira passava da borda da tela. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--sp-2);
   position: relative;
   padding-left: var(--sp-5);
@@ -790,7 +797,7 @@
   position: relative;
   width: 100%;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--sp-1) var(--sp-3);
   padding: var(--sp-3);
   text-align: left;
@@ -800,11 +807,15 @@
   transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
 }
 
+/* O glifo senta sobre o fio da linha do tempo, que corre 15px à esquerda do
+   cartão. Posicionado à mão: com margem negativa numa coluna `auto`, a coluna
+   encolhia a quase nada e o glifo, sob `max-width: 100%`, sumia achatado. */
 .era-item__glifo {
-  grid-row: span 2;
-  align-self: center;
+  position: absolute;
+  left: -31px;
+  top: calc(var(--sp-3) - 2px);
+  max-width: none;
   color: var(--cx-ouro);
-  margin-left: calc(var(--sp-5) * -1 - 4px);
   background: rgba(12, 10, 8, 0.95);
   border-radius: 50%;
   padding: 3px;
@@ -818,15 +829,16 @@
 }
 
 .era-item__anos {
+  grid-column: 2;
+  grid-row: 1;
   font-size: var(--fs-xs);
   letter-spacing: 0.14em;
   color: var(--cx-ouro-fundo);
-  white-space: nowrap;
   align-self: center;
 }
 
 .era-item__nota {
-  grid-column: 2 / -1;
+  grid-column: 1 / -1;
   font-size: var(--fs-sm);
   line-height: 1.5;
   color: var(--cx-apagado);
@@ -1122,14 +1134,22 @@
     bottom: 0;
     left: 0;
     width: min(300px, 84vw);
-    background: rgba(12, 10, 8, 0.98);
+    background: rgb(12, 10, 8);
     box-shadow: var(--shadow-lg);
     transform: translateX(-102%);
-    transition: transform var(--dur-mid) var(--ease-out);
+    /* Escondida de verdade, não só deslocada: fora da tela ela continuava na
+       ordem de tabulação, e quem usa teclado parava em links invisíveis. O
+       `visibility` espera a animação de saída terminar para não cortá-la. */
+    visibility: hidden;
+    transition:
+      transform var(--dur-mid) var(--ease-out),
+      visibility 0s linear var(--dur-mid);
   }
 
   .codice[data-indice='aberto'] .codice__indice {
     transform: none;
+    visibility: visible;
+    transition-delay: 0s;
   }
 
   /* No celular o índice é a navegação inteira, e 28px de altura é alvo de
@@ -1427,4 +1447,248 @@
 
 .instrumento:hover svg {
   color: var(--cx-ouro-claro);
+}
+
+
+/* ======================================================= polimento de uso */
+
+/* A leitura recebe o foco quando a página troca (para quem navega por
+   teclado ou leitor de tela), mas não é um controle: sem contorno. */
+.codice__leitura:focus {
+  outline: none;
+}
+
+/* ---------------------------------------------------- gavetas do índice */
+
+.indice__gavetas-topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin: var(--sp-4) 0 var(--sp-2);
+  padding: 0 var(--sp-2);
+}
+
+.indice__rotulo--solto {
+  margin: 0;
+  padding: 0;
+}
+
+.indice__alternar-todas {
+  padding: 2px var(--sp-1);
+  border-radius: var(--r-sm);
+  color: var(--cx-apagado);
+  font-size: var(--fs-xs);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--cx-linha);
+}
+
+.indice__alternar-todas:hover {
+  color: var(--cx-ouro-claro);
+}
+
+.indice__grupo {
+  margin-bottom: var(--sp-1);
+}
+
+.indice__gaveta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px var(--sp-2);
+  text-align: left;
+  border-radius: var(--r-sm);
+  color: var(--cx-ouro-claro);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.indice__gaveta:hover {
+  background: rgba(201, 162, 75, 0.07);
+}
+
+.indice__gaveta-nome {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--cx-display);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.indice__gaveta-conta {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  color: var(--cx-apagado);
+  font-variant-numeric: tabular-nums;
+}
+
+.indice__seta {
+  flex: 0 0 auto;
+  color: var(--cx-ouro-fundo);
+  transform: rotate(-90deg);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.indice__grupo[data-aberto='sim'] .indice__seta {
+  transform: none;
+}
+
+/* Quem abre a gaveta vê o que há nela com um recuo e um fio, não uma lista
+   colada ao cabeçalho. */
+.indice__grupo[data-aberto='sim'] > div {
+  margin: 2px 0 var(--sp-3) var(--sp-3);
+  padding-left: var(--sp-1);
+  border-left: 1px solid var(--cx-linha-fraca);
+}
+
+/* ------------------------------------------------ voltar, dentro da página */
+
+/* No celular o histórico do cabeçalho não cabe, e "voltar" é a ação mais
+   repetida de quem lê saltando de verbete em verbete. Vira uma barra. */
+.codice__voltar {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  .codice__voltar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    min-height: 44px;
+    padding: 0 var(--sp-4);
+    border-bottom: 1px solid var(--cx-linha-fraca);
+    background: rgba(12, 10, 8, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--cx-ouro);
+    font-size: var(--fs-sm);
+    text-align: left;
+  }
+
+  .codice__voltar span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* A marca virou o item "A Capa" do índice; sem ela a busca ganha a linha. */
+  .codice__marca {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------- ficha, no celular */
+
+/* Numa coluna só a ficha empurrava a prosa para o fim da segunda tela. Em
+   duas colunas cada fato ocupa metade da largura, e a crônica sobe. Os de
+   valor longo (marcados pelo componente) continuam usando a linha toda. */
+@media (max-width: 900px) {
+  .verbete__ficha dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--sp-4);
+  }
+
+  .verbete__fato[data-longo='sim'] {
+    grid-column: 1 / -1;
+  }
+
+  /* Em duas colunas o primeiro filho deixa de ser o único do topo: sem o
+     mesmo respiro em todos, o rótulo da direita descia uns pixels. */
+  .verbete__fato:first-child {
+    padding-top: var(--sp-2);
+  }
+
+  .verbete__fato:last-child {
+    padding-bottom: var(--sp-2);
+  }
+
+  .verbete__ficha {
+    padding: var(--sp-1) var(--sp-4) var(--sp-2);
+  }
+}
+
+/* ------------------------------------------------------ alvos de toque */
+
+/* O desenho do Códice é fino de propósito, mas o dedo não é: no toque os
+   controles de navegação chegam a 44px (WCAG 2.5.5). Só o alvo cresce. */
+@media (pointer: coarse) {
+  .codice__fechar,
+  .codice__indice-alternar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .codice__busca {
+    height: 44px;
+  }
+
+  .codice__menu {
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .codice__historico button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .codice__marca {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .indice__item,
+  .indice__gaveta,
+  .indice__alternar-todas {
+    min-height: 44px;
+  }
+
+  .pastilha-verbete {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .verbete__eras .codice-elo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* ---------------------------------------------- linha do tempo, estreita */
+
+/* Nome, período e nota empilhados ao lado do glifo: numa coluna de 300px, o
+   período ao lado do nome espremia o nome em três linhas de duas palavras. */
+@media (max-width: 720px) {
+  .era-item {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .era-item__anos {
+    grid-column: 1;
+    grid-row: auto;
+    align-self: start;
+  }
+}
+
+/* O "voltar" mostra para onde se volta, sem passar da largura da tela. */
+.codice__voltar-acao {
+  font-weight: 600;
+}
+
+.codice__voltar-titulo {
+  color: var(--cx-apagado);
+}
+
+.codice__voltar-titulo::before {
+  content: '· ';
 }

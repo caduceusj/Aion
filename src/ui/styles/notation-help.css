@@ -38,6 +38,10 @@
   border-bottom: 1px solid var(--sf-hairline);
 }
 
+.ajuda--estreita {
+  width: min(520px, 100%);
+}
+
 .ajuda__titulo {
   font-size: var(--fs-lg);
   color: var(--ink-bright);
@@ -126,5 +130,16 @@
 
   .ajuda__exemplo {
     text-align: left;
+  }
+}
+
+@media (pointer: coarse) {
+  .ajuda__fechar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ajuda__linha {
+    min-height: 44px;
   }
 }

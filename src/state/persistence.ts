@@ -88,6 +88,7 @@ function parseSettings(raw: unknown): Settings {
     gmMode: bool(raw.gmMode, DEFAULT_SETTINGS.gmMode),
     reducedMotion: bool(raw.reducedMotion, DEFAULT_SETTINGS.reducedMotion),
     showSeeds: bool(raw.showSeeds, DEFAULT_SETTINGS.showSeeds),
+    hotkeys: bool(raw.hotkeys, DEFAULT_SETTINGS.hotkeys),
     defaultSkin: (knownSkins.includes(skin) ? skin : 'ambar') as Settings['defaultSkin'],
   };
 }

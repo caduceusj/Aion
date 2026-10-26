@@ -16,10 +16,15 @@
 .doca__dados {
   display: flex;
   gap: var(--sp-2);
+  /* Pescoço de garrafa só em telas intermediárias: se algum dia não couber,
+     rola em vez de estourar. Em celular a grade abaixo resolve. */
   overflow-x: auto;
   scroll-snap-type: x proximity;
   scrollbar-width: none;
-  padding-bottom: 2px;
+  /* A etiqueta de quantidade vaza 6px para cima e para a direita do botão;
+     sem este respiro o overflow a cortaria. */
+  padding: 6px 6px 2px 0;
+  margin: -6px -6px 0 0;
 }
 
 .doca__dados::-webkit-scrollbar {
@@ -103,7 +108,7 @@
 .doca__input {
   width: 100%;
   min-height: 48px;
-  padding: 0 42px 0 var(--sp-4);
+  padding: 0 76px 0 var(--sp-4);
   border: 1px solid var(--sf-hairline);
   border-radius: var(--r-md);
   background: rgba(9, 13, 22, 0.9);
@@ -129,9 +134,9 @@
   border-color: var(--danger);
 }
 
-.doca__ajuda {
+.doca__ajuda,
+.doca__limpar {
   position: absolute;
-  right: var(--sp-2);
   width: 32px;
   height: 32px;
   display: grid;
@@ -141,7 +146,16 @@
   transition: color var(--dur-fast) var(--ease-out);
 }
 
-.doca__ajuda:hover {
+.doca__ajuda {
+  right: var(--sp-2);
+}
+
+.doca__limpar {
+  right: calc(var(--sp-2) + 34px);
+}
+
+.doca__ajuda:hover,
+.doca__limpar:hover {
   color: var(--amber-300);
 }
 
@@ -154,10 +168,14 @@
 }
 
 .doca__botao {
-  width: 48px;
+  min-width: 48px;
   min-height: 48px;
-  display: grid;
-  place-items: center;
+  padding: 0 var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
   border: 1px solid var(--sf-hairline);
   border-radius: var(--r-md);
   background: rgba(18, 24, 38, 0.8);
@@ -181,6 +199,20 @@
   opacity: 0.35;
 }
 
+/* Só o ícone não diz se a seta para cima é vantagem ou desvantagem — e no
+   toque não há `title` para ler. O rótulo curto resolve sem ocupar a linha. */
+.doca__botao-rotulo {
+  font-size: var(--fs-micro);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-wide);
+  font-weight: 600;
+}
+
+.doca__botao--icone {
+  width: 48px;
+  padding: 0;
+}
+
 .doca__rolar {
   min-height: 48px;
   padding: 0 var(--sp-5);
@@ -199,17 +231,20 @@
     filter var(--dur-fast) var(--ease-out);
 }
 
-.doca__rolar:hover:not(:disabled) {
+.doca__rolar:hover:not([aria-disabled='true']) {
   filter: brightness(1.08);
 }
 
-.doca__rolar:active:not(:disabled) {
+.doca__rolar:active:not([aria-disabled='true']) {
   transform: translateY(2px);
 }
 
-.doca__rolar:disabled {
-  opacity: 0.4;
+/* Parece desligado, mas continua clicável: clicar leva ao campo e diz o que
+   falta. `disabled` de verdade engoliria o toque sem uma palavra. */
+.doca__rolar[aria-disabled='true'] {
+  opacity: 0.55;
   filter: saturate(0.4);
+  cursor: not-allowed;
 }
 
 /* Enquanto os dados rolam, o botão pulsa de leve em vez de girar um spinner. */
@@ -232,6 +267,11 @@
   padding-left: var(--sp-1);
 }
 
+/* A dica de campo vazio não é erro de ninguém: tom neutro. */
+.doca__erro--dica {
+  color: var(--ink-dim);
+}
+
 @media (max-width: 720px) {
   .doca__rolar span {
     display: none;
@@ -245,6 +285,23 @@
 /* Em telas estreitas o campo ganha a linha inteira: espremido entre quatro
    botões, não cabia nem "1d20+7[Ataque]". */
 @media (max-width: 560px) {
+  /* Oito dados numa fila de rolagem escondiam justo o d20, o mais usado.
+     Em grade 4×2 aparecem todos, sem gesto nenhum para descobrir. */
+  .doca__dados {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow: visible;
+    gap: var(--sp-2);
+  }
+
+  .dado-rapido {
+    min-width: 0;
+    min-height: 52px;
+    flex-direction: row;
+    gap: var(--sp-2);
+    padding: 0 var(--sp-1);
+  }
+
   .doca__linha {
     flex-wrap: wrap;
   }
@@ -267,3 +324,25 @@
   }
 }
 
+
+/* No toque o campo é o maior alvo da doca; os dois botões dentro dele também
+   chegam a 44px, e o texto digitado ganha espaço para não passar por baixo. */
+@media (pointer: coarse) {
+  .doca__ajuda,
+  .doca__limpar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .doca__ajuda {
+    right: 2px;
+  }
+
+  .doca__limpar {
+    right: 46px;
+  }
+
+  .doca__input {
+    padding-right: 94px;
+  }
+}

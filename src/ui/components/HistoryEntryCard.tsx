@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { HistoryEntry } from '@/state/types';
 import { useAionStore } from '@/state/store';
+import { removerEntrada } from '@/ui/remocoes';
 import { DiceBreakdown } from './DiceBreakdown';
 import { IconFixado, IconFixar, IconLixeira, IconOlho, IconRepetir } from './Icons';
 
@@ -24,7 +25,6 @@ export function HistoryEntryCard({ entry, destacado }: { entry: HistoryEntry; de
   const characters = useAionStore((state) => state.characters);
   const revealEntry = useAionStore((state) => state.revealEntry);
   const togglePin = useAionStore((state) => state.togglePin);
-  const removeEntry = useAionStore((state) => state.removeEntry);
   const rollExpression = useAionStore((state) => state.rollExpression);
 
   const { result } = entry;
@@ -58,10 +58,14 @@ export function HistoryEntryCard({ entry, destacado }: { entry: HistoryEntry; de
           <span className="entrada__identidade">
             <span className="entrada__titulo">{titulo}</span>
             <span className="entrada__meta mono">
-              {result.expression}
-              <span className="entrada__ponto" aria-hidden="true">
-                ·
-              </span>
+              {entry.macroName ? (
+                <>
+                  {result.expression}
+                  <span className="entrada__ponto" aria-hidden="true">
+                    ·
+                  </span>
+                </>
+              ) : null}
               {tempoRelativo(result.timestamp)}
             </span>
           </span>
@@ -116,7 +120,7 @@ export function HistoryEntryCard({ entry, destacado }: { entry: HistoryEntry; de
           <button
             type="button"
             className="entrada__acao entrada__acao--perigo"
-            onClick={() => removeEntry(entry.id)}
+            onClick={() => removerEntrada(entry.id)}
             aria-label="Remover do histórico"
             title="Remover"
           >

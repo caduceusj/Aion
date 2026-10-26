@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { NOTATION_HELP, type NotationHelpEntry } from '@/engine';
-import { useAionStore } from '@/state/store';
+import { useDialogo } from '@/ui/hooks/useDialogo';
 import { IconFechar } from './Icons';
 import '@/ui/styles/notation-help.css';
 
@@ -12,8 +12,14 @@ const GROUP_ORDER: Array<NotationHelpEntry['group']> = [
   'Pools de sucesso',
 ];
 
-export function NotationHelp({ onClose }: { onClose: () => void }) {
-  const setInput = useAionStore((state) => state.setInput);
+export function NotationHelp({
+  onClose,
+  onPick,
+}: {
+  onClose: () => void;
+  /** Uma linha foi escolhida: quem abriu a ajuda põe a sintaxe no campo. */
+  onPick: (syntax: string) => void;
+}) {
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
   const grouped = useMemo(() => {
@@ -23,17 +29,10 @@ export function NotationHelp({ onClose }: { onClose: () => void }) {
     })).filter((section) => section.entries.length > 0);
   }, []);
 
+  useDialogo(dialogRef, onClose);
   useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
-        event.stopPropagation();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
     dialogRef.current?.focus();
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
+  }, []);
 
   return (
     <div
@@ -77,10 +76,7 @@ export function NotationHelp({ onClose }: { onClose: () => void }) {
                     <button
                       type="button"
                       className="ajuda__linha"
-                      onClick={() => {
-                        setInput(entry.syntax);
-                        onClose();
-                      }}
+                      onClick={() => onPick(entry.syntax)}
                     >
                       <code className="ajuda__sintaxe mono">{entry.syntax}</code>
                       <span className="ajuda__descricao">{entry.label}</span>

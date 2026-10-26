@@ -46,6 +46,14 @@ export const IconHistorico = (props: IconProps) => (
   </Glyph>
 );
 
+export const IconPaineis = (props: IconProps) => (
+  <Glyph {...props}>
+    <rect x="3" y="4.5" width="18" height="15" rx="2.4" />
+    <path d="M14.5 4.5v15" />
+    <path d="M17 9h1M17 12h1M17 15h1" />
+  </Glyph>
+);
+
 export const IconAtalhos = (props: IconProps) => (
   <Glyph {...props}>
     <path d="M13 2.8 4.4 13.4h6l-1.4 7.8 8.6-10.6h-6z" />

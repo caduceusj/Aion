@@ -18,7 +18,7 @@ export function MenuPrincipal() {
   const ultima = useAionStore((state) => state.history[0] ?? null);
 
   return (
-    <main className="menu">
+    <main className="menu" tabIndex={-1} data-foco-da-vista>
       <div className="menu__brilho" aria-hidden="true" />
 
       <header className="menu__topo">
@@ -72,8 +72,11 @@ export function MenuPrincipal() {
       </nav>
 
       <p className="menu__dica">
-        Dentro de qualquer um dos dois, <kbd>C</kbd> troca para o Códice e o brasão no
-        canto volta para cá.
+        <span className="menu__dica-teclado">
+          Dentro de qualquer um dos dois, <kbd>C</kbd> troca para o Códice e <kbd>?</kbd>{' '}
+          mostra os atalhos de teclado.{' '}
+        </span>
+        O brasão no canto volta para cá.
       </p>
     </main>
   );

@@ -16,8 +16,11 @@
   /* --- Tinta --- */
   --ink-bright: #f4f1ea;
   --ink: #cdd3df;
-  --ink-dim: #8c96ab;
-  --ink-faint: #5c6579;
+  /* Os três degraus de tinta são todos legíveis (WCAG AA, 4.5:1) sobre as
+     três superfícies. O mais fraco, `faint`, é o limite — abaixo disso vira
+     decoração, e texto não pode ser decoração. */
+  --ink-dim: #9aa4b8;
+  --ink-faint: #808aa0;
 
   /* --- Âmbar arcano (marca) --- */
   --amber-100: #f8e3bd;
@@ -37,7 +40,9 @@
   --crit-fail: #e0523f;
   --crit-fail-glow: rgba(224, 82, 63, 0.5);
   --success: #6fcf97;
-  --danger: #e0523f;
+  /* Um tom acima do `crit-fail`: texto de erro em superfície elevada
+     (#1a2233) precisa de 4.5:1, e o vermelho do crítico dava 4.1. */
+  --danger: #e8644f;
 
   /* --- Feltro da mesa --- */
   --felt-deep: #0d1f1c;

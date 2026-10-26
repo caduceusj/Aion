@@ -4,6 +4,9 @@
   z-index: var(--z-hud);
   display: grid;
   place-items: center;
+  /* Centrado na parte livre da mesa — entre o cabeçalho e a doca, cuja
+     altura real o App mede. Um número fixo só acertava numa tela. */
+  padding: 56px var(--sp-4) calc(var(--rodape-h, var(--dock-h)) + var(--sp-2));
   pointer-events: none;
 }
 
@@ -59,11 +62,51 @@
   align-items: center;
   gap: var(--sp-1);
   padding: var(--sp-4) var(--sp-6);
-  margin-bottom: calc(var(--dock-h) + var(--sp-6));
+  max-width: 100%;
   background: none;
   color: var(--ink-bright);
   text-align: center;
+  cursor: pointer;
   animation: resultado-entra var(--dur-mid) var(--ease-out);
+}
+
+/* O texto fica por cima dos dados e do feltro: um véu escuro e macio atrás
+   dele garante o contraste sem desenhar uma caixa. */
+.resultado__painel::before {
+  content: '';
+  position: absolute;
+  inset: -12% -16%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(4, 6, 11, 0.62), rgba(4, 6, 11, 0));
+  pointer-events: none;
+}
+
+.resultado__fechar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  color: var(--ink-dim);
+  opacity: 0.8;
+  transition: opacity var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.resultado__fechar:hover,
+.resultado__fechar:focus-visible {
+  color: var(--ink-bright);
+  opacity: 1;
+}
+
+@media (pointer: coarse) {
+  .resultado__fechar {
+    width: 44px;
+    height: 44px;
+  }
 }
 
 @keyframes resultado-entra {
@@ -185,7 +228,8 @@
 }
 
 .resultado__revelar {
-  padding: var(--sp-1) var(--sp-4);
+  min-height: 36px;
+  padding: 0 var(--sp-5);
   border-radius: var(--r-pill);
   background: var(--amber-300);
   color: #2a1c05;

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { tryRoll, validate } from '@/engine';
 import type { Macro } from '@/state/types';
 import { useAionStore } from '@/state/store';
+import { useDialogo } from '@/ui/hooks/useDialogo';
 import { IconCheck, IconFechar, IconRolar } from './Icons';
 
 const GLYPHS = [
@@ -43,38 +44,7 @@ export function MacroEditor({ macro, onClose }: Props) {
     nameRef.current?.focus();
   }, []);
 
-  // Prende o foco dentro do editor enquanto ele estiver aberto.
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
-        event.stopPropagation();
-        onClose();
-        return;
-      }
-      if (event.key !== 'Tab') return;
-
-      const container = containerRef.current;
-      if (!container) return;
-
-      const focusables = container.querySelectorAll<HTMLElement>(
-        'button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      );
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      if (!first || !last) return;
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown, true);
-    return () => window.removeEventListener('keydown', onKeyDown, true);
-  }, [onClose]);
+  useDialogo(containerRef, onClose);
 
   const salvar = (): void => {
     if (!valido) return;

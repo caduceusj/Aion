@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useAionStore } from '@/state/store';
+import { limparHistorico } from '@/ui/remocoes';
 import { HistoryEntryCard } from './HistoryEntryCard';
 import { IconDado, IconLixeira } from './Icons';
 import '@/ui/styles/history.css';
@@ -32,10 +33,8 @@ function rotuloDoDia(timestamp: number): string {
 export function HistoryRail() {
   const history = useAionStore((state) => state.history);
   const lastEntryId = useAionStore((state) => state.lastEntryId);
-  const clearHistory = useAionStore((state) => state.clearHistory);
 
   const [filtro, setFiltro] = useState<Filtro>('todos');
-  const [confirmando, setConfirmando] = useState(false);
 
   const visiveis = useMemo(() => {
     if (filtro === 'fixados') return history.filter((entry) => entry.pinned);
@@ -52,21 +51,9 @@ export function HistoryRail() {
         </div>
 
         {history.length > 0 ? (
-          <button
-            type="button"
-            className={`historico__limpar${confirmando ? ' historico__limpar--confirma' : ''}`}
-            onClick={() => {
-              if (!confirmando) {
-                setConfirmando(true);
-                setTimeout(() => setConfirmando(false), 3500);
-                return;
-              }
-              clearHistory();
-              setConfirmando(false);
-            }}
-          >
+          <button type="button" className="historico__limpar" onClick={limparHistorico}>
             <IconLixeira size={15} />
-            <span>{confirmando ? 'Confirmar?' : 'Limpar'}</span>
+            <span>Limpar</span>
           </button>
         ) : null}
       </header>

@@ -3,21 +3,11 @@ import type { DiceSkin } from '@/state/types';
 import { useAionStore } from '@/state/store';
 import { SKIN_COLORS, SKIN_ORDER } from '@/three/textures';
 import { audio } from '@/audio/sfx';
+import { ATALHOS } from '@/ui/atalhos';
+import { limparHistorico, removerPersonagem } from '@/ui/remocoes';
 import { IconLixeira, IconMais } from './Icons';
+import { ListaDeAtalhos } from './ListaDeAtalhos';
 import '@/ui/styles/settings.css';
-
-const ATALHOS_TECLADO: Array<[string, string]> = [
-  ['Enter', 'Foca o campo de notação'],
-  ['1 – 8', 'Rola d4, d6, d8, d10, d12, d20, d100, dF'],
-  ['R', 'Repete a última rolagem'],
-  ['V / D', 'Vantagem / desvantagem'],
-  ['H', 'Abre e fecha o histórico'],
-  ['A', 'Abre e fecha os atalhos'],
-  ['F', 'Abre e fecha a ficha'],
-  ['M', 'Abre e fecha a mesa compartilhada'],
-  [',', 'Abre os ajustes'],
-  ['Esc', 'Fecha o painel aberto'],
-];
 
 function Interruptor({
   id,
@@ -105,12 +95,9 @@ export function SettingsPanel() {
   const updateSettings = useAionStore((state) => state.updateSettings);
   const addCharacter = useAionStore((state) => state.addCharacter);
   const updateCharacter = useAionStore((state) => state.updateCharacter);
-  const removeCharacter = useAionStore((state) => state.removeCharacter);
   const setActiveCharacter = useAionStore((state) => state.setActiveCharacter);
-  const clearHistory = useAionStore((state) => state.clearHistory);
 
   const [novoNome, setNovoNome] = useState('');
-  const [confirmandoLimpeza, setConfirmandoLimpeza] = useState(false);
 
   const aplicarSom = (ligado: boolean): void => {
     updateSettings({ sound: ligado });
@@ -265,7 +252,7 @@ export function SettingsPanel() {
                 <button
                   type="button"
                   className="personagem__remover"
-                  onClick={() => removeCharacter(character.id)}
+                  onClick={() => removerPersonagem(character.id)}
                   aria-label={`Remover ${character.name}`}
                   title="Remover"
                 >
@@ -300,41 +287,29 @@ export function SettingsPanel() {
         </section>
 
         <section className="ajustes__secao">
-          <h3 className="rotulo ajustes__secao-titulo">Atalhos de teclado</h3>
-          <dl className="teclas">
-            {ATALHOS_TECLADO.map(([tecla, acao]) => (
-              <div className="teclas__linha" key={tecla}>
-                <dt>
-                  <kbd className="tecla">{tecla}</kbd>
-                </dt>
-                <dd>{acao}</dd>
-              </div>
-            ))}
-          </dl>
+          <h3 className="rotulo ajustes__secao-titulo">Teclado</h3>
+
+          <Interruptor
+            id="cfg-teclas"
+            rotulo="Atalhos de uma tecla"
+            descricao="Números, letras e vírgula rolam dados e abrem painéis. Desligue se usa ditado ou leitor de voz."
+            valor={settings.hotkeys}
+            aoMudar={(valor) => updateSettings({ hotkeys: valor })}
+          />
+
+          <ListaDeAtalhos grupos={ATALHOS} nivel={4} />
         </section>
 
         <section className="ajustes__secao">
           <h3 className="rotulo ajustes__secao-titulo">Dados guardados</h3>
           <button
             type="button"
-            className={`ajustes__perigo${confirmandoLimpeza ? ' ajustes__perigo--confirma' : ''}`}
+            className="ajustes__perigo"
             disabled={historyLength === 0}
-            onClick={() => {
-              if (!confirmandoLimpeza) {
-                setConfirmandoLimpeza(true);
-                setTimeout(() => setConfirmandoLimpeza(false), 3500);
-                return;
-              }
-              clearHistory();
-              setConfirmandoLimpeza(false);
-            }}
+            onClick={limparHistorico}
           >
             <IconLixeira size={16} />
-            <span>
-              {confirmandoLimpeza
-                ? 'Confirmar: apagar tudo?'
-                : `Limpar histórico (${historyLength})`}
-            </span>
+            <span>Limpar histórico ({historyLength})</span>
           </button>
           <p className="ajustes__nota">
             Tudo fica só neste navegador. O Aion não envia nada para lugar nenhum.

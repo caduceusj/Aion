@@ -16,6 +16,7 @@ export const DEFAULT_SETTINGS: Settings = {
   gmMode: false,
   reducedMotion: false,
   showSeeds: false,
+  hotkeys: true,
   defaultSkin: 'ambar',
 };
 

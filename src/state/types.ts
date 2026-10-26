@@ -74,6 +74,12 @@ export interface Settings {
   reducedMotion: boolean;
   /** Mostra a semente de cada rolagem no histórico. */
   showSeeds: boolean;
+  /**
+   * Atalhos de uma tecla só (1–8, R, V, H, C…). Quem usa ditado ou leitor de
+   * voz precisa poder desligá-los: uma palavra falada vira uma rajada de
+   * teclas soltas (WCAG 2.1.4).
+   */
+  hotkeys: boolean;
   /** Skin padrão dos dados quando não há personagem ativo. */
   defaultSkin: DiceSkin;
 }
@@ -237,11 +243,17 @@ export interface AionState {
   togglePin(id: string): void;
   removeEntry(id: string): void;
   clearHistory(): void;
+  /** Devolve uma entrada removida à posição em que estava. */
+  restaurarEntrada(entrada: HistoryEntry, indice: number): void;
+  /** Devolve o que `clearHistory` apagou, abaixo do que foi rolado depois. */
+  restaurarHistorico(entradas: HistoryEntry[]): void;
 
   // ---- Atalhos ----
   addMacro(macro: Pick<Macro, 'name' | 'expression' | 'glyph'> & Partial<Macro>): void;
   updateMacro(id: string, patch: Partial<Macro>): void;
   removeMacro(id: string): void;
+  /** Devolve um atalho removido; a ordem original vem junto no próprio atalho. */
+  restaurarMacro(macro: Macro): void;
   moveMacro(id: string, delta: number): void;
   /** Rola um atalho e incrementa seu contador de uso. */
   runMacro(id: string): void;
@@ -250,6 +262,14 @@ export interface AionState {
   addCharacter(name: string, skin: DiceSkin): void;
   updateCharacter(id: string, patch: Partial<Character>): void;
   removeCharacter(id: string): void;
+  /**
+   * Desfaz `removeCharacter`: o personagem volta ao lugar, seus atalhos
+   * voltam a ser dele e, se era o ativo, volta a ser o ativo.
+   */
+  restaurarPersonagem(
+    personagem: Character,
+    opcoes: { indice: number; macrosIds: string[]; eraAtivo: boolean },
+  ): void;
   setActiveCharacter(id: string | null): void;
 
   // ---- Fichas de Daggerheart ----
@@ -258,6 +278,11 @@ export interface AionState {
   adicionarFicha(nome?: string): void;
   atualizarFicha(id: string, patch: Partial<import('@/daggerheart/ficha').Ficha>): void;
   removerFicha(id: string): void;
+  /** Desfaz `removerFicha`: a ficha volta ao lugar e, se era a aberta, reabre. */
+  restaurarFicha(
+    ficha: import('@/daggerheart/ficha').Ficha,
+    opcoes: { indice: number; eraAtiva: boolean },
+  ): void;
   definirFichaAtiva(id: string | null): void;
   /** Rola algo montado pela ficha, já com rótulo. */
   rolarDaFicha(expressao: string, rotulo: string): void;

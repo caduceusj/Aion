@@ -15,6 +15,12 @@ body {
   height: 100%;
 }
 
+/* A pinça continua dando zoom (WCAG 1.4.4); só o toque duplo deixa de ser
+   "zoom", o que tira o atraso de 300ms de todo toque no celular. */
+html {
+  touch-action: manipulation;
+}
+
 body {
   min-height: 100dvh;
   overflow: hidden;
@@ -82,6 +88,13 @@ ol {
 }
 
 :focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Regiões que recebem foco por código (a tela nova, a leitura, o painel) para
+   quem navega por teclado ou leitor de tela. Não são controles: o contorno
+   cercaria a tela inteira e não diria nada a ninguém. */
+[tabindex='-1']:focus {
   outline: none;
 }
 

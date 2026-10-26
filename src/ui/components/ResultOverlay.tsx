@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAionStore } from '@/state/store';
 import { CriticalFx } from './CriticalFx';
-import { IconOlho } from './Icons';
+import { IconFechar, IconOlho } from './Icons';
 import '@/ui/styles/result.css';
 
-const AUTO_HIDE_MS = 6000;
+const AUTO_HIDE_MS = 7000;
 const COUNT_MS = 450;
 
 /** Contagem animada até o total. Curta o bastante para não atrasar a mesa. */
@@ -47,6 +47,8 @@ export function ResultOverlay() {
   const revealEntry = useAionStore((state) => state.revealEntry);
 
   const [dismissed, setDismissed] = useState(false);
+  /** Ponteiro ou foco em cima do resultado: quem está lendo não é interrompido. */
+  const [pausado, setPausado] = useState(false);
 
   const entry = history.find((item) => item.id === lastEntryId) ?? null;
   const revealed = phase === 'revelado' && result !== null && !dismissed;
@@ -56,13 +58,20 @@ export function ResultOverlay() {
   const total = result?.total ?? 0;
   const counted = useContagem(total, revealed && !hidden, !reducedMotion);
 
-  // Some sozinho: o total não pode ficar tapando a mesa até a próxima rolagem.
   useEffect(() => {
     setDismissed(false);
-    if (phase !== 'revelado') return undefined;
+    setPausado(false);
+  }, [phase, lastEntryId]);
+
+  // Some sozinho: o total não pode ficar tapando a mesa até a próxima rolagem.
+  // Exceto se for rolagem do mestre ainda oculta — o "Revelar" é o assunto
+  // do painel, e ele não deve desaparecer antes de a pessoa decidir — e
+  // enquanto o ponteiro ou o foco estão em cima (WCAG 2.2.1).
+  useEffect(() => {
+    if (phase !== 'revelado' || pausado || hidden) return undefined;
     const timer = setTimeout(() => setDismissed(true), AUTO_HIDE_MS);
     return () => clearTimeout(timer);
-  }, [phase, lastEntryId]);
+  }, [phase, lastEntryId, pausado, hidden]);
 
   // Tremor de tela na falha crítica.
   useEffect(() => {
@@ -100,13 +109,27 @@ export function ResultOverlay() {
       ) : null}
 
       {revealed ? (
-        <button
-          type="button"
+        <div
           className="resultado__painel"
           onClick={() => setDismissed(true)}
+          onPointerEnter={() => setPausado(true)}
+          onPointerLeave={() => setPausado(false)}
+          onFocus={() => setPausado(true)}
+          onBlur={() => setPausado(false)}
           data-critico={critical ?? undefined}
-          aria-label="Dispensar o resultado"
         >
+          <button
+            type="button"
+            className="resultado__fechar"
+            onClick={(event) => {
+              event.stopPropagation();
+              setDismissed(true);
+            }}
+            aria-label="Dispensar o resultado"
+          >
+            <IconFechar size={18} />
+          </button>
+
           {critical === 'max' ? <span className="resultado__selo">Crítico</span> : null}
           {critical === 'min' ? <span className="resultado__selo">Falha crítica</span> : null}
 
@@ -116,23 +139,16 @@ export function ResultOverlay() {
             <span className="resultado__oculto">
               <IconOlho size={22} />
               <span>Rolagem do Mestre</span>
-              <span
+              <button
+                type="button"
                 className="resultado__revelar"
-                role="button"
-                tabIndex={0}
                 onClick={(event) => {
                   event.stopPropagation();
                   if (entry) revealEntry(entry.id);
                 }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' && event.key !== ' ') return;
-                  event.stopPropagation();
-                  event.preventDefault();
-                  if (entry) revealEntry(entry.id);
-                }}
               >
                 Revelar
-              </span>
+              </button>
             </span>
           ) : (
             <>
@@ -166,7 +182,7 @@ export function ResultOverlay() {
               ) : null}
             </>
           )}
-        </button>
+        </div>
       ) : null}
     </div>
   );

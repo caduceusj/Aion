@@ -210,9 +210,9 @@
   color: var(--amber-300);
 }
 
-.atalho__acao--confirma {
+.atalho__acao--perigo:hover {
   color: var(--danger);
-  background: rgba(224, 82, 63, 0.14);
+  background: rgba(232, 100, 79, 0.14);
 }
 
 /* --------------------------------------------------------- faixa rápida */
@@ -481,5 +481,11 @@ select.editor__input {
 @media (max-width: 420px) {
   .editor__glifos {
     grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (pointer: coarse) {
+  .faixa-atalhos__item {
+    min-height: 44px;
   }
 }

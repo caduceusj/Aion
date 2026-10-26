@@ -47,7 +47,11 @@ export function CodexVerbete({
         <aside className="verbete__ficha" aria-label="Ficha do verbete">
           <dl>
             {entrada.ficha.map((fato) => (
-              <div className="verbete__fato" key={fato.rotulo}>
+              <div
+                className="verbete__fato"
+                key={fato.rotulo}
+                data-longo={fato.valor.length > 34 ? 'sim' : undefined}
+              >
                 <dt>{fato.rotulo}</dt>
                 <dd>
                   <Prosa texto={fato.valor} aoNavegar={aoNavegar} />

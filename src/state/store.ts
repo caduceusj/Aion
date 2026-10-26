@@ -466,6 +466,24 @@ export const useAionStore = create<AionState>((set, get) => ({
     set({ history: [], lastEntryId: null, lastResult: null, phase: 'ocioso' });
   },
 
+  restaurarEntrada(entrada, indice) {
+    set((state) => {
+      if (state.history.some((item) => item.id === entrada.id)) return state;
+      const history = [...state.history];
+      history.splice(Math.max(0, Math.min(indice, history.length)), 0, entrada);
+      return { history };
+    });
+  },
+
+  restaurarHistorico(entradas) {
+    set((state) => {
+      const presentes = new Set(state.history.map((item) => item.id));
+      const voltam = entradas.filter((item) => !presentes.has(item.id));
+      // O que foi rolado depois de limpar é mais novo, então fica por cima.
+      return voltam.length === 0 ? state : { history: [...state.history, ...voltam] };
+    });
+  },
+
   // -------------------------------------------------------------- atalhos
   addMacro(macro) {
     set((state) => ({
@@ -495,6 +513,14 @@ export const useAionStore = create<AionState>((set, get) => ({
 
   removeMacro(id) {
     set((state) => ({ macros: state.macros.filter((macro) => macro.id !== id) }));
+  },
+
+  restaurarMacro(macro) {
+    set((state) =>
+      state.macros.some((item) => item.id === macro.id)
+        ? state
+        : { macros: [...state.macros, macro] },
+    );
   },
 
   moveMacro(id, delta) {
@@ -577,6 +603,25 @@ export const useAionStore = create<AionState>((set, get) => ({
     });
   },
 
+  restaurarPersonagem(personagem, { indice, macrosIds, eraAtivo }) {
+    set((state) => {
+      if (state.characters.some((item) => item.id === personagem.id)) return state;
+      const characters = [...state.characters];
+      characters.splice(Math.max(0, Math.min(indice, characters.length)), 0, personagem);
+      return {
+        characters,
+        // Só devolve os atalhos que continuam "da mesa": se a pessoa já deu
+        // um deles a outro personagem, essa escolha vale mais que o desfazer.
+        macros: state.macros.map((macro) =>
+          macrosIds.includes(macro.id) && macro.characterId === null
+            ? { ...macro, characterId: personagem.id }
+            : macro,
+        ),
+        activeCharacterId: eraAtivo ? personagem.id : state.activeCharacterId,
+      };
+    });
+  },
+
   setActiveCharacter(id) {
     set({ activeCharacterId: id });
   },
@@ -606,6 +651,15 @@ export const useAionStore = create<AionState>((set, get) => ({
         fichaAtivaId:
           state.fichaAtivaId === id ? (fichas[0]?.id ?? null) : state.fichaAtivaId,
       };
+    });
+  },
+
+  restaurarFicha(ficha, { indice, eraAtiva }) {
+    set((state) => {
+      if (state.fichas.some((item) => item.id === ficha.id)) return state;
+      const fichas = [...state.fichas];
+      fichas.splice(Math.max(0, Math.min(indice, fichas.length)), 0, ficha);
+      return { fichas, fichaAtivaId: eraAtiva ? ficha.id : state.fichaAtivaId };
     });
   },
 

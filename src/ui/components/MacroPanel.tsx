@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { Macro } from '@/state/types';
 import { useAionStore } from '@/state/store';
 import { audio } from '@/audio/sfx';
+import { removerAtalho } from '@/ui/remocoes';
 import { MacroEditor } from './MacroEditor';
 import {
   IconAtalhos,
@@ -15,10 +16,8 @@ import '@/ui/styles/macros.css';
 
 function MacroCard({ macro, onEdit }: { macro: Macro; onEdit: (macro: Macro) => void }) {
   const runMacro = useAionStore((state) => state.runMacro);
-  const removeMacro = useAionStore((state) => state.removeMacro);
   const moveMacro = useAionStore((state) => state.moveMacro);
   const sound = useAionStore((state) => state.settings.sound);
-  const [confirmando, setConfirmando] = useState(false);
 
   return (
     <li className="atalho">
@@ -74,17 +73,10 @@ function MacroCard({ macro, onEdit }: { macro: Macro; onEdit: (macro: Macro) => 
         </button>
         <button
           type="button"
-          className={`atalho__acao${confirmando ? ' atalho__acao--confirma' : ''}`}
-          onClick={() => {
-            if (!confirmando) {
-              setConfirmando(true);
-              setTimeout(() => setConfirmando(false), 3000);
-              return;
-            }
-            removeMacro(macro.id);
-          }}
-          aria-label={confirmando ? `Confirmar remoção de ${macro.name}` : `Remover ${macro.name}`}
-          title={confirmando ? 'Clique de novo para confirmar' : 'Remover'}
+          className="atalho__acao atalho__acao--perigo"
+          onClick={() => removerAtalho(macro.id)}
+          aria-label={`Remover ${macro.name}`}
+          title="Remover"
         >
           <IconLixeira size={14} />
         </button>

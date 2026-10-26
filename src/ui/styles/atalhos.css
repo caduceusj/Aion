@@ -1,0 +1,43 @@
+/* A lista de teclas — a mesma em Ajustes e na folha que o `?` abre. */
+
+.teclas-grupo + .teclas-grupo {
+  margin-top: var(--sp-5);
+}
+
+.teclas-grupo__titulo {
+  margin-bottom: var(--sp-2);
+  color: var(--amber-500);
+}
+
+.teclas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.teclas__linha {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+.teclas__linha dd {
+  color: var(--ink-dim);
+  font-size: var(--fs-sm);
+}
+
+.tecla {
+  display: inline-block;
+  min-width: 100%;
+  padding: 3px var(--sp-2);
+  border: 1px solid var(--sf-hairline-strong);
+  border-bottom-width: 2px;
+  border-radius: var(--r-sm);
+  background: var(--sf-overlay);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-align: center;
+  white-space: nowrap;
+}

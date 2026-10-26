@@ -2,7 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { PolyhedronKind } from '@/engine/types';
 import { useAionStore } from '@/state/store';
 import { audio } from '@/audio/sfx';
-import { GlifoDado, IconAjuda, IconDesvantagem, IconRepetir, IconRolar, IconVantagem } from './Icons';
+import {
+  GlifoDado,
+  IconAjuda,
+  IconDesvantagem,
+  IconFechar,
+  IconRepetir,
+  IconRolar,
+  IconVantagem,
+} from './Icons';
 import { NotationHelp } from './NotationHelp';
 import '@/ui/styles/dock.css';
 
@@ -29,6 +37,11 @@ const PLACEHOLDERS = [
 
 const LONG_PRESS_MS = 420;
 
+/** Quanto a notação precisa ficar parada e errada antes de reclamarmos. */
+const ESPERA_DO_ERRO_MS = 700;
+
+const DICA_CAMPO_VAZIO = 'Escreva uma rolagem, como 2d6+3, ou toque num dado.';
+
 export function Dock() {
   const input = useAionStore((state) => state.input);
   const inputError = useAionStore((state) => state.inputError);
@@ -43,18 +56,24 @@ export function Dock() {
   const repeatLast = useAionStore((state) => state.repeatLast);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const ajudaRef = useRef<HTMLButtonElement | null>(null);
   const [counts, setCounts] = useState<Partial<Record<PolyhedronKind, number>>>({});
   const [helpOpen, setHelpOpen] = useState(false);
   const [placeholder, setPlaceholder] = useState(PLACEHOLDERS[0] ?? '1d20');
   /** Posição na navegação por seta para cima, tipo histórico de terminal. */
   const [recallIndex, setRecallIndex] = useState(-1);
+  /** O erro só aparece depois que a pessoa para de digitar — "2d" não é um erro, é um caminho. */
+  const [erroVisivel, setErroVisivel] = useState(false);
+  /** Tentou rolar com o campo vazio: o botão explica em vez de ficar mudo. */
+  const [dicaVazio, setDicaVazio] = useState(false);
 
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressFired = useRef(false);
 
   const rolling = phase === 'lancando' || phase === 'assentando';
   const trimmed = input.trim();
-  const blocked = trimmed.length > 0 && inputError !== null;
+  const vazio = trimmed.length === 0;
+  const blocked = !vazio && inputError !== null;
 
   /** Expressões anteriores, sem repetir, para a seta para cima. */
   const recall = useMemo(() => {
@@ -87,6 +106,18 @@ export function Dock() {
     return () => window.removeEventListener('aion:focar-notacao', focus);
   }, []);
 
+  // Um erro que aparece e some a cada tecla faz a doca inteira tremer. Ele
+  // entra depois de uma pausa, some na hora em que a expressão fica válida, e
+  // — enquanto continua errada — só troca o texto, sem piscar.
+  useEffect(() => {
+    if (!blocked) {
+      setErroVisivel(false);
+      return undefined;
+    }
+    const timer = setTimeout(() => setErroVisivel(true), ESPERA_DO_ERRO_MS);
+    return () => clearTimeout(timer);
+  }, [blocked, input]);
+
   const click = () => {
     if (sound) audio.click();
   };
@@ -103,6 +134,7 @@ export function Dock() {
       return;
     }
     click();
+    setDicaVazio(false);
     rollQuick(kind, countFor(kind));
   };
 
@@ -123,12 +155,17 @@ export function Dock() {
 
   const handleSubmit = (event: React.FormEvent): void => {
     event.preventDefault();
-    if (blocked) return;
-    click();
-    if (trimmed.length > 0) {
-      rollFromInput();
-      setRecallIndex(-1);
+    if (vazio || blocked) {
+      // Um botão que não faz nada e não diz por quê é pior que um botão que
+      // erra: leva a pessoa ao campo e mostra o que falta.
+      setDicaVazio(vazio);
+      setErroVisivel(blocked);
+      inputRef.current?.focus();
+      return;
     }
+    click();
+    rollFromInput();
+    setRecallIndex(-1);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -150,9 +187,29 @@ export function Dock() {
     }
   };
 
+  const fecharAjuda = (): void => {
+    setHelpOpen(false);
+    ajudaRef.current?.focus();
+  };
+
+  const escolherDaAjuda = (syntax: string): void => {
+    setInput(syntax);
+    setRecallIndex(-1);
+    setDicaVazio(false);
+    setHelpOpen(false);
+    // No celular, focar o campo abre o teclado por cima de tudo — e quem
+    // escolheu um exemplo muitas vezes só quer rolá-lo.
+    const comMouse =
+      typeof window.matchMedia === 'function' && window.matchMedia('(pointer: fine)').matches;
+    (comMouse ? inputRef.current : ajudaRef.current)?.focus();
+  };
+
+  const mostraErro = erroVisivel && blocked;
+  const mostraDica = dicaVazio && vazio;
+
   return (
     <>
-      <form className="doca" onSubmit={handleSubmit}>
+      <form className="doca" onSubmit={handleSubmit} aria-label="Rolar dados">
         <div className="doca__dados" role="group" aria-label="Dados rápidos">
           {QUICK_DICE.map(({ kind, label, hotkey }) => {
             const count = countFor(kind);
@@ -169,6 +226,13 @@ export function Dock() {
                   }
                   handleQuickRoll(kind);
                 }}
+                onKeyDown={(event) => {
+                  // Sem mouse nem toque longo, a quantidade se muda pelas setas.
+                  if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    setCount(kind, count + (event.key === 'ArrowUp' ? 1 : -1));
+                  }
+                }}
                 onContextMenu={(event) => {
                   event.preventDefault();
                   setCount(kind, 1);
@@ -181,7 +245,7 @@ export function Dock() {
                 onPointerLeave={cancelLongPress}
                 onPointerCancel={cancelLongPress}
                 aria-label={`Rolar ${count} ${label} (tecla ${hotkey})`}
-                title={`${label} — clique para rolar, shift ou roda para mudar a quantidade`}
+                title={`${label} — clique para rolar. Para mudar a quantidade: segure, use shift+clique, a roda do mouse ou as setas.`}
               >
                 <GlifoDado kind={kind} size={26} className="dado-rapido__glifo" />
                 <span className="dado-rapido__rotulo">{label}</span>
@@ -200,6 +264,7 @@ export function Dock() {
               onChange={(event) => {
                 setInput(event.target.value);
                 setRecallIndex(-1);
+                setDicaVazio(false);
               }}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
@@ -210,16 +275,37 @@ export function Dock() {
               enterKeyHint="send"
               aria-label="Notação da rolagem"
               aria-invalid={blocked}
-              {...(blocked ? { 'aria-describedby': 'doca-erro' } : {})}
+              {...(mostraErro
+                ? { 'aria-describedby': 'doca-erro' }
+                : mostraDica
+                  ? { 'aria-describedby': 'doca-dica' }
+                  : {})}
             />
+            {!vazio ? (
+              <button
+                type="button"
+                className="doca__limpar"
+                onClick={() => {
+                  setInput('');
+                  setRecallIndex(-1);
+                  inputRef.current?.focus();
+                }}
+                aria-label="Limpar o campo"
+                title="Limpar o campo"
+              >
+                <IconFechar size={15} />
+              </button>
+            ) : null}
             <button
               type="button"
+              ref={ajudaRef}
               className="doca__ajuda"
               onClick={() => {
                 click();
                 setHelpOpen(true);
               }}
               aria-label="Como escrever uma rolagem"
+              aria-haspopup="dialog"
               title="Referência de notação"
             >
               <IconAjuda size={18} />
@@ -237,7 +323,8 @@ export function Dock() {
               aria-label="Rolar com vantagem (tecla V)"
               title="Vantagem — 2d20, mantém o maior"
             >
-              <IconVantagem size={19} />
+              <IconVantagem size={18} />
+              <span className="doca__botao-rotulo">Vant.</span>
             </button>
             <button
               type="button"
@@ -249,11 +336,12 @@ export function Dock() {
               aria-label="Rolar com desvantagem (tecla D)"
               title="Desvantagem — 2d20, mantém o menor"
             >
-              <IconDesvantagem size={19} />
+              <IconDesvantagem size={18} />
+              <span className="doca__botao-rotulo">Desv.</span>
             </button>
             <button
               type="button"
-              className="doca__botao"
+              className="doca__botao doca__botao--icone"
               onClick={() => {
                 click();
                 repeatLast();
@@ -268,12 +356,12 @@ export function Dock() {
             <button
               type="submit"
               className="doca__rolar"
-              disabled={blocked || trimmed.length === 0}
+              aria-disabled={vazio || blocked ? 'true' : undefined}
               data-rolando={rolling ? 'sim' : undefined}
               title={
                 blocked
                   ? 'Corrija a expressão para rolar'
-                  : trimmed.length === 0
+                  : vazio
                     ? 'Escreva uma rolagem, como 1d20+5'
                     : 'Rolar'
               }
@@ -284,14 +372,18 @@ export function Dock() {
           </div>
         </div>
 
-        {blocked ? (
+        {mostraErro ? (
           <p className="doca__erro" id="doca-erro" role="status">
             {inputError?.message}
+          </p>
+        ) : mostraDica ? (
+          <p className="doca__erro doca__erro--dica" id="doca-dica" role="status">
+            {DICA_CAMPO_VAZIO}
           </p>
         ) : null}
       </form>
 
-      {helpOpen ? <NotationHelp onClose={() => setHelpOpen(false)} /> : null}
+      {helpOpen ? <NotationHelp onClose={fecharAjuda} onPick={escolherDaAjuda} /> : null}
     </>
   );
 }

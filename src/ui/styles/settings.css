@@ -302,40 +302,6 @@
   opacity: 0.4;
 }
 
-/* -------------------------------------------------------------- teclas */
-
-.teclas {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-}
-
-.teclas__linha {
-  display: grid;
-  grid-template-columns: 84px 1fr;
-  gap: var(--sp-3);
-  align-items: center;
-}
-
-.teclas__linha dd {
-  color: var(--ink-dim);
-  font-size: var(--fs-xs);
-}
-
-.tecla {
-  display: inline-block;
-  min-width: 100%;
-  padding: 3px var(--sp-2);
-  border: 1px solid var(--sf-hairline-strong);
-  border-bottom-width: 2px;
-  border-radius: var(--r-sm);
-  background: var(--sf-overlay);
-  color: var(--ink);
-  font-family: var(--font-mono);
-  font-size: var(--fs-micro);
-  text-align: center;
-}
-
 /* -------------------------------------------------------------- perigo */
 
 .ajustes__perigo {
@@ -355,12 +321,6 @@
 .ajustes__perigo:hover:not(:disabled) {
   color: var(--danger);
   border-color: var(--danger);
-}
-
-.ajustes__perigo--confirma {
-  color: var(--danger);
-  border-color: var(--danger);
-  background: rgba(224, 82, 63, 0.12);
 }
 
 .ajustes__perigo:disabled {
