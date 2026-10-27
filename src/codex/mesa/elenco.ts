@@ -383,14 +383,15 @@ const JOGADORES: Verbete[] = [
     titulo: 'Eliezer',
     epiteto: 'Eliezer Coração-de-Leão',
     categoria: 'jogador',
-    resumo: 'Guerreiro caçador-de-sangue listado na cópia antiga da wiki, ao lado de Beatrix, e ausente da cópia nova.',
+    resumo: 'Guerreiro caçador-de-sangue da cópia antiga da wiki, ao lado de Beatrix e ausente da nova; nas notas da mesa, assassinou um general Bellias.',
     brasao: 'templo',
     ficha: [
       { rotulo: 'Papel', valor: 'Jogador' },
       { rotulo: 'Nome completo', valor: 'Eliezer Coração-de-Leão' },
       { rotulo: 'Raça', valor: 'Humano/Gnomo' },
       { rotulo: 'Classe', valor: 'Guerreiro / Caçador-de-Sangue' },
-      { rotulo: 'Fonte', valor: 'Só na cópia antiga' },
+      { rotulo: 'Feito', valor: 'Assassinou um general Bellias — [[general-bellias-e-os-pixadores|o relato das notas]]' },
+      { rotulo: 'Fonte', valor: 'Só na cópia antiga da wiki; o feito vem das notas da mesa' },
     ],
     secoes: [
       {
@@ -400,8 +401,14 @@ const JOGADORES: Verbete[] = [
           'Isso pode significar entrada recente, saída recente, ou só uma cópia que ficou para trás. O Códice registra os dois estados em vez de escolher um.',
         ],
       },
+      {
+        titulo: 'O general e os pixadores',
+        paragrafos: [
+          'Fora da wiki, as notas da mesa acrescentam um feito: Eliezer desobedeceu à ordem de executar pixadores numa cidade e, depois disso, assassinou um general [[casa-bellias|Bellias]]. Qual cidade, qual general e de quem veio a ordem as notas não dizem — o relato e as lacunas estão em [[general-bellias-e-os-pixadores|O general Bellias e os pixadores]].',
+        ],
+      },
     ],
-    relacionados: ['beatrix', 'alvyriel'],
+    relacionados: ['beatrix', 'alvyriel', 'general-bellias-e-os-pixadores', 'casa-bellias'],
     eras: ['era-moderna'],
   },
 

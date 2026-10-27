@@ -69,7 +69,7 @@ você mesmo roda, para os aparelhos se acharem.
 
 **O Códice**
 - A lore da campanha por cima da mesa, em uma aba própria (tecla `C`)
-- 176 verbetes navegáveis: eras, personagens, casas, lugares, o céu, relíquias,
+- 177 verbetes navegáveis: eras, personagens, casas, lugares, o céu, relíquias,
   eventos e potências
 - Wiki de verdade: toda menção na prosa é um link, e cada verbete mostra quem cita ele
 - Cada verbete diz de onde veio: As Anais, a Gazeta, a Biblioteca de Andari, o

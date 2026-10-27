@@ -289,4 +289,38 @@ export const FRAGMENTOS: Verbete[] = [
     relacionados: ['ferdinand', 'rhogar'],
     eras: ['era-moderna'],
   },
+
+  {
+    chave: 'general-bellias-e-os-pixadores',
+    titulo: 'O general Bellias e os pixadores',
+    epiteto: 'Uma ordem desobedecida',
+    categoria: 'evento',
+    resumo: 'Eliezer assassinou um general Bellias depois de desobedecer à ordem de executar pixadores numa cidade — as notas não dizem qual cidade, nem qual general.',
+    brasao: 'bellias',
+    ficha: [
+      { rotulo: 'Quem matou', valor: '[[eliezer|Eliezer Coração-de-Leão]]' },
+      { rotulo: 'Quem morreu', valor: 'Um general [[casa-bellias|Bellias]] — as notas não o nomeiam' },
+      { rotulo: 'Antes', valor: 'Eliezer desobedeceu à ordem de executar pixadores' },
+      { rotulo: 'Cidade', valor: 'A dos pixadores — as notas não a nomeiam' },
+      { rotulo: 'Fonte', valor: 'Notas da mesa, fora da wiki' },
+    ],
+    secoes: [
+      {
+        titulo: 'O que as notas registram',
+        paragrafos: [
+          'Segundo as notas da mesa, [[eliezer|Eliezer Coração-de-Leão]] desobedeceu à ordem de executar pixadores numa cidade. Depois disso, assassinou um general [[casa-bellias|Bellias]].',
+        ],
+      },
+      {
+        titulo: 'O que as notas não dizem',
+        paragrafos: [
+          'Não dizem que cidade era, quem eram os pixadores nem quando isso aconteceu. Não dizem de quem veio a ordem — se do próprio general ou de alguém acima dele — nem em que posição Eliezer a recebeu. E registram só que uma coisa veio depois da outra: se uma causou a outra, ninguém escreveu.',
+          'O general também fica sem nome. O elenco conhece um general ligado aos Bellias, [[duncan-bellias|Duncan]] — "antes de desaparecer misteriosamente" —, e as notas não dizem se é dele que se fala.',
+        ],
+      },
+    ],
+    relacionados: ['eliezer', 'casa-bellias', 'duncan-bellias'],
+    eras: ['era-moderna'],
+    alcunhas: ['pichadores', 'morte do general Bellias', 'assassinato do general Bellias'],
+  },
 ];

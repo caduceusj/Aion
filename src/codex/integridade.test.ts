@@ -229,3 +229,35 @@ describe('a prosa se resolve', () => {
     expect(verbete('casa-keaton')?.titulo).toBe('House Keaton');
   });
 });
+
+describe('o feito de Eliezer, vindo das notas da mesa', () => {
+  const CHAVE = 'general-bellias-e-os-pixadores';
+
+  it('vive na camada da mesa, assinado pelas notas — não pela wiki nem pelas Anais', () => {
+    const relato = verbete(CHAVE);
+    expect(relato?.fonte).toBe('notas');
+    expect(relato?.categoria).toBe('evento');
+  });
+
+  it('Eliezer o cita, e a Casa Bellias, que é das Anais, o lista sem ter sido tocada', () => {
+    expect(verbete('eliezer')?.relacionados).toContain(CHAVE);
+    expect(referenciam('casa-bellias').map((v) => v.chave)).toContain(CHAVE);
+    // A crônica não foi editada para caber a notícia: nada nela fala da morte.
+    expect(JSON.stringify(verbete('casa-bellias'))).not.toMatch(/pixador/i);
+  });
+
+  it('a busca acha pelas duas grafias, pixadores e pichadores', () => {
+    for (const termo of ['pixadores', 'pichadores']) {
+      expect(buscar(termo).map((a) => a.verbete.chave), termo).toContain(CHAVE);
+    }
+  });
+
+  it('o que as notas não dizem fica dito, e o general não ganha o nome de ninguém', () => {
+    const relato = verbete(CHAVE);
+    expect(relato?.secoes.map((s) => s.titulo)).toContain('O que as notas não dizem');
+    // Duncan aparece como pergunta aberta — nunca como a vítima.
+    const ficha = relato?.ficha.map((f) => `${f.rotulo}: ${f.valor}`).join('\n') ?? '';
+    expect(ficha).not.toMatch(/duncan/i);
+    expect(ficha).toMatch(/Quem morreu: .*as notas não o nomeiam/);
+  });
+});
