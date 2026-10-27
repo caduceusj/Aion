@@ -80,13 +80,13 @@ export const LUA_VERMELHA: Verbete[] = [
     titulo: 'Os Vernatto',
     epiteto: 'Ligados aos Marrixz pelas cachoeiras',
     categoria: 'poder',
-    resumo: 'Povo ligado ao plano elemental da Água, atingido primeiro pela invasão da Shadowfell e hoje liderado pela Cavaleira do Coral Vermelho.',
+    resumo: 'Povo ligado ao plano elemental da Água, atingido primeiro pela invasão da Shadowfell e hoje liderado por Carmilla, a Cavaleira do Coral Vermelho.',
     brasao: 'porto',
     ficha: [
       { rotulo: 'Ligação', valor: 'Família Marrixz, pelas cachoeiras' },
       { rotulo: 'Buscam', valor: 'Laços mais próximos com os territórios do Marid' },
       { rotulo: 'Comparação', valor: 'Não são tão terríveis quanto os Schraden' },
-      { rotulo: 'Liderança atual', valor: '[[carmilla|a Cavaleira do Coral Vermelho]]' },
+      { rotulo: 'Liderança atual', valor: '[[carmilla|Carmilla]], a Cavaleira do Coral Vermelho' },
     ],
     secoes: [
       {
@@ -99,13 +99,13 @@ export const LUA_VERMELHA: Verbete[] = [
       {
         titulo: 'Dois exércitos',
         paragrafos: [
-          'Os Vernatto mantêm dois exércitos distintos hoje; um deles é liderado por [[carmilla|a Cavaleira do Coral Vermelho]] — uma criatura de armadura vermelha abençoada por corais, bênção do plano elemental da Água, que surgiu em meio às águas do porto e ajudou a derrotar os monstros de lá.',
+          'Os Vernatto mantêm dois exércitos distintos hoje; um deles é liderado por [[carmilla|Carmilla]], a Cavaleira do Coral Vermelho — uma criatura de armadura vermelha abençoada por corais, bênção do plano elemental da Água, que surgiu em meio às águas do porto e ajudou a derrotar os monstros de lá.',
         ],
       },
       {
         titulo: 'O que ainda não se sabe',
         paragrafos: [
-          'Para onde a Cavaleira do Coral Vermelho está guiando a cidade, ninguém no grupo sabe dizer ainda.',
+          'Para onde [[carmilla|Carmilla]], a Cavaleira do Coral Vermelho, está guiando a cidade, ninguém no grupo sabe dizer ainda.',
         ],
       },
     ],

@@ -261,3 +261,40 @@ describe('o feito de Eliezer, vindo das notas da mesa', () => {
     expect(ficha).toMatch(/Quem morreu: .*as notas não o nomeiam/);
   });
 });
+
+describe('a Cavaleira do Coral Vermelho é a Carmilla', () => {
+  const EPITETO = 'Cavaleira do Coral Vermelho';
+
+  /** Cada trecho de texto do verbete — resumo, valores da ficha, parágrafos —, sem marcação. */
+  const trechos = (entrada: Verbete): string[] => [
+    entrada.resumo,
+    ...entrada.ficha.map((fato) => semMarcacao(fato.valor)),
+    ...entrada.secoes.flatMap((secao) => secao.paragrafos.map((paragrafo) => semMarcacao(paragrafo))),
+  ];
+
+  it('onde o epíteto aparece, o nome aparece junto — ninguém precisa clicar para saber quem é', () => {
+    // Antes, a página dos Vernatto dizia só "a Cavaleira do Coral Vermelho", com
+    // o nome escondido no destino do link.
+    const soltos: string[] = [];
+    for (const entrada of VERBETES) {
+      if (entrada.chave === 'carmilla') continue;
+      for (const trecho of trechos(entrada)) {
+        if (trecho.includes(EPITETO) && !trecho.includes('Carmilla')) {
+          soltos.push(`${entrada.chave} → "${trecho.slice(0, 80)}…"`);
+        }
+      }
+    }
+    expect(soltos).toEqual([]);
+  });
+
+  it('o verbete dela diz que ela é a Cavaleira, no texto e não só no epíteto', () => {
+    const corpo = (verbete('carmilla')?.secoes ?? [])
+      .flatMap((secao) => secao.paragrafos.map((paragrafo) => semMarcacao(paragrafo)))
+      .join(' ');
+    expect(corpo).toMatch(/Carmilla é a Cavaleira do Coral Vermelho/);
+  });
+
+  it('e quem procura pelo epíteto chega a ela', () => {
+    expect(buscar('cavaleira do coral vermelho').map((achado) => achado.verbete.chave)).toContain('carmilla');
+  });
+});

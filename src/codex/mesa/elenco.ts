@@ -871,7 +871,7 @@ const INIMIGOS: Verbete[] = [
     brasao: 'serpente',
     epiteto: 'A Cavaleira do Coral Vermelho',
     nota:
-      'Filha, ou campeã, da Rainha dos Marid, enviada para salvar os [[vernatto|Vernatto]] — surgiu nas águas do porto com armadura vermelha abençoada por corais e ajudou a derrotar os monstros de lá.',
+      'Carmilla é a Cavaleira do Coral Vermelho: filha, ou campeã, da Rainha dos Marid, enviada para salvar os [[vernatto|Vernatto]]. Surgiu nas águas do porto com armadura vermelha abençoada por corais e ajudou a derrotar os monstros de lá; hoje lidera um dos dois exércitos dos Vernatto.',
     relacionados: ['vernatto', 'raven-mother'],
   }),
   inimigo({ chave: 'pet-demonio', titulo: 'Pet Demônio', brasao: 'mao' }),
